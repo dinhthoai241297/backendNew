@@ -76,7 +76,7 @@ class Sidebar extends Component {
                                         }
                                     />
                                     <MyLink
-                                        to="/sector/edit"
+                                        to="/sector/edit/new"
                                         activeOnlyWhenExact={true}
                                         label={
                                             <Fragment>

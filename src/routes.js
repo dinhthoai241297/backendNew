@@ -10,7 +10,7 @@ export default (
         <Switch>
             <Route path="/" exact component={DashBoard} />
             <Route path="/sector/list" component={Sector} />
-            <Route path="/sector/edit" component={EditSector} />
+            <Route path="/sector/edit/:param" component={EditSector} />
         </Switch>
     </App>
 );
