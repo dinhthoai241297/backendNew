@@ -59,14 +59,15 @@ export const loadAllSectorApi = page => {
             //
             throw (error);
         } else {
-            dispatch(loadAllSectorState(JSON.parse(data.text).data.list));
+            console.log(data);
+            dispatch(loadAllSectorState(JSON.parse(data.text).data));
         }
     });
 };
 
-export const loadAllSectorState = sectors => {
+export const loadAllSectorState = data => {
     return {
         type: actionTypes.LOAD_ALL_SECTOR,
-        sectors
+        data
     };
 };

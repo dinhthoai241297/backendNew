@@ -1,6 +1,9 @@
 import * as actionTypes from './../actionTypes/SectorActionTypes';
 
-let initState = [];
+let initState = {
+    sectors: [],
+    next: false
+}
 
 function findIndex(list, sector) {
     for (let i = 0; i < list.length; i++) {
@@ -14,24 +17,28 @@ function findIndex(list, sector) {
 const sectorReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.ADD_SECTOR: {
-            return [...state, action.sector];
+            state.sectors.push(action.sector);
+            return {...state};
         }
         case actionTypes.UPDATE_SECTOR: {
-            let index = findIndex(state, action.sector);
+            let index = findIndex(state.sectors, action.sector);
             if (index > 0) {
-                state[index] = action.sector;
+                state.sectors[index] = action.sector;
             }
-            return [...state];
+            return {...state};
         }
         case actionTypes.DELETE_SECTOR: {
-            let index = findIndex(state, action.sector);
+            let index = findIndex(state.sectors, action.sector);
             if (index > 0) {
-                state.splice(index, 1);
+                state.sectors.splice(index, 1);
             }
-            return [...state];
+            return {...state};
         }
         case actionTypes.LOAD_ALL_SECTOR: {
-            return [...action.sectors];
+            return {
+                sectors: action.data.list,
+                next: action.data.next
+            };
         }
         default: {
             return state;

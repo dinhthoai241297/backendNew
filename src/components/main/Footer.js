@@ -6,10 +6,10 @@ class Footer extends Component {
             <footer className="main-footer">
                 {/* To the right */}
                 <div className="pull-right hidden-xs">
-                    Anything you want
-                        </div>
+                    Banana
+                </div>
                 {/* Default to the left */}
-                <strong>Copyright © 2016 <a href="#">Company</a>.</strong> All rights reserved.
+                <strong>Copyright © 2018 <a href="#">Company</a>.</strong> All rights reserved.
             </footer>
         );
     }

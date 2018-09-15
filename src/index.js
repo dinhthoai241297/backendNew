@@ -15,12 +15,13 @@ import 'admin-lte/bower_components/Ionicons/css/ionicons.min.css'
 import 'admin-lte/dist/css/AdminLTE.min.css';
 import 'admin-lte/dist/css/skins/skin-blue.min.css';
 
+import './assets/styles/styles.css';
+
 import 'admin-lte/bower_components/jquery/dist/jquery.min.js';
 import 'admin-lte/bower_components/bootstrap/dist/js/bootstrap.min.js';
 import 'admin-lte/dist/js/adminlte.min.js';
 
 const store = configureStore();
-store.dispatch(sectorActions.loadAllSectorApi(1));
 
 render(
     <Provider store={store}>

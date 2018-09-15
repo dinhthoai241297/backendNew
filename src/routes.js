@@ -1,14 +1,16 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
-import HomePage from './components/home/HomePage';
-import SectorPage from './components/sector/SectorPage';
+import DashBoard from './components/dashBoard/DashBoard';
+import Sector from './components/sector/Sectors';
+import EditSector from './components/sector/EditSector';
 
 export default (
-    <Route path="/" component={App}>
-        {/* <Switch>
-            <Route path="/sector" component={SectorPage} />
-            <Route component={HomePage} />
-        </Switch> */}
-    </Route>
+    <App>
+        <Switch>
+            <Route path="/" exact component={DashBoard} />
+            <Route path="/sector/list" component={Sector} />
+            <Route path="/sector/edit" component={EditSector} />
+        </Switch>
+    </App>
 );

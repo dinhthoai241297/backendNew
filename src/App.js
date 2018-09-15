@@ -1,9 +1,8 @@
 import React, { Component, Fragment } from 'react';
-import Header from './components/header/Header';
-import Sidebar from './components/sidebar/Sidebar';
-import Content from './components/content/Content';
-import Footer from './components/footer/Footer';
-import ControlSidebar from './components/controlSidebar/ControlSidebar';
+import Header from './components/main/Header';
+import Sidebar from './components/main/Sidebar';
+import Footer from './components/main/Footer';
+import ControlSidebar from './components/main/ControlSidebar';
 
 class App extends Component {
     render() {
@@ -14,7 +13,9 @@ class App extends Component {
                 {/* Left side column. contains the logo and sidebar */}
                 <Sidebar />
                 {/* Content Wrapper. Contains page content */}
-                <Content />
+                <div className="content-wrapper">
+                    {this.props.children}
+                </div>
                 {/* /.content-wrapper */}
                 {/* Main Footer */}
                 <Footer />

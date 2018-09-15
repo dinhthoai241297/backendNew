@@ -6,7 +6,7 @@ const MyLink = ({ children, nativeClass, ...linkProps }) => (
         path={linkProps.to}
         exact={linkProps.activeOnlyWhenExact}
         children={({ match }) => (
-            <li className={nativeClass + (match ? ' active' : '')}>
+            <li className={nativeClass + (match ? ' menu-open active' : '')}>
                 <Link to={linkProps.to}>{linkProps.label}</Link>
                 {children}
             </li>
@@ -23,7 +23,7 @@ class Sidebar extends Component {
                     {/* Sidebar user panel (optional) */}
                     <div className="user-panel">
                         <div className="pull-left image">
-                            <img src="https://png.icons8.com/dotty/2x/add-administrator.png" className="img-circle" alt="User Image" />
+                            <img src="https://almsaeedstudio.com/themes/AdminLTE/dist/img/user2-160x160.jpg" className="img-circle" alt="User Image" />
                         </div>
                         <div className="pull-left info">
                             <p>Alexander Pierce</p>
@@ -47,7 +47,7 @@ class Sidebar extends Component {
                         <li className="header">HEADER</li>
                         {/* Optionally, you can add icons to the links */}
                         <MyLink
-                            to="/sector"
+                            to="/"
                             activeOnlyWhenExact={true}
                             label={<Fragment><i className="fa fa-dashboard" /> <span>Dashboard</span></Fragment>}
                         />
@@ -76,7 +76,7 @@ class Sidebar extends Component {
                                         }
                                     />
                                     <MyLink
-                                        to="/sector/add"
+                                        to="/sector/edit"
                                         activeOnlyWhenExact={true}
                                         label={
                                             <Fragment>
