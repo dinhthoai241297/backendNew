@@ -59,14 +59,14 @@ export const loadAllSchoolApi = page => {
             //
             throw (error);
         } else {
-            dispatch(loadAllSchoolState(JSON.parse(data.text).data.list));
+            dispatch(loadAllSchoolState(JSON.parse(data.text).data));
         }
     });
 };
 
-export const loadAllSchoolState = schools => {
+export const loadAllSchoolState = data => {
     return {
         type: actionTypes.LOAD_ALL_SCHOOL,
-        schools
+        data
     };
 };

@@ -1,10 +1,13 @@
 import * as actionTypes from './../actionTypes/SubjectGroupActionTypes';
 
-let initState = [];
+let initState = {
+    subjectGroups: [],
+    next: false
+}
 
-function findIndex(list, subjectGroup) {
+function findIndex(list, id) {
     for (let i = 0; i < list.length; i++) {
-        if (list[i].id === subjectGroup.id) {
+        if (list[i].id === id) {
             return i;
         }
     }
@@ -14,24 +17,25 @@ function findIndex(list, subjectGroup) {
 const subjectGroupReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.ADD_SUBJECTGROUP: {
-            return [...state, action.subjectGroup];
+            state.subjectGroups.push(action.subjectGroup);
+            return {...state};
         }
         case actionTypes.UPDATE_SUBJECTGROUP: {
-            let index = findIndex(state, action.subjectGroup);
+            let index = findIndex(state.subjectGroups, action.subjectGroup.id);
             if (index > 0) {
-                state[index] = action.subjectGroup;
+                state.subjectGroups[index] = action.subjectGroup;
             }
-            return [...state];
+            return {...state};
         }
         case actionTypes.DELETE_SUBJECTGROUP: {
-            let index = findIndex(state, action.subjectGroup);
+            let index = findIndex(state.subjectGroups, action.id);
             if (index > 0) {
-                state.splice(index, 1);
+                state.subjectGroups.splice(index, 1);
             }
-            return [...state];
+            return {...state};
         }
         case actionTypes.LOAD_ALL_SUBJECTGROUP: {
-            return [...action.subjectGroups];
+            return {...action.data};
         }
         default: {
             return state;

@@ -59,7 +59,6 @@ export const loadAllSectorApi = page => {
             //
             throw (error);
         } else {
-            console.log(data);
             dispatch(loadAllSectorState(JSON.parse(data.text).data));
         }
     });

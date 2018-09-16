@@ -6,6 +6,7 @@ export const addMarkApi = mark => {
         if (error) {
             throw (error);
         } else {
+            //
             dispatch(addMarkState(mark));
         }
     });
@@ -23,6 +24,7 @@ export const updateMarkApi = mark => {
         if (error) {
             throw (error);
         } else {
+            //
             dispatch(updateMarkState(mark));
         }
     });
@@ -59,14 +61,14 @@ export const loadAllMarkApi = page => {
             //
             throw (error);
         } else {
-            dispatch();
+            dispatch(loadAllMarkState(JSON.parse(data.text).data));
         }
     });
 };
 
-export const loadAllMarkState = marks => {
+export const loadAllMarkState = data => {
     return {
         type: actionTypes.LOAD_ALL_MARK,
-        marks
+        data
     };
 };

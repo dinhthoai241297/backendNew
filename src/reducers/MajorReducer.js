@@ -1,10 +1,13 @@
 import * as actionTypes from "./../actionTypes/MajorActionTypes";
 
-let initState = [];
+let initState = {
+    majors: [],
+    next: false
+}
 
-function findIndex(list, major) {
+function findIndex(list, id) {
     for (let i = 0; i < list.length; i++) {
-        if (list[i].id === major.id) {
+        if (list[i].id === id) {
             return i;
         }
     }
@@ -14,24 +17,25 @@ function findIndex(list, major) {
 const majorReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.ADD_MAJOR: {
-            return [...state, action.major];
+            state.majors.push(action.major);
+            return {...state};
         }
         case actionTypes.UPDATE_MAJOR: {
-            let index = findIndex(state, action.major);
+            let index = findIndex(state.majors, action.major.id);
             if (index > 0) {
-                state[index] = action.major;
+                state.majors[index] = action.major;
             }
-            return [...state];
+            return {...state};
         }
         case actionTypes.DELETE_MAJOR: {
-            let index = findIndex(state, action.major);
+            let index = findIndex(state.majors, action.id);
             if (index > 0) {
-                state.splice(index, 1);
+                state.majors.splice(index, 1);
             }
-            return [...state];
+            return {...state};
         }
         case actionTypes.LOAD_ALL_MAJOR: {
-            return [...action.majors];
+            return {...action.data};
         }
         default: {
             return state;

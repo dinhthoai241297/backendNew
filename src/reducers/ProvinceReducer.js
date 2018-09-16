@@ -1,10 +1,13 @@
 import * as actionTypes from "./../actionTypes/ProvinceActionTypes";
 
-let initState = [];
+let initState = {
+    provinces: [],
+    next: false
+}
 
-function findIndex(list, province) {
+function findIndex(list, id) {
     for (let i = 0; i < list.length; i++) {
-        if (list[i].id === province.id) {
+        if (list[i].id === id) {
             return i;
         }
     }
@@ -14,24 +17,25 @@ function findIndex(list, province) {
 const provinceReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.ADD_PROVINCE: {
-            return [...state, action.province];
+            state.provinces.push(action.province);
+            return {...sate};
         }
         case actionTypes.UPDATE_PROVINCE: {
-            let index = findIndex(state, action.province);
+            let index = findIndex(state.provinces, action.province.id);
             if (index > 0) {
-                state[index] = action.province;
+                state.provinces[index] = action.province;
             }
-            return [...state];
+            return {...state};
         }
         case actionTypes.DELETE_PROVINCE: {
-            let index = findIndex(state, action.province);
+            let index = findIndex(state.provinces, action.id);
             if (index > 0) {
-                state.splice(index, 1);
+                state.provinces.splice(index, 1);
             }
-            return [...state];
+            return {...state};
         }
         case actionTypes.LOAD_ALL_PROVINCE: {
-            return [...action.provinces];
+            return {...action.data};
         }
         default: {
             return state;

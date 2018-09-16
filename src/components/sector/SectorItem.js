@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {Link} from 'react-router-dom';
 
 class SectorItem extends Component {
     render() {
@@ -12,8 +13,8 @@ class SectorItem extends Component {
                     <button className="btn btn-success btn-xs">Xem</button>
                 </td>
                 <td>
-                    <button className="btn btn-warning btn-xs">Sửa</button>
-                    <button className="btn btn-danger btn-xs">Xóa</button>
+                    <Link className="btn btn-warning btn-xs" to={'/sector/edit/' + sector.id}>Sửa</Link>
+                    <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteSector(sector.id)}>Xóa</button>
                 </td>
             </tr>
         );

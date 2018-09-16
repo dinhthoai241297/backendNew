@@ -1,10 +1,13 @@
 import * as actionTypes from './../actionTypes/SubjectActionTypes';
 
-let initState = [];
+let initState = {
+    subjects: [],
+    next: false
+}
 
-function findIndex(list, subject) {
+function findIndex(list, id) {
     for (let i = 0; i < list.length; i++) {
-        if (list[i].id === subject.id) {
+        if (list[i].id === id) {
             return i;
         }
     }
@@ -14,24 +17,25 @@ function findIndex(list, subject) {
 const subjectReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.ADD_SUBJECT: {
-            return [...state, action.subject];
+            state.subjects.push(action.subject);
+            return { ...state };
         }
         case actionTypes.UPDATE_SUBJECT: {
-            let index = findIndex(state, action.subject);
+            let index = findIndex(state.subjects, action.subject.id);
             if (index > 0) {
-                state[index] = action.subject;
+                state.subjects[index] = action.subject;
             }
-            return [...state];
+            return { ...state };
         }
         case actionTypes.DELETE_SUBJECT: {
-            let index = findIndex(state, action.subject);
+            let index = findIndex(state.subjects, action.id);
             if (index > 0) {
-                state.splice(index, 1);
+                state.subjects.splice(index, 1);
             }
-            return [...state];
+            return { ...state };
         }
         case actionTypes.LOAD_ALL_SUBJECT: {
-            return [...action.subjects];
+            return { ...action.data };
         }
         default: {
             return state;

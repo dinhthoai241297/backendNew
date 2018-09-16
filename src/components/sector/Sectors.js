@@ -21,7 +21,6 @@ class Sectors extends Component {
 
     componentWillReceiveProps(nextProps) {
         let {sectors, next} = nextProps.data;
-        console.log(sectors);
         this.setState({
             sectors,
             next
@@ -32,13 +31,13 @@ class Sectors extends Component {
         e.preventDefault();
         let {page, next} = this.state;
         page += num;
-        if (page  === 0 || !next) {
+        if (page  === 0 || (!next && num > 0)) {
             return;
         } else {
             this.setState({
                 page
             });
-            // call action here
+            this.props.loadSectors(page);
         }
     }
 
@@ -48,11 +47,17 @@ class Sectors extends Component {
         if (sectors) {
             rs = sectors.map((sector, index) => {
                 return (
-                    <SectorItem key={index} sector={sector} />
+                    <SectorItem key={index} sector={sector} deleteSector={this.deleteSector} />
                 );
             });
         }
         return rs;
+    }
+
+    deleteSector = (id) => {
+        if (confirm('Bạn có chắc muốn xóa')) {
+            this.props.deleteSector(id);
+        }
     }
 
     render() {
@@ -133,7 +138,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        loadSectors: (page) => dispatch(actions.loadAllSectorApi(page))
+        loadSectors: (page) => dispatch(actions.loadAllSectorApi(page)),
+        deleteSector: (id) => dispatch(actions.deleteSectorApi(id))
     }
 }
 

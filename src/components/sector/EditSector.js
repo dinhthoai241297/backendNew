@@ -28,13 +28,13 @@ class EditSector extends Component {
                                     <div className="row">
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label for="name">Tên khu vực</label>
+                                                <label htmlFor="name">Tên khu vực</label>
                                                 <input autoComplete="off" type="text" className="form-control" id="name" placeholder="Tên khu vực" />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label for="description">Mô tả khu vực</label>
+                                                <label htmlFor="description">Mô tả khu vực</label>
                                                 <input autoComplete="off" type="text" className="form-control" id="description" placeholder="Mô tả khu vực" />
                                             </div>
                                         </div>

@@ -15,11 +15,11 @@ class MajorApi {
     }
 
     static getall(page = 1) {
-        return request.post(`${HOST}major/getAll`).send({ page });
+        return request.post(`${HOST}major/getall`).send({ page });
     }
 
     static getone(id = -1) {
-        return request.post(`${HOST}major/getOne`).send({ id });
+        return request.post(`${HOST}major/getone`).send({ id });
     }
 }
 

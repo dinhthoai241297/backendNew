@@ -1,11 +1,13 @@
 import majorApi from './../api/MajorApi';
 import * as actionTypes from './../actionTypes/MajorActionTypes';
 
-export const addMApi = major => {
+export const addMajorApi = major => {
     return dispatch => majorApi.add(major).end((error, data) => {
         if (error) {
+            //
             throw (error);
         } else {
+            //
             dispatch(addMajorState(major));
         }
     });
@@ -21,8 +23,10 @@ export const addMajorState = major => {
 export const updateMajorApi = major => {
     return dispatch => majorApi.update(major).end((error, data) => {
         if (error) {
+            //
             throw (error);
         } else {
+            //
             dispatch(updateMajorState(major));
         }
     });
@@ -41,6 +45,7 @@ export const deleteMajorApi = id => {
             //
             throw (error);
         } else {
+            //
             dispatch(deleteMajorState(id));
         }
     });
@@ -59,14 +64,14 @@ export const loadAllMajorApi = page => {
             //
             throw (error);
         } else {
-            dispatch();
+            dispatch(loadAllMajorState(JSON.parse(data.text).data));
         }
     });
 };
 
-export const loadAllMajorState = majors => {
+export const loadAllMajorState = data => {
     return {
         type: actionTypes.LOAD_ALL_MAJOR,
-        majors
+        data
     };
 };

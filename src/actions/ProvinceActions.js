@@ -59,14 +59,14 @@ export const loadAllProvinceApi = page => {
             //
             throw (error);
         } else {
-            dispatch();
+            dispatch(loadAllProvinceState(JSON.parse(data.text).data));
         }
     });
 };
 
-export const loadAllProvinceState = provinces => {
+export const loadAllProvinceState = data => {
     return {
         type: actionTypes.LOAD_ALL_PROVINCE,
-        provinces
+        data
     };
 };

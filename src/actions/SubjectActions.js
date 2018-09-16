@@ -59,14 +59,14 @@ export const loadAllSubjectApi = page => {
             //
             throw (error);
         } else {
-            dispatch(loadAllSubjectState(JSON.parse(data.text).data.list));
+            dispatch(loadAllSubjectState(JSON.parse(data.text).data));
         }
     });
 };
 
-export const loadAllSubjectState = subjects => {
+export const loadAllSubjectState = data => {
     return {
         type: actionTypes.LOAD_ALL_SUBJECT,
-        subjects
+        data
     };
 };

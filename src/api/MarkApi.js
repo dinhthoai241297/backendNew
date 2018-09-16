@@ -15,11 +15,11 @@ class MarkApi {
     }
 
     static getall(page = 1) {
-        return request.post(`${HOST}mark/getAll`).send({ page });
+        return request.post(`${HOST}mark/getall`).send({ page });
     }
 
     static getone(id = -1) {
-        return request.post(`${HOST}mark/getOne`).send({ id });
+        return request.post(`${HOST}mark/getone`).send({ id });
     }
 }
 
