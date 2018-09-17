@@ -35,7 +35,10 @@ const subjectReducer = (state = initState, action) => {
             return { ...state };
         }
         case actionTypes.LOAD_ALL_SUBJECT: {
-            return { ...action.data };
+            return {
+                subjects: action.data.list,
+                next: action.data.next
+            };
         }
         default: {
             return state;

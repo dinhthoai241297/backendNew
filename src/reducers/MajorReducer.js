@@ -35,7 +35,10 @@ const majorReducer = (state = initState, action) => {
             return {...state};
         }
         case actionTypes.LOAD_ALL_MAJOR: {
-            return {...action.data};
+            return {
+                majors: action.data.list,
+                next: action.data.next
+            };
         }
         default: {
             return state;

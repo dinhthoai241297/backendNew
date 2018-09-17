@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
 
-class SectorItem extends Component {
+class SubjectItem extends Component {
     render() {
         let { sector } = this.props;
         return (
@@ -21,4 +21,4 @@ class SectorItem extends Component {
     }
 }
 
-export default SectorItem;
+export default SubjectItem;

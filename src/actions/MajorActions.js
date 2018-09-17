@@ -2,14 +2,10 @@ import majorApi from './../api/MajorApi';
 import * as actionTypes from './../actionTypes/MajorActionTypes';
 
 export const addMajorApi = major => {
-    return dispatch => majorApi.add(major).end((error, data) => {
-        if (error) {
-            //
-            throw (error);
-        } else {
-            //
-            dispatch(addMajorState(major));
-        }
+    return dispatch => majorApi.add(major).then(data => {
+        dispatch(addMajorState(major));
+    }).catch(error => {
+        throw (error);
     });
 };
 
@@ -21,14 +17,10 @@ export const addMajorState = major => {
 };
 
 export const updateMajorApi = major => {
-    return dispatch => majorApi.update(major).end((error, data) => {
-        if (error) {
-            //
-            throw (error);
-        } else {
-            //
-            dispatch(updateMajorState(major));
-        }
+    return dispatch => majorApi.update(major).then(data => {
+        dispatch(updateMajorState(major));
+    }).catch(error => {
+        throw (error);
     });
 };
 
@@ -40,14 +32,10 @@ export const updateMajorState = major => {
 };
 
 export const deleteMajorApi = id => {
-    return dispatch => majorApi.delete(id).end((error, data) => {
-        if (error) {
-            //
-            throw (error);
-        } else {
-            //
-            dispatch(deleteMajorState(id));
-        }
+    return dispatch => majorApi.delete(id).then(data => {
+        dispatch(deleteMajorState(id));
+    }).catch(error => {
+        throw (error);
     });
 };
 
@@ -59,13 +47,10 @@ export const deleteMajorState = id => {
 };
 
 export const loadAllMajorApi = page => {
-    return dispatch => majorApi.getAll(page).end((error, data) => {
-        if (error) {
-            //
-            throw (error);
-        } else {
-            dispatch(loadAllMajorState(JSON.parse(data.text).data));
-        }
+    return dispatch => majorApi.getall(page).then(data => {
+        dispatch(loadAllMajorState(JSON.parse(data.text).data));
+    }).catch(error => {
+        throw (error);
     });
 };
 

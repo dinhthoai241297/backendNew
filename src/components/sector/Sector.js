@@ -1,26 +1,27 @@
 import React, { Component, Fragment } from 'react';
 import SectorItem from './SectorItem';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import * as actions from './../../actions/SectorActions';
+import toastr from 'toastr';
 
 class Sectors extends Component {
 
-    constructor (props) {
+    constructor(props) {
         super(props);
         this.state = {
-            page : 1,
+            page: 1,
             next: true,
             sectors: []
         }
     }
 
     componentDidMount() {
-        let {page} = this.state;
+        let { page } = this.state;
         this.props.loadSectors(page);
     }
 
     componentWillReceiveProps(nextProps) {
-        let {sectors, next} = nextProps.data;
+        let { sectors, next } = nextProps.data;
         this.setState({
             sectors,
             next
@@ -29,9 +30,9 @@ class Sectors extends Component {
 
     newPage = (e, num) => {
         e.preventDefault();
-        let {page, next} = this.state;
+        let { page, next } = this.state;
         page += num;
-        if (page  === 0 || (!next && num > 0)) {
+        if (page === 0 || (!next && num > 0)) {
             return;
         } else {
             this.setState({
@@ -42,7 +43,7 @@ class Sectors extends Component {
     }
 
     genListSector = () => {
-        let {sectors} = this.state;
+        let { sectors } = this.state;
         let rs = null;
         if (sectors) {
             rs = sectors.map((sector, index) => {
@@ -55,8 +56,27 @@ class Sectors extends Component {
     }
 
     deleteSector = (id) => {
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "2000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteSector(id);
+            this.props.deleteSector(id).then(res => {
+                toastr.warning('Deleted!');
+            });
         }
     }
 
@@ -114,7 +134,7 @@ class Sectors extends Component {
                                         <li className="active">
                                             <a>{this.state.page}</a>
                                         </li>
-                                        <li className={this.state.next ? '' : 'disabled' }>
+                                        <li className={this.state.next ? '' : 'disabled'}>
                                             <a href="#" onClick={(e) => this.newPage(e, 1)} >Next</a>
                                         </li>
                                     </ul>

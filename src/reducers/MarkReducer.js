@@ -35,7 +35,10 @@ const markReducer = (state = initState, action) => {
             return {...state};
         }
         case actionTypes.LOAD_ALL_MARK: {
-            return {...action.data}
+            return {
+                marks: action.data.list,
+                next: action.data.next
+            };
         }
         default: {
             return state;

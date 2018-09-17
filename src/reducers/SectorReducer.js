@@ -29,14 +29,16 @@ const sectorReducer = (state = initState, action) => {
         }
         case actionTypes.DELETE_SECTOR: {
             let index = findIndex(state.sectors, action.id);
-            console.log(index, action.id);
             if (index > 0) {
                 state.sectors.splice(index, 1);
             }
             return {...state};
         }
         case actionTypes.LOAD_ALL_SECTOR: {
-            return {...action.data};
+            return {
+                sectors: action.data.list,
+                next: action.data.next
+            };
         }
         default: {
             return state;

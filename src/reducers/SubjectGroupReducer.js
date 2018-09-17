@@ -35,7 +35,10 @@ const subjectGroupReducer = (state = initState, action) => {
             return {...state};
         }
         case actionTypes.LOAD_ALL_SUBJECTGROUP: {
-            return {...action.data};
+            return {
+                subjectGroups: action.data.list,
+                next: action.data.next
+            };
         }
         default: {
             return state;

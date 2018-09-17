@@ -76,11 +76,227 @@ class Sidebar extends Component {
                                         }
                                     />
                                     <MyLink
-                                        to="/sector/edit/new"
+                                        to="/sector/add"
                                         activeOnlyWhenExact={true}
                                         label={
                                             <Fragment>
                                                 <i className="fa fa-circle-o"></i> Add Sector
+                                            </Fragment>
+                                        }
+                                    />
+                                </ul>
+                            }
+                        </MyLink>
+                        <MyLink
+                            to="/province"
+                            activeOnlyWhenExact={false}
+                            nativeClass="treeview"
+                            label={
+                                <Fragment>
+                                    <i className="fa fa-plus" /> <span>Province</span>
+                                    <span className="pull-right-container">
+                                        <i className="fa fa-angle-left pull-right" />
+                                    </span>
+                                </Fragment>
+                            }
+                        >
+                            {
+                                <ul className="treeview-menu">
+                                    <MyLink
+                                        to="/province/list"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> List Province
+                                            </Fragment>
+                                        }
+                                    />
+                                    <MyLink
+                                        to="/province/add"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> Add Province
+                                            </Fragment>
+                                        }
+                                    />
+                                </ul>
+                            }
+                        </MyLink>
+                        <MyLink
+                            to="/school"
+                            activeOnlyWhenExact={false}
+                            nativeClass="treeview"
+                            label={
+                                <Fragment>
+                                    <i className="fa fa-plus" /> <span>School</span>
+                                    <span className="pull-right-container">
+                                        <i className="fa fa-angle-left pull-right" />
+                                    </span>
+                                </Fragment>
+                            }
+                        >
+                            {
+                                <ul className="treeview-menu">
+                                    <MyLink
+                                        to="/school/list"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> List School
+                                            </Fragment>
+                                        }
+                                    />
+                                    <MyLink
+                                        to="/school/add"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> Add School
+                                            </Fragment>
+                                        }
+                                    />
+                                </ul>
+                            }
+                        </MyLink>
+                        <MyLink
+                            to="/mark"
+                            activeOnlyWhenExact={false}
+                            nativeClass="treeview"
+                            label={
+                                <Fragment>
+                                    <i className="fa fa-plus" /> <span>Mark</span>
+                                    <span className="pull-right-container">
+                                        <i className="fa fa-angle-left pull-right" />
+                                    </span>
+                                </Fragment>
+                            }
+                        >
+                            {
+                                <ul className="treeview-menu">
+                                    <MyLink
+                                        to="/mark/list"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> List Mark
+                                            </Fragment>
+                                        }
+                                    />
+                                    <MyLink
+                                        to="/mark/add"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> Add Mark
+                                            </Fragment>
+                                        }
+                                    />
+                                </ul>
+                            }
+                        </MyLink>
+                        <MyLink
+                            to="/major"
+                            activeOnlyWhenExact={false}
+                            nativeClass="treeview"
+                            label={
+                                <Fragment>
+                                    <i className="fa fa-plus" /> <span>Major</span>
+                                    <span className="pull-right-container">
+                                        <i className="fa fa-angle-left pull-right" />
+                                    </span>
+                                </Fragment>
+                            }
+                        >
+                            {
+                                <ul className="treeview-menu">
+                                    <MyLink
+                                        to="/major/list"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> List Major
+                                            </Fragment>
+                                        }
+                                    />
+                                    <MyLink
+                                        to="/major/add"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> Add Major
+                                            </Fragment>
+                                        }
+                                    />
+                                </ul>
+                            }
+                        </MyLink>
+                        <MyLink
+                            to="/subject"
+                            activeOnlyWhenExact={false}
+                            nativeClass="treeview"
+                            label={
+                                <Fragment>
+                                    <i className="fa fa-plus" /> <span>Subject</span>
+                                    <span className="pull-right-container">
+                                        <i className="fa fa-angle-left pull-right" />
+                                    </span>
+                                </Fragment>
+                            }
+                        >
+                            {
+                                <ul className="treeview-menu">
+                                    <MyLink
+                                        to="/subject/list"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> List Subject
+                                            </Fragment>
+                                        }
+                                    />
+                                    <MyLink
+                                        to="/subject/add"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> Add Subject
+                                            </Fragment>
+                                        }
+                                    />
+                                </ul>
+                            }
+                        </MyLink>
+                        <MyLink
+                            to="/subjectGroup"
+                            activeOnlyWhenExact={false}
+                            nativeClass="treeview"
+                            label={
+                                <Fragment>
+                                    <i className="fa fa-plus" /> <span>SubjectGroup</span>
+                                    <span className="pull-right-container">
+                                        <i className="fa fa-angle-left pull-right" />
+                                    </span>
+                                </Fragment>
+                            }
+                        >
+                            {
+                                <ul className="treeview-menu">
+                                    <MyLink
+                                        to="/subjectGroup/list"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> List SubjectGroup
+                                            </Fragment>
+                                        }
+                                    />
+                                    <MyLink
+                                        to="/subjectGroup/add"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> Add SubjectGroup
                                             </Fragment>
                                         }
                                     />

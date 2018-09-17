@@ -35,7 +35,10 @@ const schoolReducer = (state = initState, action) => {
             return {...state};
         }
         case actionTypes.LOAD_ALL_SCHOOL: {
-            return {...action.data};
+            return {
+                schools: action.data.list,
+                next: action.data.next
+            };
         }
         default: {
             return state;

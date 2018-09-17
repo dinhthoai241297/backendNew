@@ -1,19 +1,20 @@
 import React, { Component, Fragment } from 'react';
-import SectorApi from './../../api/SectorApi';
+import MajorApi from '../../api/MajorApi';
 import { connect } from 'react-redux';
-import * as sectorAction from './../../actions/SectorActions';
+import * as majorAction from '../../actions/MajorActions';
 import toastr from 'toastr';
 
-class EditSector extends Component {
+class EditMajor extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             isUpdate: false,
-            sector: {
+            major: {
+                id: '',
                 name: '',
-                description: '',
-                id: ''
+                code: '',
+                school: '',
             },
             isProcess: false
         }
@@ -36,39 +37,39 @@ class EditSector extends Component {
             });
         } catch (error) {
         }
-        let sector = {
-            id: undefined, name: '', description: ''
+        let major = {
+            id: undefined, name: '', code: '', school: ''
         };
         if (isUpdate) {
-            SectorApi.getOne(match.params.id).end((error, data) => {
+            MajorApi.getone(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
                 } else {
-                    let s = JSON.parse(data.text).data;
-                    if (s) {
-                        sector.id = s.id;
-                        sector.name = s.name;
-                        sector.description = s.description;
+                    let m = JSON.parse(data.text).data;
+                    console.log(m.id);
+                    if (m) {
+                        major.id = m.id;
+                        major.name = m.name;
+                        major.code = m.code;
+                        major.school = m.school;
                     }
                     this.setState({
-                        sector
+                        major
                     });
                 }
             });
         } else {
             this.setState({
-                sector
+                major
             });
         }
     }
 
     clearForm = () => {
         this.setState({
-            sector: {
-                name: '',
-                description: '',
-                id: undefined
+            major: {
+                id: undefined, name: '', code: '', school: ''
             }
         });
     }
@@ -77,8 +78,8 @@ class EditSector extends Component {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
-            sector: {
-                ...preState.sector,
+            major: {
+                ...preState.major,
                 [name]: value
             }
         }));
@@ -106,16 +107,17 @@ class EditSector extends Component {
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         }
-        let { sector } = this.state;
-        if (sector.id) {
-            this.props.updateSector(sector).then(res => {
+        let { major } = this.state;
+        console.log(major.id);
+        if (major.id) {
+            this.props.updateMajor(major).then(res => {
                 toastr.success('Updated!');
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSector(sector).then(() => {
+            this.props.addMajor(major).then(() => {
                 toastr.success('Added!');
                 this.setState({
                     isProcess: false
@@ -126,7 +128,7 @@ class EditSector extends Component {
     }
 
     render() {
-        let { sector } = this.state;
+        let { major } = this.state;
         return (
             <Fragment>
                 {/* Content Header (Page header) */}
@@ -153,30 +155,45 @@ class EditSector extends Component {
                                     <div className="row">
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tên khu vực</label>
+                                                <label htmlFor="name">Tên Ngành</label>
                                                 <input
-                                                    value={sector.name}
+                                                    value={major.name}
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
                                                     id="name"
                                                     name="name"
-                                                    placeholder="Tên khu vực"
+                                                    placeholder="Tên Ngành"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="description">Mô tả khu vực</label>
+                                                <label htmlFor="code">Mã Ngành</label>
                                                 <input
+                                                    value={major.code}
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
-                                                    id="description"
-                                                    name="description"
-                                                    placeholder="Mô tả khu vực"
-                                                    value={sector.description}
+                                                    id="code"
+                                                    name="code"
+                                                    placeholder="Mã Ngành"
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="school">Tên Trường</label>
+                                                <input
+                                                    value={major.school}
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="school"
+                                                    name="school"
+                                                    placeholder="Tên Trường"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
@@ -207,9 +224,9 @@ class EditSector extends Component {
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        addSector: sector => dispatch(sectorAction.addSectorApi(sector)),
-        updateSector: sector => dispatch(sectorAction.updateSectorApi(sector)),
+        addMajor: major => dispatch(majorAction.addMajorApi(major)),
+        updateMajor: major => dispatch(majorAction.updateMajorApi(major)),
     }
 }
 
-export default connect(null, mapDispatchToProps)(EditSector);
+export default connect(null, mapDispatchToProps)(EditMajor);

@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
-import SectorApi from './../../api/SectorApi';
+import SectorApi from '../../api/SectorApi';
 import { connect } from 'react-redux';
-import * as sectorAction from './../../actions/SectorActions';
+import * as sectorAction from '../../actions/SectorActions';
 import toastr from 'toastr';
 
-class EditSector extends Component {
+class EditMark extends Component {
 
     constructor(props) {
         super(props);
@@ -212,4 +212,4 @@ const mapDispatchToProps = (dispatch, props) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(EditSector);
+export default connect(null, mapDispatchToProps)(EditMark);

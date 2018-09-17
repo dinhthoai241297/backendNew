@@ -2,12 +2,10 @@ import schoolApi from './../api/SchoolApi';
 import * as actionTypes from './../actionTypes/SchoolActionTypes';
 
 export const addSchoolApi = school => {
-    return dispatch => schoolApi.add(school).end((error, data) => {
-        if (error) {
-            throw (error);
-        } else {
-            dispatch(addSchoolState(school));
-        }
+    return dispatch => schoolApi.add(school).end(data => {
+        dispatch(addSchoolState(school));
+    }).catch(error => {
+        throw (error);
     });
 };
 
@@ -19,12 +17,10 @@ export const addSchoolState = school => {
 };
 
 export const updateSchoolApi = school => {
-    return dispatch => schoolApi.update(school).end((error, data) => {
-        if (error) {
-            throw (error);
-        } else {
-            dispatch(updateSchoolState(school));
-        }
+    return dispatch => schoolApi.update(school).end(data => {
+        dispatch(updateSchoolState(school));
+    }).catch(error => {
+        throw (error);
     });
 };
 
@@ -36,13 +32,10 @@ export const updateSchoolState = school => {
 };
 
 export const deleteSchoolApi = id => {
-    return dispatch => schoolApi.delete(id).end((error, data) => {
-        if (error) {
-            //
-            throw (error);
-        } else {
-            dispatch(deleteSchoolState(id));
-        }
+    return dispatch => schoolApi.delete(id).end(data => {
+        dispatch(deleteSchoolState(id));
+    }).catch(error => {
+        throw (error);
     });
 };
 
@@ -54,13 +47,10 @@ export const deleteSchoolState = id => {
 };
 
 export const loadAllSchoolApi = page => {
-    return dispatch => schoolApi.getAll(page).end((error, data) => {
-        if (error) {
-            //
-            throw (error);
-        } else {
-            dispatch(loadAllSchoolState(JSON.parse(data.text).data));
-        }
+    return dispatch => schoolApi.getAll(page).end(data => {
+        dispatch(loadAllSchoolState(JSON.parse(data.text).data));
+    }).catch(error => {
+        throw (error);
     });
 };
 

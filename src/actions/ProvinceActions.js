@@ -2,12 +2,10 @@ import provinceApi from './../api/ProvinceApi';
 import * as actionTypes from './../actionTypes/ProvinceActionTypes';
 
 export const addProvinceApi = province => {
-    return dispatch => provinceApi.add(province).end((error, data) => {
-        if (error) {
-            throw (error);
-        } else {
-            dispatch(addProvinceState(province));
-        }
+    return dispatch => provinceApi.add(province).end(data => {
+        dispatch(addProvinceState(province));
+    }).catch(error => {
+        throw (error);
     });
 };
 
@@ -19,12 +17,10 @@ export const addProvinceState = province => {
 };
 
 export const updateProvinceApi = province => {
-    return dispatch => provinceApi.update(province).end((error, data) => {
-        if (error) {
-            throw (error);
-        } else {
-            dispatch(updateProvinceState(province));
-        }
+    return dispatch => provinceApi.update(province).end(data => {
+        dispatch(updateProvinceState(province));
+    }).catch(error => {
+        throw (error);
     });
 };
 
@@ -36,13 +32,10 @@ export const updateProvinceState = province => {
 };
 
 export const deleteProvinceApi = id => {
-    return dispatch => provinceApi.delete(id).end((error, data) => {
-        if (error) {
-            //
-            throw (error);
-        } else {
-            dispatch(deleteProvinceState(id));
-        }
+    return dispatch => provinceApi.delete(id).end(data => {
+        dispatch(deleteProvinceState(id));
+    }).catch(error => {
+        throw (error);
     });
 };
 
@@ -54,13 +47,10 @@ export const deleteProvinceState = id => {
 };
 
 export const loadAllProvinceApi = page => {
-    return dispatch => provinceApi.getAll(page).end((error, data) => {
-        if (error) {
-            //
-            throw (error);
-        } else {
-            dispatch(loadAllProvinceState(JSON.parse(data.text).data));
-        }
+    return dispatch => provinceApi.getAll(page).end(data => {
+        dispatch(loadAllProvinceState(JSON.parse(data.text).data));
+    }).catch(error => {
+        throw (error);
     });
 };
 

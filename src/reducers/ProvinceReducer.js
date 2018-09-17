@@ -35,7 +35,10 @@ const provinceReducer = (state = initState, action) => {
             return {...state};
         }
         case actionTypes.LOAD_ALL_PROVINCE: {
-            return {...action.data};
+            return {
+                provinces: action.data.list,
+                next: action.data.next
+            };
         }
         default: {
             return state;
