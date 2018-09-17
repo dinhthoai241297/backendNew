@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import SectorApi from '../../api/SectorApi';
+import MarkApi from '../../api/MarkApi';
 import { connect } from 'react-redux';
-import * as sectorAction from '../../actions/SectorActions';
+import * as markAction from '../../actions/MarkActions';
 import toastr from 'toastr';
 
 class EditMark extends Component {
@@ -10,7 +10,7 @@ class EditMark extends Component {
         super(props);
         this.state = {
             isUpdate: false,
-            sector: {
+            mark: {
                 name: '',
                 description: '',
                 id: ''
@@ -36,36 +36,36 @@ class EditMark extends Component {
             });
         } catch (error) {
         }
-        let sector = {
+        let mark = {
             id: undefined, name: '', description: ''
         };
         if (isUpdate) {
-            SectorApi.getOne(match.params.id).end((error, data) => {
+            MarkApi.getOne(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
                 } else {
                     let s = JSON.parse(data.text).data;
                     if (s) {
-                        sector.id = s.id;
-                        sector.name = s.name;
-                        sector.description = s.description;
+                        mark.id = s.id;
+                        mark.name = s.name;
+                        mark.description = s.description;
                     }
                     this.setState({
-                        sector
+                        mark
                     });
                 }
             });
         } else {
             this.setState({
-                sector
+                mark
             });
         }
     }
 
     clearForm = () => {
         this.setState({
-            sector: {
+            mark: {
                 name: '',
                 description: '',
                 id: undefined
@@ -77,8 +77,8 @@ class EditMark extends Component {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
-            sector: {
-                ...preState.sector,
+            mark: {
+                ...preState.mark,
                 [name]: value
             }
         }));
@@ -106,16 +106,16 @@ class EditMark extends Component {
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         }
-        let { sector } = this.state;
-        if (sector.id) {
-            this.props.updateSector(sector).then(res => {
+        let { mark } = this.state;
+        if (mark.id) {
+            this.props.updateMark(mark).then(res => {
                 toastr.success('Updated!');
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSector(sector).then(() => {
+            this.props.addMark(mark).then(() => {
                 toastr.success('Added!');
                 this.setState({
                     isProcess: false
@@ -126,17 +126,17 @@ class EditMark extends Component {
     }
 
     render() {
-        let { sector } = this.state;
+        let { mark } = this.state;
         return (
             <Fragment>
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
                         Trang Quản Lý
-                        <small>Khu Vực</small>
+                        <small>Điểm Chuẩn</small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><a href="#"><i className="fa fa-dashboard" /> Sector</a></li>
+                        <li><a href="#"><i className="fa fa-dashboard" /> Mark</a></li>
                         <li className="active">{this.state.isUpdate ? 'update' : 'add'}</li>
                     </ol>
                 </section>
@@ -146,37 +146,97 @@ class EditMark extends Component {
                         <div className="col-xs-12">
                             <div className="box box-primary">
                                 <div className="box-header">
-                                    <h3 className="box-title">{(this.state.isUpdate ? 'Cập nhật' : 'Thêm') + ' khu vực'}</h3>
+                                    <h3 className="box-title">{(this.state.isUpdate ? 'Cập nhật' : 'Thêm') + ' điểm chuẩn'}</h3>
                                 </div>
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tên khu vực</label>
+                                                <label htmlFor="name">Ngành</label>
                                                 <input
-                                                    value={sector.name}
+                                                    value={mark.name}
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
                                                     id="name"
                                                     name="name"
-                                                    placeholder="Tên khu vực"
+                                                    placeholder="Tên ngành"
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                     <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="name">Trường</label>
+                                                <input
+                                                    value={mark.name}
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="name"
+                                                    name="name"
+                                                    placeholder="Trường"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="description">Mô tả khu vực</label>
+                                                <label htmlFor="description">Điểm trúng tuyển</label>
                                                 <input
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
                                                     id="description"
                                                     name="description"
-                                                    placeholder="Mô tả khu vực"
-                                                    value={sector.description}
+                                                    placeholder="Điểm trúng tuyển"
+                                                    value={mark.description}
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="name">Tổ hợp môn</label>
+                                                <input
+                                                    value={mark.name}
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="name"
+                                                    name="name"
+                                                    placeholder="Tổ hợp môn"
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                         <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="name">Năm tuyển sinh</label>
+                                                <input
+                                                    value={mark.name}
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="name"
+                                                    name="name"
+                                                    placeholder="Năm tuyển sinh"
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                            <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="name">Ghi chú</label>
+                                                <input
+                                                    value={mark.name}
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="name"
+                                                    name="name"
+                                                    placeholder="Ghi chú"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
@@ -207,8 +267,8 @@ class EditMark extends Component {
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        addSector: sector => dispatch(sectorAction.addSectorApi(sector)),
-        updateSector: sector => dispatch(sectorAction.updateSectorApi(sector)),
+        addMark: mark => dispatch(markAction.addMarkApi(mark)),
+        updateMark: mark => dispatch(markAction.updateMarkApi(mark)),
     }
 }
 

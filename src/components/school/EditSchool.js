@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import SectorApi from '../../api/SectorApi';
+import SchoolApi from '../../api/SchoolApi';
 import { connect } from 'react-redux';
-import * as sectorAction from '../../actions/SectorActions';
+import * as schoolAction from '../../actions/SchoolActions';
 import toastr from 'toastr';
 
 class EditSchool extends Component {
@@ -10,7 +10,7 @@ class EditSchool extends Component {
         super(props);
         this.state = {
             isUpdate: false,
-            sector: {
+            school: {
                 name: '',
                 description: '',
                 id: ''
@@ -36,36 +36,36 @@ class EditSchool extends Component {
             });
         } catch (error) {
         }
-        let sector = {
+        let school = {
             id: undefined, name: '', description: ''
         };
         if (isUpdate) {
-            SectorApi.getOne(match.params.id).end((error, data) => {
+            SchoolApi.getOne(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
                 } else {
                     let s = JSON.parse(data.text).data;
                     if (s) {
-                        sector.id = s.id;
-                        sector.name = s.name;
-                        sector.description = s.description;
+                        school.id = s.id;
+                        school.name = s.name;
+                        school.description = s.description;
                     }
                     this.setState({
-                        sector
+                        school
                     });
                 }
             });
         } else {
             this.setState({
-                sector
+                school
             });
         }
     }
 
     clearForm = () => {
         this.setState({
-            sector: {
+            school: {
                 name: '',
                 description: '',
                 id: undefined
@@ -77,8 +77,8 @@ class EditSchool extends Component {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
-            sector: {
-                ...preState.sector,
+            school: {
+                ...preState.school,
                 [name]: value
             }
         }));
@@ -106,16 +106,16 @@ class EditSchool extends Component {
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         }
-        let { sector } = this.state;
-        if (sector.id) {
-            this.props.updateSector(sector).then(res => {
+        let { school } = this.state;
+        if (school.id) {
+            this.props.updateSchool(school).then(res => {
                 toastr.success('Updated!');
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSector(sector).then(() => {
+            this.props.addSchool(school).then(() => {
                 toastr.success('Added!');
                 this.setState({
                     isProcess: false
@@ -126,17 +126,17 @@ class EditSchool extends Component {
     }
 
     render() {
-        let { sector } = this.state;
+        let { school } = this.state;
         return (
             <Fragment>
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
                         Trang Quản Lý
-                        <small>Khu Vực</small>
+                        <small>Trường</small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><a href="#"><i className="fa fa-dashboard" /> Sector</a></li>
+                        <li><a href="#"><i className="fa fa-dashboard" /> School</a></li>
                         <li className="active">{this.state.isUpdate ? 'update' : 'add'}</li>
                     </ol>
                 </section>
@@ -146,37 +146,53 @@ class EditSchool extends Component {
                         <div className="col-xs-12">
                             <div className="box box-primary">
                                 <div className="box-header">
-                                    <h3 className="box-title">{(this.state.isUpdate ? 'Cập nhật' : 'Thêm') + ' khu vực'}</h3>
+                                    <h3 className="box-title">{(this.state.isUpdate ? 'Cập nhật' : 'Thêm') + ' trường'}</h3>
                                 </div>
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tên khu vực</label>
+                                                <label htmlFor="name">Tên trường</label>
                                                 <input
-                                                    value={sector.name}
+                                                    value={school.name}
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
                                                     id="name"
                                                     name="name"
-                                                    placeholder="Tên khu vực"
+                                                    placeholder="Tên trường"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="description">Mô tả khu vực</label>
+                                                <label htmlFor="description">Mô tả trường</label>
                                                 <input
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
                                                     id="description"
                                                     name="description"
-                                                    placeholder="Mô tả khu vực"
-                                                    value={sector.description}
+                                                    placeholder="Mô tả trường"
+                                                    value={school.description}
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                         <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="description">Danh Sách Khu Vực</label>
+                                                
+                                                <input
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="description"
+                                                    name="description"
+                                                    placeholder="Mô tả trường"
+                                                    value={school.description}
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
@@ -207,8 +223,8 @@ class EditSchool extends Component {
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        addSector: sector => dispatch(sectorAction.addSectorApi(sector)),
-        updateSector: sector => dispatch(sectorAction.updateSectorApi(sector)),
+        addSchool: school => dispatch(schoolAction.addSchoolApi(school)),
+        updateSchool: school => dispatch(schoolAction.updateSchoolApi(school)),
     }
 }
 

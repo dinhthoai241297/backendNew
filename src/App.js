@@ -9,7 +9,7 @@ class App extends Component {
         return (
             <Fragment>
                 {/* Main Header */}
-                <Header />
+               <Header/>
                 {/* Left side column. contains the logo and sidebar */}
                 <Sidebar />
                 {/* Content Wrapper. Contains page content */}

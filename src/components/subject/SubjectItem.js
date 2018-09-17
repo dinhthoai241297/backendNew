@@ -3,18 +3,18 @@ import {Link} from 'react-router-dom';
 
 class SubjectItem extends Component {
     render() {
-        let { sector } = this.props;
+        let { subject } = this.props;
         return (
             <tr>
-                <td>{sector.id}</td>
-                <td>{sector.name}</td>
-                <td>{sector.description}</td>
+                <td>{subject.id}</td>
+                <td>{subject.name}</td>
+                <td>{subject.description}</td>
                 <td>
                     <button className="btn btn-success btn-xs">Xem</button>
                 </td>
                 <td>
-                    <Link className="btn btn-warning btn-xs" to={'/sector/update/' + sector.id}>Sửa</Link>
-                    <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteSector(sector.id)}>Xóa</button>
+                    <Link className="btn btn-warning btn-xs" to={'/subject/update/' + subject.id}>Sửa</Link>
+                    <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteSubject(subject.id)}>Xóa</button>
                 </td>
             </tr>
         );

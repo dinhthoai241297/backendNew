@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import SchoolItem from './SchoolItem';
 import { connect } from 'react-redux';
-import * as actions from '../../actions/SectorActions';
+import * as actions from '../../actions/SchoolActions';
 import toastr from 'toastr';
 
 class School extends Component {
@@ -11,19 +11,19 @@ class School extends Component {
         this.state = {
             page: 1,
             next: true,
-            sectors: []
+            schools: []
         }
     }
 
     componentDidMount() {
         let { page } = this.state;
-        this.props.loadSectors(page);
+        this.props.loadSchools(page);
     }
 
     componentWillReceiveProps(nextProps) {
-        let { sectors, next } = nextProps.data;
+        let { schools, next } = nextProps.data;
         this.setState({
-            sectors,
+            schools,
             next
         });
     }
@@ -38,24 +38,24 @@ class School extends Component {
             this.setState({
                 page
             });
-            this.props.loadSectors(page);
+            this.props.loadSchools(page);
         }
     }
 
-    genListSector = () => {
-        let { sectors } = this.state;
+    genListSchool = () => {
+        let { schools } = this.state;
         let rs = null;
-        if (sectors) {
-            rs = sectors.map((sector, index) => {
+        if (schools) {
+            rs = schools.map((school, index) => {
                 return (
-                    <SectorItem key={index} sector={sector} deleteSector={this.deleteSector} />
+                    <SchoolItem key={index} school={school} deleteSchool={this.deleteSchool} />
                 );
             });
         }
         return rs;
     }
 
-    deleteSector = (id) => {
+    deleteSchool = (id) => {
         toastr.options = {
             "closeButton": false,
             "debug": false,
@@ -74,7 +74,7 @@ class School extends Component {
             "hideMethod": "fadeOut"
         }
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteSector(id).then(res => {
+            this.props.deleteSchool(id).then(res => {
                 toastr.warning('Deleted!');
             });
         }
@@ -87,10 +87,10 @@ class School extends Component {
                 <section className="content-header">
                     <h1>
                         Trang Quản Lý
-                        <small>Khu Vực</small>
+                        <small>Trường</small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><a href="#"><i className="fa fa-dashboard" /> Sector</a></li>
+                        <li><a href="#"><i className="fa fa-dashboard" /> School</a></li>
                         <li className="active">List</li>
                     </ol>
                 </section>
@@ -100,7 +100,7 @@ class School extends Component {
                         <div className="col-xs-12">
                             <div className="box">
                                 <div className="box-header">
-                                    <h3 className="box-title">Danh sách khu vực</h3>
+                                    <h3 className="box-title">Danh sách trường</h3>
                                     <div className="box-tools">
                                         <div className="input-group input-group-sm" style={{ width: 150 }}>
                                             <input type="text" name="table_search" className="form-control pull-right" placeholder="Tìm kiếm" />
@@ -115,13 +115,13 @@ class School extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Mã KV</th>
-                                                <th>Tên KV</th>
-                                                <th>Mô tả KV</th>
-                                                <th>DS Tỉnh</th>
+                                                <th>Mã Trường</th>
+                                                <th>Tên Trường</th>
+                                                <th>Mô tả Trường</th>
+                                                <th>Khu Vực</th>
                                                 <th>Chức năng</th>
                                             </tr>
-                                            {this.genListSector()}
+                                            {this.genListSchool()}
                                         </tbody>
                                     </table>
                                 </div>
@@ -152,14 +152,14 @@ class School extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.SectorReducer
+        data: state.SchoolReducer
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        loadSectors: (page) => dispatch(actions.loadAllSectorApi(page)),
-        deleteSector: (id) => dispatch(actions.deleteSectorApi(id))
+        loadSchools: (page) => dispatch(actions.loadAllSchoolApi(page)),
+        deleteSchool: (id) => dispatch(actions.deleteSchoolApi(id))
     }
 }
 

@@ -11,7 +11,7 @@ class Province extends Component {
         this.state = {
             page: 1,
             next: true,
-            sectors: []
+            provinces: []
         }
     }
 
@@ -21,9 +21,9 @@ class Province extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        let { sectors, next } = nextProps.data;
+        let { provinces, next } = nextProps.data;
         this.setState({
-            sectors,
+            provinces,
             next
         });
     }
@@ -43,12 +43,12 @@ class Province extends Component {
     }
 
     genListSector = () => {
-        let { sectors } = this.state;
+        let { provinces } = this.state;
         let rs = null;
-        if (sectors) {
-            rs = sectors.map((sector, index) => {
+        if (provinces) {
+            rs = provinces.map((province, index) => {
                 return (
-                    <SectorItem key={index} sector={sector} deleteSector={this.deleteSector} />
+                    <SectorItem key={index} province={province} deleteSector={this.deleteSector} />
                 );
             });
         }
@@ -87,7 +87,7 @@ class Province extends Component {
                 <section className="content-header">
                     <h1>
                         Trang Quản Lý
-                        <small>Khu Vực</small>
+                        <small>Tỉnh Thành</small>
                     </h1>
                     <ol className="breadcrumb">
                         <li><a href="#"><i className="fa fa-dashboard" /> Sector</a></li>
@@ -100,7 +100,7 @@ class Province extends Component {
                         <div className="col-xs-12">
                             <div className="box">
                                 <div className="box-header">
-                                    <h3 className="box-title">Danh sách khu vực</h3>
+                                    <h3 className="box-title">Danh sách tỉnh thành</h3>
                                     <div className="box-tools">
                                         <div className="input-group input-group-sm" style={{ width: 150 }}>
                                             <input type="text" name="table_search" className="form-control pull-right" placeholder="Tìm kiếm" />
@@ -115,10 +115,10 @@ class Province extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Mã KV</th>
-                                                <th>Tên KV</th>
-                                                <th>Mô tả KV</th>
-                                                <th>DS Tỉnh</th>
+                                                <th>Mã Tỉnh</th>
+                                                <th>Tên Tỉnh</th>
+                                                <th>Mô tả</th>
+                                                <th>Khu vực</th>
                                                 <th>Chức năng</th>
                                             </tr>
                                             {this.genListSector()}

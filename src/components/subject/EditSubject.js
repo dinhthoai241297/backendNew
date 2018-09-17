@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import SectorApi from '../../api/SectorApi';
+import SubjectApi from '../../api/SubjectApi';
 import { connect } from 'react-redux';
-import * as sectorAction from '../../actions/SectorActions';
+import * as subjectAction from '../../actions/SubjectActions';
 import toastr from 'toastr';
 
 class EditSubject extends Component {
@@ -10,7 +10,7 @@ class EditSubject extends Component {
         super(props);
         this.state = {
             isUpdate: false,
-            sector: {
+            subject: {
                 name: '',
                 description: '',
                 id: ''
@@ -36,36 +36,36 @@ class EditSubject extends Component {
             });
         } catch (error) {
         }
-        let sector = {
+        let subject = {
             id: undefined, name: '', description: ''
         };
         if (isUpdate) {
-            SectorApi.getOne(match.params.id).end((error, data) => {
+            SubjectApi.getOne(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
                 } else {
                     let s = JSON.parse(data.text).data;
                     if (s) {
-                        sector.id = s.id;
-                        sector.name = s.name;
-                        sector.description = s.description;
+                        subject.id = s.id;
+                        subject.name = s.name;
+                        subject.description = s.description;
                     }
                     this.setState({
-                        sector
+                        subject
                     });
                 }
             });
         } else {
             this.setState({
-                sector
+                subject
             });
         }
     }
 
     clearForm = () => {
         this.setState({
-            sector: {
+            subject: {
                 name: '',
                 description: '',
                 id: undefined
@@ -77,8 +77,8 @@ class EditSubject extends Component {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
-            sector: {
-                ...preState.sector,
+            subject: {
+                ...preState.subject,
                 [name]: value
             }
         }));
@@ -106,16 +106,16 @@ class EditSubject extends Component {
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         }
-        let { sector } = this.state;
-        if (sector.id) {
-            this.props.updateSector(sector).then(res => {
+        let { subject } = this.state;
+        if (subject.id) {
+            this.props.updateSubject(subject).then(res => {
                 toastr.success('Updated!');
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSector(sector).then(() => {
+            this.props.addSubject(subject).then(() => {
                 toastr.success('Added!');
                 this.setState({
                     isProcess: false
@@ -126,17 +126,17 @@ class EditSubject extends Component {
     }
 
     render() {
-        let { sector } = this.state;
+        let { subject } = this.state;
         return (
             <Fragment>
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
                         Trang Quản Lý
-                        <small>Khu Vực</small>
+                        <small>Môn Thi</small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><a href="#"><i className="fa fa-dashboard" /> Sector</a></li>
+                        <li><a href="#"><i className="fa fa-dashboard" /> Subject</a></li>
                         <li className="active">{this.state.isUpdate ? 'update' : 'add'}</li>
                     </ol>
                 </section>
@@ -146,42 +146,27 @@ class EditSubject extends Component {
                         <div className="col-xs-12">
                             <div className="box box-primary">
                                 <div className="box-header">
-                                    <h3 className="box-title">{(this.state.isUpdate ? 'Cập nhật' : 'Thêm') + ' khu vực'}</h3>
+                                    <h3 className="box-title">{(this.state.isUpdate ? 'Cập nhật' : 'Thêm') + ' môn thi'}</h3>
                                 </div>
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tên khu vực</label>
+                                                <label htmlFor="name">Tên môn thi</label>
                                                 <input
-                                                    value={sector.name}
+                                                    value={subject.name}
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
                                                     id="name"
                                                     name="name"
-                                                    placeholder="Tên khu vực"
+                                                    placeholder="Tên môn thi"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-xs-12 col-lg-6">
-                                            <div className="form-group">
-                                                <label htmlFor="description">Mô tả khu vực</label>
-                                                <input
-                                                    autoComplete="off"
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="description"
-                                                    name="description"
-                                                    placeholder="Mô tả khu vực"
-                                                    value={sector.description}
-                                                    onChange={(e) => this.onChange(e)}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
+                                     </div>
                                     <div className="row">
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button
@@ -207,8 +192,8 @@ class EditSubject extends Component {
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        addSector: sector => dispatch(sectorAction.addSectorApi(sector)),
-        updateSector: sector => dispatch(sectorAction.updateSectorApi(sector)),
+        addSubject: subject => dispatch(subjectAction.addSubjectApi(subject)),
+        updateSubject: subject => dispatch(subjectAction.updateSubjectApi(subject)),
     }
 }
 
