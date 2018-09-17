@@ -2,7 +2,7 @@ import schoolApi from './../api/SchoolApi';
 import * as actionTypes from './../actionTypes/SchoolActionTypes';
 
 export const addSchoolApi = school => {
-    return dispatch => schoolApi.add(school).end(data => {
+    return dispatch => schoolApi.add(JSON.stringify(school)).then(data => {
         dispatch(addSchoolState(school));
     }).catch(error => {
         throw (error);
@@ -17,7 +17,7 @@ export const addSchoolState = school => {
 };
 
 export const updateSchoolApi = school => {
-    return dispatch => schoolApi.update(school).end(data => {
+    return dispatch => schoolApi.update(JSON.stringify(school)).then(data => {
         dispatch(updateSchoolState(school));
     }).catch(error => {
         throw (error);
@@ -32,7 +32,7 @@ export const updateSchoolState = school => {
 };
 
 export const deleteSchoolApi = id => {
-    return dispatch => schoolApi.delete(id).end(data => {
+    return dispatch => schoolApi.delete(id).then(data => {
         dispatch(deleteSchoolState(id));
     }).catch(error => {
         throw (error);
@@ -47,7 +47,7 @@ export const deleteSchoolState = id => {
 };
 
 export const loadAllSchoolApi = page => {
-    return dispatch => schoolApi.getAll(page).end(data => {
+    return dispatch => schoolApi.getall(page).then(data => {
         dispatch(loadAllSchoolState(JSON.parse(data.text).data));
     }).catch(error => {
         throw (error);

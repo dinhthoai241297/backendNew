@@ -12,8 +12,10 @@ class EditSchool extends Component {
             isUpdate: false,
             school: {
                 name: '',
+                code: '',
                 description: '',
-                id: ''
+                province: '',
+                id: undefined
             },
             isProcess: false
         }
@@ -37,10 +39,10 @@ class EditSchool extends Component {
         } catch (error) {
         }
         let school = {
-            id: undefined, name: '', description: ''
+            id: undefined, name: '', description: '', code: '', province: ''
         };
         if (isUpdate) {
-            SchoolApi.getOne(match.params.id).end((error, data) => {
+            SchoolApi.getone(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
@@ -50,6 +52,8 @@ class EditSchool extends Component {
                         school.id = s.id;
                         school.name = s.name;
                         school.description = s.description;
+                        school.code = s.code;
+                        school.province = s.province;
                     }
                     this.setState({
                         school
@@ -66,9 +70,7 @@ class EditSchool extends Component {
     clearForm = () => {
         this.setState({
             school: {
-                name: '',
-                description: '',
-                id: undefined
+                id: undefined, name: '', description: '', code: '', province: ''
             }
         });
     }
@@ -168,6 +170,21 @@ class EditSchool extends Component {
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
+                                                <label htmlFor="code">Mã trường</label>
+                                                <input
+                                                    value={school.code}
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="code"
+                                                    name="code"
+                                                    placeholder="Mã trường"
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
                                                 <label htmlFor="description">Mô tả trường</label>
                                                 <input
                                                     autoComplete="off"
@@ -181,18 +198,18 @@ class EditSchool extends Component {
                                                 />
                                             </div>
                                         </div>
-                                         <div className="col-xs-12 col-lg-6">
+                                        <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="description">Danh Sách Khu Vực</label>
-                                                
+                                                <label htmlFor="province">Mã Tỉnh</label>
+
                                                 <input
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
-                                                    id="description"
-                                                    name="description"
-                                                    placeholder="Mô tả trường"
-                                                    value={school.description}
+                                                    id="province"
+                                                    name="province"
+                                                    placeholder="Mã Tỉnh"
+                                                    value={school.province}
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>

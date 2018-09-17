@@ -118,7 +118,7 @@ class School extends Component {
                                                 <th>Mã Trường</th>
                                                 <th>Tên Trường</th>
                                                 <th>Mô tả Trường</th>
-                                                <th>Khu Vực</th>
+                                                <th>Mã Tỉnh</th>
                                                 <th>Chức năng</th>
                                             </tr>
                                             {this.genListSchool()}

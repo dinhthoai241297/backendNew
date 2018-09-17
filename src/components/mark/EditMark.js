@@ -11,9 +11,15 @@ class EditMark extends Component {
         this.state = {
             isUpdate: false,
             mark: {
-                name: '',
-                description: '',
-                id: ''
+                id: undefined,
+                school: '',
+                major: '',
+                year: 0,
+                mark: 0,
+                aspiration: 0,
+                subjectGroups: [],
+                note: ''
+
             },
             isProcess: false
         }
@@ -37,19 +43,32 @@ class EditMark extends Component {
         } catch (error) {
         }
         let mark = {
-            id: undefined, name: '', description: ''
-        };
+            id: undefined,
+            school: '',
+            major: '',
+            year: 0,
+            mark: 0,
+            aspiration: 0,
+            subjectGroups: [],
+            note: ''
+
+        }
         if (isUpdate) {
-            MarkApi.getOne(match.params.id).end((error, data) => {
+            MarkApi.getone(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
                 } else {
-                    let s = JSON.parse(data.text).data;
-                    if (s) {
-                        mark.id = s.id;
-                        mark.name = s.name;
-                        mark.description = s.description;
+                    let m = JSON.parse(data.text).data;
+                    if (m) {
+                        mark.id = m.id;
+                        mark.school = m.school;
+                        mark.major = m.major;
+                        mark.year = m.year;
+                        mark.mark = m.mark;
+                        mark.aspiration = m.aspiration;
+                        mark.subjectGroups = JSON.parse(m.subjectGroups);
+                        mark.note = m.note;
                     }
                     this.setState({
                         mark
@@ -66,15 +85,25 @@ class EditMark extends Component {
     clearForm = () => {
         this.setState({
             mark: {
-                name: '',
-                description: '',
-                id: undefined
+                id: undefined,
+                school: '',
+                major: '',
+                year: 0,
+                mark: 0,
+                aspiration: 0,
+                subjectGroups: [],
+                note: ''
+
             }
         });
     }
 
     onChange = (e) => {
         let { name, value } = e.target;
+        if (name === 'subjectGroups') {
+            console.log(value);
+            value = JSON.parse(value);
+        }
         this.setState(preState => ({
             ...preState,
             mark: {
@@ -153,90 +182,105 @@ class EditMark extends Component {
                                     <div className="row">
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Ngành</label>
+                                                <label htmlFor="school">Mã Trường</label>
                                                 <input
-                                                    value={mark.name}
+                                                    value={mark.school}
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
-                                                    id="name"
-                                                    name="name"
-                                                    placeholder="Tên ngành"
-                                                    onChange={(e) => this.onChange(e)}
-                                                />
-                                            </div>
-                                        </div>
-                                     <div className="col-xs-12 col-lg-6">
-                                            <div className="form-group">
-                                                <label htmlFor="name">Trường</label>
-                                                <input
-                                                    value={mark.name}
-                                                    autoComplete="off"
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="name"
-                                                    name="name"
-                                                    placeholder="Trường"
+                                                    id="school"
+                                                    name="school"
+                                                    placeholder="Mã Trường"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="description">Điểm trúng tuyển</label>
+                                                <label htmlFor="major">Mã Ngành</label>
                                                 <input
+                                                    value={mark.major}
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
-                                                    id="description"
-                                                    name="description"
-                                                    placeholder="Điểm trúng tuyển"
-                                                    value={mark.description}
+                                                    id="major"
+                                                    name="major"
+                                                    placeholder="Mã Ngành"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tổ hợp môn</label>
+                                                <label htmlFor="year">Năm</label>
                                                 <input
-                                                    value={mark.name}
+                                                    value={mark.year}
                                                     autoComplete="off"
-                                                    type="text"
+                                                    type="number"
                                                     className="form-control"
-                                                    id="name"
-                                                    name="name"
-                                                    placeholder="Tổ hợp môn"
+                                                    id="year"
+                                                    name="year"
+                                                    placeholder="Năm"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
-                                         <div className="col-xs-12 col-lg-6">
+                                        <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Năm tuyển sinh</label>
+                                                <label htmlFor="mark">Điểm chuẩn</label>
                                                 <input
-                                                    value={mark.name}
+                                                    value={mark.mark}
                                                     autoComplete="off"
-                                                    type="text"
+                                                    type="number"
                                                     className="form-control"
-                                                    id="name"
-                                                    name="name"
-                                                    placeholder="Năm tuyển sinh"
+                                                    id="mark"
+                                                    name="mark"
+                                                    placeholder="Điểm chuẩn"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
-                                            <div className="col-xs-12 col-lg-6">
+                                        <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Ghi chú</label>
+                                                <label htmlFor="aspiration">Nguyện Vọng</label>
                                                 <input
-                                                    value={mark.name}
+                                                    value={mark.aspiration}
+                                                    autoComplete="off"
+                                                    type="number"
+                                                    className="form-control"
+                                                    id="aspiration"
+                                                    name="aspiration"
+                                                    placeholder="Nguyện Vọng"
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="subjectGroups">Tổ Hợp Môn</label>
+                                                <input
+                                                    value={mark.subjectGroups}
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
-                                                    id="name"
-                                                    name="name"
-                                                    placeholder="Ghi chú"
+                                                    id="subjectGroups"
+                                                    name="subjectGroups"
+                                                    placeholder="Tổ Hợp Môn"
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="note">Nghi Chú</label>
+                                                <input
+                                                    value={mark.note}
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="note"
+                                                    name="note"
+                                                    placeholder="Nghi Chú"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>

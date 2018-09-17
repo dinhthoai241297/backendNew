@@ -2,7 +2,7 @@ import majorApi from './../api/MajorApi';
 import * as actionTypes from './../actionTypes/MajorActionTypes';
 
 export const addMajorApi = major => {
-    return dispatch => majorApi.add(major).then(data => {
+    return dispatch => majorApi.add(JSON.stringify(major)).then(data => {
         dispatch(addMajorState(major));
     }).catch(error => {
         throw (error);
@@ -17,7 +17,7 @@ export const addMajorState = major => {
 };
 
 export const updateMajorApi = major => {
-    return dispatch => majorApi.update(major).then(data => {
+    return dispatch => majorApi.update(JSON.stringify(major)).then(data => {
         dispatch(updateMajorState(major));
     }).catch(error => {
         throw (error);

@@ -22,14 +22,14 @@ const schoolReducer = (state = initState, action) => {
         }
         case actionTypes.UPDATE_SCHOOL: {
             let index = findIndex(state.schools, action.school.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.schools[index] = action.school;
             }
             return {...state};
         }
         case actionTypes.DELETE_SCHOOL: {
             let index = findIndex(state.schools, action.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.schools.splice(index, 1);
             }
             return {...state};

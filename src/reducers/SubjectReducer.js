@@ -22,14 +22,15 @@ const subjectReducer = (state = initState, action) => {
         }
         case actionTypes.UPDATE_SUBJECT: {
             let index = findIndex(state.subjects, action.subject.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.subjects[index] = action.subject;
             }
             return { ...state };
         }
         case actionTypes.DELETE_SUBJECT: {
             let index = findIndex(state.subjects, action.id);
-            if (index > 0) {
+            console.log(index);
+            if (index > -1) {
                 state.subjects.splice(index, 1);
             }
             return { ...state };

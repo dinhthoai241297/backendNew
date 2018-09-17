@@ -22,14 +22,14 @@ const subjectGroupReducer = (state = initState, action) => {
         }
         case actionTypes.UPDATE_SUBJECTGROUP: {
             let index = findIndex(state.subjectGroups, action.subjectGroup.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.subjectGroups[index] = action.subjectGroup;
             }
             return {...state};
         }
         case actionTypes.DELETE_SUBJECTGROUP: {
             let index = findIndex(state.subjectGroups, action.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.subjectGroups.splice(index, 1);
             }
             return {...state};

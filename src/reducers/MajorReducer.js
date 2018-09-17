@@ -22,14 +22,14 @@ const majorReducer = (state = initState, action) => {
         }
         case actionTypes.UPDATE_MAJOR: {
             let index = findIndex(state.majors, action.major.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.majors[index] = action.major;
             }
             return {...state};
         }
         case actionTypes.DELETE_MAJOR: {
             let index = findIndex(state.majors, action.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.majors.splice(index, 1);
             }
             return {...state};

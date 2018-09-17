@@ -2,7 +2,7 @@ import provinceApi from './../api/ProvinceApi';
 import * as actionTypes from './../actionTypes/ProvinceActionTypes';
 
 export const addProvinceApi = province => {
-    return dispatch => provinceApi.add(province).end(data => {
+    return dispatch => provinceApi.add(JSON.stringify(province)).then(data => {
         dispatch(addProvinceState(province));
     }).catch(error => {
         throw (error);
@@ -17,7 +17,7 @@ export const addProvinceState = province => {
 };
 
 export const updateProvinceApi = province => {
-    return dispatch => provinceApi.update(province).end(data => {
+    return dispatch => provinceApi.update(JSON.stringify(province)).then(data => {
         dispatch(updateProvinceState(province));
     }).catch(error => {
         throw (error);
@@ -32,7 +32,7 @@ export const updateProvinceState = province => {
 };
 
 export const deleteProvinceApi = id => {
-    return dispatch => provinceApi.delete(id).end(data => {
+    return dispatch => provinceApi.delete(id).then(data => {
         dispatch(deleteProvinceState(id));
     }).catch(error => {
         throw (error);
@@ -47,7 +47,7 @@ export const deleteProvinceState = id => {
 };
 
 export const loadAllProvinceApi = page => {
-    return dispatch => provinceApi.getAll(page).end(data => {
+    return dispatch => provinceApi.getall(page).then(data => {
         dispatch(loadAllProvinceState(JSON.parse(data.text).data));
     }).catch(error => {
         throw (error);

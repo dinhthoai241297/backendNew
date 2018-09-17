@@ -9,9 +9,7 @@ class ProvinceItem extends Component {
                 <td>{province.id}</td>
                 <td>{province.name}</td>
                 <td>{province.description}</td>
-                <td>
-                    <button className="btn btn-success btn-xs">Xem</button>
-                </td>
+                <td>{province.sector}</td>
                 <td>
                     <Link className="btn btn-warning btn-xs" to={'/province/update/' + province.id}>Sửa</Link>
                     <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteProvince(province.id)}>Xóa</button>

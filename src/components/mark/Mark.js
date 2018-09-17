@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import MarkItem from './MarkItem';
 import { connect } from 'react-redux';
-import * as actions from '../../actions/SectorActions';
+import * as actions from '../../actions/MarkActions';
 import toastr from 'toastr';
 
 class Mark extends Component {
@@ -17,7 +17,7 @@ class Mark extends Component {
 
     componentDidMount() {
         let { page } = this.state;
-        this.props.loadSectors(page);
+        this.props.loadMarks(page);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -38,24 +38,24 @@ class Mark extends Component {
             this.setState({
                 page
             });
-            this.props.loadSectors(page);
+            this.props.loadMarks(page);
         }
     }
 
-    genListSector = () => {
+    genListMark = () => {
         let { marks } = this.state;
         let rs = null;
         if (marks) {
             rs = marks.map((mark, index) => {
                 return (
-                    <SectorItem key={index} mark={mark} deleteSector={this.deleteSector} />
+                    <MarkItem key={index} mark={mark} deleteMark={this.deleteMark} />
                 );
             });
         }
         return rs;
     }
 
-    deleteSector = (id) => {
+    deleteMark = (id) => {
         toastr.options = {
             "closeButton": false,
             "debug": false,
@@ -115,15 +115,17 @@ class Mark extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Ngành</th>
-                                                <th>Trường</th>
+                                                <th>Mã</th>
+                                                <th>Mã Trường</th>
+                                                <th>Mã Ngành</th>
+                                                <th>Năm</th>
+                                                <th>Nguyện vọng</th>
                                                 <th>Điểm Chuẩn</th>
                                                 <th>Tổ Hợp Môn</th>
-                                                <th>Năm </th>
                                                 <th>Ghi Chú</th>
                                                 <th>Chức năng</th>
                                             </tr>
-                                            {this.genListSector()}
+                                            {this.genListMark()}
                                         </tbody>
                                     </table>
                                 </div>
@@ -154,14 +156,14 @@ class Mark extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.SectorReducer
+        data: state.MarkReducer
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        loadSectors: (page) => dispatch(actions.loadAllSectorApi(page)),
-        deleteSector: (id) => dispatch(actions.deleteSectorApi(id))
+        loadMarks: (page) => dispatch(actions.loadAllMarkApi(page)),
+        deleteMark: (id) => dispatch(actions.deleteMarkApi(id))
     }
 }
 

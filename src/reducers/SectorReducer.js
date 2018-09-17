@@ -22,14 +22,14 @@ const sectorReducer = (state = initState, action) => {
         }
         case actionTypes.UPDATE_SECTOR: {
             let index = findIndex(state.sectors, action.sector.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.sectors[index] = action.sector;
             }
             return {...state};
         }
         case actionTypes.DELETE_SECTOR: {
             let index = findIndex(state.sectors, action.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.sectors.splice(index, 1);
             }
             return {...state};

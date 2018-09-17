@@ -13,7 +13,8 @@ class EditProvince extends Component {
             province: {
                 name: '',
                 description: '',
-                id: ''
+                sector: '',
+                id: undefined
             },
             isProcess: false
         }
@@ -37,19 +38,20 @@ class EditProvince extends Component {
         } catch (error) {
         }
         let province = {
-            id: undefined, name: '', description: ''
+            id: undefined, name: '', description: '', sector: ''
         };
         if (isUpdate) {
-            ProvinceApi.getOne(match.params.id).end((error, data) => {
+            ProvinceApi.getone(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
                 } else {
-                    let s = JSON.parse(data.text).data;
-                    if (s) {
-                        province.id = s.id;
-                        province.name = s.name;
-                        province.description = s.description;
+                    let p = JSON.parse(data.text).data;
+                    if (p) {
+                        province.id = p.id;
+                        province.name = p.name;
+                        province.description = p.description;
+                        province.sector = p.sector
                     }
                     this.setState({
                         province
@@ -68,6 +70,7 @@ class EditProvince extends Component {
             province: {
                 name: '',
                 description: '',
+                sector: '',
                 id: undefined
             }
         });
@@ -183,15 +186,15 @@ class EditProvince extends Component {
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="description">Thuộc Khu Vực</label>
+                                                <label htmlFor="sector">Mã Khu Vực</label>
                                                 <input
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
-                                                    id="description"
-                                                    name="description"
+                                                    id="sector"
+                                                    name="sector"
                                                     placeholder="Chọn khu vực "
-                                                    value={province.description}
+                                                    value={province.sector}
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>

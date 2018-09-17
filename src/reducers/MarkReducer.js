@@ -22,14 +22,14 @@ const markReducer = (state = initState, action) => {
         }
         case actionTypes.UPDATE_MARK: {
             let index = findIndex(state.marks, action.mark.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.marks[index] = action.mark;
             }
             return {...state};
         }
         case actionTypes.DELETE_MARK: {
             let index = findIndex(state.marks, action.id);
-            if (index > 0) {
+            if (index > -1) {
                 state.marks.splice(index, 1);
             }
             return {...state};

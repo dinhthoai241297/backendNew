@@ -13,7 +13,7 @@ class EditSubject extends Component {
             subject: {
                 name: '',
                 description: '',
-                id: ''
+                id: undefined
             },
             isProcess: false
         }
@@ -40,7 +40,7 @@ class EditSubject extends Component {
             id: undefined, name: '', description: ''
         };
         if (isUpdate) {
-            SubjectApi.getOne(match.params.id).end((error, data) => {
+            SubjectApi.getone(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
@@ -153,7 +153,7 @@ class EditSubject extends Component {
                                     <div className="row">
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tên môn thi</label>
+                                                <label htmlFor="name">Tên môn</label>
                                                 <input
                                                     value={subject.name}
                                                     autoComplete="off"
@@ -161,7 +161,22 @@ class EditSubject extends Component {
                                                     className="form-control"
                                                     id="name"
                                                     name="name"
-                                                    placeholder="Tên môn thi"
+                                                    placeholder="Tên môn"
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="description">Mô Tả</label>
+                                                <input
+                                                    value={subject.description}
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="description"
+                                                    name="description"
+                                                    placeholder="Mô Tả"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>

@@ -11,9 +11,10 @@ class EditSubjectGroup extends Component {
         this.state = {
             isUpdate: false,
             subjectGroup: {
-                name: '',
+                code: '',
                 description: '',
-                id: ''
+                id: undefined,
+                subjects: []
             },
             isProcess: false
         }
@@ -37,19 +38,20 @@ class EditSubjectGroup extends Component {
         } catch (error) {
         }
         let subjectGroup = {
-            id: undefined, name: '', description: ''
+            id: undefined, code: '', description: '', subjects: []
         };
         if (isUpdate) {
-            SubjectGroupApi.getOne(match.params.id).end((error, data) => {
+            SubjectGroupApi.getone(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
                 } else {
-                    let s = JSON.parse(data.text).data;
-                    if (s) {
-                        subjectGroup.id = s.id;
-                        subjectGroup.name = s.name;
-                        subjectGroup.description = s.description;
+                    let sg = JSON.parse(data.text).data;
+                    if (sg) {
+                        subjectGroup.id = sg.id;
+                        subjectGroup.code = sg.code;
+                        subjectGroup.description = sg.description;
+                        subjectGroup.subjects = JSON.parse(sg.subjects).join(',');
                     }
                     this.setState({
                         subjectGroup
@@ -66,9 +68,10 @@ class EditSubjectGroup extends Component {
     clearForm = () => {
         this.setState({
             subjectGroup: {
-                name: '',
+                code: '',
                 description: '',
-                id: undefined
+                id: undefined,
+                subjects: []
             }
         });
     }
@@ -107,6 +110,7 @@ class EditSubjectGroup extends Component {
             "hideMethod": "fadeOut"
         }
         let { subjectGroup } = this.state;
+        subjectGroup.subjects = subjectGroup.subjects.split(',').filter(el => el !== '');
         if (subjectGroup.id) {
             this.props.updateSubjectGroup(subjectGroup).then(res => {
                 toastr.success('Updated!');
@@ -153,29 +157,44 @@ class EditSubjectGroup extends Component {
                                     <div className="row">
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tên tổ hợp môn</label>
+                                                <label htmlFor="code">Mã tổ hợp môn</label>
                                                 <input
-                                                    value={subjectGroup.name}
+                                                    value={subjectGroup.code}
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
-                                                    id="name"
-                                                    name="name"
-                                                    placeholder="Tên tổ hợp môn"
+                                                    id="code"
+                                                    name="code"
+                                                    placeholder="Mã tổ hợp môn"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="description">Môn thi</label>
+                                                <label htmlFor="subjects">Môn</label>
+                                                <input
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="subjects"
+                                                    name="subjects"
+                                                    placeholder="Môn"
+                                                    value={subjectGroup.subjects}
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="description">Mô tả</label>
                                                 <input
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
                                                     id="description"
                                                     name="description"
-                                                    placeholder="Môn thi"
+                                                    placeholder="Mô tả"
                                                     value={subjectGroup.description}
                                                     onChange={(e) => this.onChange(e)}
                                                 />

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import ProvinceItem from './ProvinceItem';
 import { connect } from 'react-redux';
-import * as actions from '../../actions/SectorActions';
+import * as actions from '../../actions/ProvinceActions';
 import toastr from 'toastr';
 
 class Province extends Component {
@@ -17,7 +17,7 @@ class Province extends Component {
 
     componentDidMount() {
         let { page } = this.state;
-        this.props.loadSectors(page);
+        this.props.loadProvinces(page);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -38,24 +38,24 @@ class Province extends Component {
             this.setState({
                 page
             });
-            this.props.loadSectors(page);
+            this.props.loadProvinces(page);
         }
     }
 
-    genListSector = () => {
+    genListProvince = () => {
         let { provinces } = this.state;
         let rs = null;
         if (provinces) {
             rs = provinces.map((province, index) => {
                 return (
-                    <SectorItem key={index} province={province} deleteSector={this.deleteSector} />
+                    <ProvinceItem key={index} province={province} deleteProvince={this.deleteProvince} />
                 );
             });
         }
         return rs;
     }
 
-    deleteSector = (id) => {
+    deleteProvince = (id) => {
         toastr.options = {
             "closeButton": false,
             "debug": false,
@@ -74,7 +74,7 @@ class Province extends Component {
             "hideMethod": "fadeOut"
         }
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteSector(id).then(res => {
+            this.props.deleteProvince(id).then(res => {
                 toastr.warning('Deleted!');
             });
         }
@@ -90,7 +90,7 @@ class Province extends Component {
                         <small>Tỉnh Thành</small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><a href="#"><i className="fa fa-dashboard" /> Sector</a></li>
+                        <li><a href="#"><i className="fa fa-dashboard" /> Province</a></li>
                         <li className="active">List</li>
                     </ol>
                 </section>
@@ -118,10 +118,10 @@ class Province extends Component {
                                                 <th>Mã Tỉnh</th>
                                                 <th>Tên Tỉnh</th>
                                                 <th>Mô tả</th>
-                                                <th>Khu vực</th>
+                                                <th>Mã Khu vực</th>
                                                 <th>Chức năng</th>
                                             </tr>
-                                            {this.genListSector()}
+                                            {this.genListProvince()}
                                         </tbody>
                                     </table>
                                 </div>
@@ -152,14 +152,14 @@ class Province extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.SectorReducer
+        data: state.ProvinceReducer
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        loadSectors: (page) => dispatch(actions.loadAllSectorApi(page)),
-        deleteSector: (id) => dispatch(actions.deleteSectorApi(id))
+        loadProvinces: (page) => dispatch(actions.loadAllProvinceApi(page)),
+        deleteProvince: (id) => dispatch(actions.deleteProvinceApi(id))
     }
 }
 
