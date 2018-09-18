@@ -48,8 +48,8 @@ export default (
             <Route do="add" path="/subject/add" exact component={EditSubject} />
 
             <Route path="/subjectGroup/list" component={SubjectGroup} />
-            <Route do="update" path="/subjectGroup/update/:id" exact component={EditSubjectGroup} />
-            <Route do="add" path="/subjectGroup/add" exact component={EditSubjectGroup} />
+            <Route path="/subjectGroup/update/:id" exact render={props => <EditSubjectGroup do="update" {...props} />} />
+            <Route path="/subjectGroup/add" exact render={props => <EditSubjectGroup do="add" {...props} />} />
 
             <Route path="/test" render={props => <Test {...props} test='abcd' />} />
         </Switch>
