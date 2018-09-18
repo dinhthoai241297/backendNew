@@ -109,14 +109,22 @@ class EditSector extends Component {
         let { sector } = this.state;
         if (sector.id) {
             this.props.updateSector(sector).then(res => {
-                toastr.success('Updated!');
+                if (res) {
+                    toastr.success('Updated!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSector(sector).then(() => {
-                toastr.success('Added!');
+            this.props.addSector(sector).then(res => {
+                if (res) {
+                    toastr.success('Added!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });

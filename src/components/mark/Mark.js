@@ -74,7 +74,7 @@ class Mark extends Component {
             "hideMethod": "fadeOut"
         }
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteSector(id).then(res => {
+            this.props.deleteMark(id).then(res => {
                 toastr.warning('Deleted!');
             });
         }
@@ -90,7 +90,7 @@ class Mark extends Component {
                         <small>Điểm Chuẩn</small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><a href="#"><i className="fa fa-dashboard" /> Sector</a></li>
+                        <li><a href="#"><i className="fa fa-dashboard" /> Mark</a></li>
                         <li className="active">List</li>
                     </ol>
                 </section>

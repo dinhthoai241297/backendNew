@@ -109,14 +109,22 @@ class EditSubject extends Component {
         let { subject } = this.state;
         if (subject.id) {
             this.props.updateSubject(subject).then(res => {
-                toastr.success('Updated!');
+                if (res) {
+                    toastr.success('Updated!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSubject(subject).then(() => {
-                toastr.success('Added!');
+            this.props.addSubject(subject).then(res => {
+                if (res) {
+                    toastr.success('Added!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });

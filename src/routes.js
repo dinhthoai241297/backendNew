@@ -16,6 +16,7 @@ import Subject from './components/subject/Subject';
 import EditSubject from './components/subject/EditSubject';
 import SubjectGroup from './components/subjectGroup/SubjectGroup';
 import EditSubjectGroup from './components/subjectGroup/EditSubjectGroup';
+import Test from './components/test/Test';
 
 export default (
     <App>
@@ -49,6 +50,8 @@ export default (
             <Route path="/subjectGroup/list" component={SubjectGroup} />
             <Route do="update" path="/subjectGroup/update/:id" exact component={EditSubjectGroup} />
             <Route do="add" path="/subjectGroup/add" exact component={EditSubjectGroup} />
+
+            <Route path="/test" render={props => <Test {...props} test='abcd' />} />
         </Switch>
     </App>
 );

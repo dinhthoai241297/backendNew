@@ -2,9 +2,13 @@ import markApi from './../api/MarkApi';
 import * as actionTypes from './../actionTypes/MarkActionTypes';
 
 export const addMarkApi = mark => {
-    return dispatch => markApi.add(JSON.stringify(mark)).then(data => {
-        console.log(data);
-        dispatch(addMarkState(mark));
+    return dispatch => markApi.add(JSON.stringify(mark)).then(res => {
+        if (res.body.code === 200) {
+            dispatch(addMarkState(mark));
+            return true;
+        } else {
+            return false;
+        }
     }).catch(error => {
         throw (error);
     });
@@ -18,8 +22,13 @@ export const addMarkState = mark => {
 };
 
 export const updateMarkApi = mark => {
-    return dispatch => markApi.update(JSON.stringify(mark)).then(data => {
-        dispatch(updateMarkState(mark));
+    return dispatch => markApi.update(JSON.stringify(mark)).then(res => {
+        if (res.body.code === 200) {
+            dispatch(updateMarkState(mark));
+            return true;
+        } else {
+            return false;
+        }
     }).catch(error => {
         throw (error);
     });
@@ -33,8 +42,13 @@ export const updateMarkState = mark => {
 };
 
 export const deleteMarkApi = id => {
-    return dispatch => markApi.delete(id).then(data => {
-        dispatch(deleteMarkState(id));
+    return dispatch => markApi.delete(id).then(res => {
+        if (res.body.code === 200) {
+            dispatch(deleteMarkState(id));
+            return true;
+        } else {
+            return false;
+        }
     }).catch(error => {
         throw (error);
     });
@@ -48,8 +62,13 @@ export const deleteMarkState = id => {
 };
 
 export const loadAllMarkApi = page => {
-    return dispatch => markApi.getAll(page).then(data => {
-        dispatch(loadAllMarkState(data.body.data));
+    return dispatch => markApi.getAll(page).then(res => {
+        if (res.body.code === 200) {
+            dispatch(loadAllMarkState(res.body.data));
+            return true;
+        } else {
+            return false;
+        }
     }).catch(error => {
         throw (error);
     });

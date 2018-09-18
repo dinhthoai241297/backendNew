@@ -128,19 +128,27 @@ class EditMark extends Component {
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         }
-        let { mark } = this.state;
+        let mark = {...this.state.mark};
         mark.subjectGroups = mark.subjectGroups.split(',').filter(el => el !== '');
         console.log(mark);
         if (mark.id) {
             this.props.updateMark(mark).then(res => {
-                toastr.success('Updated!');
+                if (res) {
+                    toastr.success('Updated!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addMark(mark).then(() => {
-                toastr.success('Added!');
+            this.props.addMark(mark).then(res => {
+                if (res) {
+                    toastr.success('Added!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });

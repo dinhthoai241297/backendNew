@@ -75,7 +75,13 @@ class Sectors extends Component {
         }
         if (confirm('Bạn có chắc muốn xóa')) {
             this.props.deleteSector(id).then(res => {
-                toastr.warning('Deleted!');
+                if (res) {
+                    toastr.warning('Deleted!');
+                } else {
+                    toastr.warning('Error!');
+                }
+            }).catch(error => {
+                toastr.warning('Error!');
             });
         }
     }

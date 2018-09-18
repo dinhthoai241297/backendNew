@@ -111,14 +111,22 @@ class EditMajor extends Component {
         console.log(major.id);
         if (major.id) {
             this.props.updateMajor(major).then(res => {
-                toastr.success('Updated!');
+                if (res) {
+                    toastr.success('Updated!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addMajor(major).then(() => {
-                toastr.success('Added!');
+            this.props.addMajor(major).then(res => {
+                if (res) {
+                    toastr.success('Added!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });
@@ -138,7 +146,7 @@ class EditMajor extends Component {
                         <small>Khu Vực</small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><a href="#"><i className="fa fa-dashboard" /> Sector</a></li>
+                        <li><a href="#"><i className="fa fa-dashboard" /> Major</a></li>
                         <li className="active">{this.state.isUpdate ? 'update' : 'add'}</li>
                     </ol>
                 </section>

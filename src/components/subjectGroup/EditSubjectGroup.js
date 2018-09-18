@@ -21,10 +21,12 @@ class EditSubjectGroup extends Component {
     }
 
     componentDidMount() {
+        console.log(this.props);
         this.updateAction(this.props.match);
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
         this.updateAction(nextProps.match);
     }
 
@@ -113,14 +115,22 @@ class EditSubjectGroup extends Component {
         subjectGroup.subjects = subjectGroup.subjects.split(',').filter(el => el !== '');
         if (subjectGroup.id) {
             this.props.updateSubjectGroup(subjectGroup).then(res => {
-                toastr.success('Updated!');
+                if (res) {
+                    toastr.success('Updated!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSubjectGroup(subjectGroup).then(() => {
-                toastr.success('Added!');
+            this.props.addSubjectGroup(subjectGroup).then(res => {
+                if (res) {
+                    toastr.success('Added!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });

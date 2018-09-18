@@ -111,14 +111,22 @@ class EditSchool extends Component {
         let { school } = this.state;
         if (school.id) {
             this.props.updateSchool(school).then(res => {
-                toastr.success('Updated!');
+                if (res) {
+                    toastr.success('Updated!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSchool(school).then(() => {
-                toastr.success('Added!');
+            this.props.addSchool(school).then(res => {
+                if (res) {
+                    toastr.success('Added!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });

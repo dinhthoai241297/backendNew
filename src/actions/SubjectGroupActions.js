@@ -2,8 +2,13 @@ import subjectGroupApi from './../api/SubjectGroupApi';
 import * as actionTypes from './../actionTypes/SubjectGroupActionTypes';
 
 export const addSubjectGroupApi = subjectGroup => {
-    return dispatch => subjectGroupApi.add(JSON.stringify(subjectGroup)).then(data => {
-        dispatch(addSubjectGroupState(subjectGroup));
+    return dispatch => subjectGroupApi.add(JSON.stringify(subjectGroup)).then(res => {
+        if (res.body.code === 200) {
+            dispatch(addSubjectGroupState(subjectGroup));
+            return true;
+        } else {
+            return false;
+        }
     }).catch(error => {
         throw (error);
     });
@@ -17,8 +22,13 @@ export const addSubjectGroupState = subjectGroup => {
 };
 
 export const updateSubjectGroupApi = subjectGroup => {
-    return dispatch => subjectGroupApi.update(JSON.stringify(subjectGroup)).then(data => {
-        dispatch(updateSubjectGroupState(subjectGroup));
+    return dispatch => subjectGroupApi.update(JSON.stringify(subjectGroup)).then(res => {
+        if (res.body.code === 200) {
+            dispatch(updateSubjectGroupState(subjectGroup));
+            return true;
+        } else {
+            return false;
+        }
     }).catch(error => {
         throw (error);
     });
@@ -32,8 +42,13 @@ export const updateSubjectGroupState = subjectGroup => {
 };
 
 export const deleteSubjectGroupApi = id => {
-    return dispatch => subjectGroupApi.delete(id).then(data => {
-        dispatch(deleteSubjectGroupState(id));
+    return dispatch => subjectGroupApi.delete(id).then(res => {
+        if (res.body.code === 200) {
+            dispatch(deleteSubjectGroupState(id));
+            return true;
+        } else {
+            return false;
+        }
     }).catch(error => {
         throw (error);
     });
@@ -47,8 +62,13 @@ export const deleteSubjectGroupState = id => {
 };
 
 export const loadAllSubjectGroupApi = page => {
-    return dispatch => subjectGroupApi.getAll(page).then(data => {
-        dispatch(loadAllSubjectGroupState(data.body.data));
+    return dispatch => subjectGroupApi.getAll(page).then(res => {
+        if (res.body.code === 200) {
+            dispatch(loadAllSubjectGroupState(res.body.data));
+            return true;
+        } else {
+            return false;
+        }
     }).catch(error => {
         throw (error);
     });

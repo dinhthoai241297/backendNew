@@ -112,14 +112,22 @@ class EditProvince extends Component {
         let { province } = this.state;
         if (province.id) {
             this.props.updateProvince(province).then(res => {
-                toastr.success('Updated!');
+                if (res) {
+                    toastr.success('Updated!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addProvince(province).then(() => {
-                toastr.success('Added!');
+            this.props.addProvince(province).then(res => {
+                if (res) {
+                    toastr.success('Added!');
+                } else {
+                    toastr.error('Error!');
+                }
                 this.setState({
                     isProcess: false
                 });
