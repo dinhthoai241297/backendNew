@@ -3,6 +3,7 @@ import * as actionTypes from './../actionTypes/MarkActionTypes';
 
 export const addMarkApi = mark => {
     return dispatch => markApi.add(JSON.stringify(mark)).then(data => {
+        console.log(data);
         dispatch(addMarkState(mark));
     }).catch(error => {
         throw (error);
@@ -47,8 +48,8 @@ export const deleteMarkState = id => {
 };
 
 export const loadAllMarkApi = page => {
-    return dispatch => markApi.getall(page).then(data => {
-        dispatch(loadAllMarkState(JSON.parse(data.text).data));
+    return dispatch => markApi.getAll(page).then(data => {
+        dispatch(loadAllMarkState(data.body.data));
     }).catch(error => {
         throw (error);
     });

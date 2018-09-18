@@ -47,8 +47,8 @@ export const deleteSubjectGroupState = id => {
 };
 
 export const loadAllSubjectGroupApi = page => {
-    return dispatch => subjectGroupApi.getall(page).then(data => {
-        dispatch(loadAllSubjectGroupState(JSON.parse(data.text).data));
+    return dispatch => subjectGroupApi.getAll(page).then(data => {
+        dispatch(loadAllSubjectGroupState(data.body.data));
     }).catch(error => {
         throw (error);
     });

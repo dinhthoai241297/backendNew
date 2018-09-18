@@ -41,7 +41,7 @@ class EditProvince extends Component {
             id: undefined, name: '', description: '', sector: ''
         };
         if (isUpdate) {
-            ProvinceApi.getone(match.params.id).end((error, data) => {
+            ProvinceApi.getOne(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
@@ -193,7 +193,7 @@ class EditProvince extends Component {
                                                     className="form-control"
                                                     id="sector"
                                                     name="sector"
-                                                    placeholder="Chọn khu vực "
+                                                    placeholder="Mã khu vực"
                                                     value={province.sector}
                                                     onChange={(e) => this.onChange(e)}
                                                 />

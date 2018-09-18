@@ -40,7 +40,7 @@ class EditSubject extends Component {
             id: undefined, name: '', description: ''
         };
         if (isUpdate) {
-            SubjectApi.getone(match.params.id).end((error, data) => {
+            SubjectApi.getOne(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);

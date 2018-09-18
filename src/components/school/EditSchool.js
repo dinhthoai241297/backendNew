@@ -42,7 +42,7 @@ class EditSchool extends Component {
             id: undefined, name: '', description: '', code: '', province: ''
         };
         if (isUpdate) {
-            SchoolApi.getone(match.params.id).end((error, data) => {
+            SchoolApi.getOne(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);

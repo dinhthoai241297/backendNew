@@ -14,11 +14,11 @@ class SectorApi {
         return request.post(`${HOST}sector/delete`).send({ id });
     }
 
-    static getall(page = 1) {
+    static getAll(page = 1) {
         return request.post(`${HOST}sector/getall`).send({ page });
     }
 
-    static getone(id = -1) {
+    static getOne(id = -1) {
         return request.post(`${HOST}sector/getone`).send({ id });
     }
 }

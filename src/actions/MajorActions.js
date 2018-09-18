@@ -47,8 +47,8 @@ export const deleteMajorState = id => {
 };
 
 export const loadAllMajorApi = page => {
-    return dispatch => majorApi.getall(page).then(data => {
-        dispatch(loadAllMajorState(JSON.parse(data.text).data));
+    return dispatch => majorApi.getAll(page).then(data => {
+        dispatch(loadAllMajorState(data.body.data));
     }).catch(error => {
         throw (error);
     });

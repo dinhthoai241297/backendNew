@@ -14,11 +14,11 @@ class SchoolApi {
         return request.post(`${HOST}school/delete`).send({ id });
     }
 
-    static getall(page = 1) {
+    static getAll(page = 1) {
         return request.post(`${HOST}school/getall`).send({ page });
     }
 
-    static getone(id = -1) {
+    static getOne(id = -1) {
         return request.post(`${HOST}school/getone`).send({ id });
     }
 }

@@ -14,11 +14,11 @@ class SubjectGroupApi {
         return request.post(`${HOST}subjectgroup/delete`).send({ id });
     }
 
-    static getall(page = 1) {
+    static getAll(page = 1) {
         return request.post(`${HOST}subjectgroup/getall`).send({ page });
     }
 
-    static getone(id = -1) {
+    static getOne(id = -1) {
         return request.post(`${HOST}subjectgroup/getone`).send({ id });
     }
 }

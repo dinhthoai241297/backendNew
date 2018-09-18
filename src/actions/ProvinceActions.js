@@ -47,8 +47,8 @@ export const deleteProvinceState = id => {
 };
 
 export const loadAllProvinceApi = page => {
-    return dispatch => provinceApi.getall(page).then(data => {
-        dispatch(loadAllProvinceState(JSON.parse(data.text).data));
+    return dispatch => provinceApi.getAll(page).then(data => {
+        dispatch(loadAllProvinceState(data.body.data));
     }).catch(error => {
         throw (error);
     });

@@ -47,8 +47,8 @@ export const deleteSchoolState = id => {
 };
 
 export const loadAllSchoolApi = page => {
-    return dispatch => schoolApi.getall(page).then(data => {
-        dispatch(loadAllSchoolState(JSON.parse(data.text).data));
+    return dispatch => schoolApi.getAll(page).then(data => {
+        dispatch(loadAllSchoolState(data.body.data));
     }).catch(error => {
         throw (error);
     });

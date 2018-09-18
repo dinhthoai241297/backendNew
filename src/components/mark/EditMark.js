@@ -17,7 +17,7 @@ class EditMark extends Component {
                 year: 0,
                 mark: 0,
                 aspiration: 0,
-                subjectGroups: [],
+                subjectGroups: '',
                 note: ''
 
             },
@@ -49,31 +49,29 @@ class EditMark extends Component {
             year: 0,
             mark: 0,
             aspiration: 0,
-            subjectGroups: [],
+            subjectGroups: '',
             note: ''
 
         }
         if (isUpdate) {
-            MarkApi.getone(match.params.id).end((error, data) => {
-                if (error) {
-                    //
-                    throw (error);
-                } else {
-                    let m = JSON.parse(data.text).data;
-                    if (m) {
-                        mark.id = m.id;
-                        mark.school = m.school;
-                        mark.major = m.major;
-                        mark.year = m.year;
-                        mark.mark = m.mark;
-                        mark.aspiration = m.aspiration;
-                        mark.subjectGroups = JSON.parse(m.subjectGroups);
-                        mark.note = m.note;
-                    }
-                    this.setState({
-                        mark
-                    });
+            MarkApi.getOne(match.params.id).then(data => {
+                let m = data.body.data;
+                console.log(m);
+                if (m) {
+                    mark.id = m.id;
+                    mark.school = m.school;
+                    mark.major = m.major;
+                    mark.year = m.year;
+                    mark.mark = m.mark;
+                    mark.aspiration = m.aspiration;
+                    mark.subjectGroups = JSON.parse(m.subjectGroups).join(',');
+                    mark.note = m.note;
                 }
+                this.setState({
+                    mark
+                });
+            }).catch(error => {
+                throw (error)
             });
         } else {
             this.setState({
@@ -91,19 +89,14 @@ class EditMark extends Component {
                 year: 0,
                 mark: 0,
                 aspiration: 0,
-                subjectGroups: [],
+                subjectGroups: '',
                 note: ''
-
             }
         });
     }
 
     onChange = (e) => {
         let { name, value } = e.target;
-        if (name === 'subjectGroups') {
-            console.log(value);
-            value = JSON.parse(value);
-        }
         this.setState(preState => ({
             ...preState,
             mark: {
@@ -136,6 +129,8 @@ class EditMark extends Component {
             "hideMethod": "fadeOut"
         }
         let { mark } = this.state;
+        mark.subjectGroups = mark.subjectGroups.split(',').filter(el => el !== '');
+        console.log(mark);
         if (mark.id) {
             this.props.updateMark(mark).then(res => {
                 toastr.success('Updated!');

@@ -41,7 +41,7 @@ class EditMajor extends Component {
             id: undefined, name: '', code: '', school: ''
         };
         if (isUpdate) {
-            MajorApi.getone(match.params.id).end((error, data) => {
+            MajorApi.getOne(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
@@ -185,7 +185,7 @@ class EditMajor extends Component {
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="school">Tên Trường</label>
+                                                <label htmlFor="school">Mã Trường</label>
                                                 <input
                                                     value={major.school}
                                                     autoComplete="off"
@@ -193,7 +193,7 @@ class EditMajor extends Component {
                                                     className="form-control"
                                                     id="school"
                                                     name="school"
-                                                    placeholder="Tên Trường"
+                                                    placeholder="Mã Trường"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>

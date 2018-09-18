@@ -47,8 +47,8 @@ export const deleteSectorState = id => {
 };
 
 export const loadAllSectorApi = page => {
-    return dispatch => sectorApi.getall(page).then(data => {
-        dispatch(loadAllSectorState(JSON.parse(data.text).data));
+    return dispatch => sectorApi.getAll(page).then(data => {
+        dispatch(loadAllSectorState(data.body.data));
     }).catch(error => {
         throw (error);
     });;

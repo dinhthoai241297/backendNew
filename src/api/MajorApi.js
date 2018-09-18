@@ -14,11 +14,11 @@ class MajorApi {
         return request.post(`${HOST}major/delete`).send({ id });
     }
 
-    static getall(page = 1) {
+    static getAll(page = 1) {
         return request.post(`${HOST}major/getall`).send({ page });
     }
 
-    static getone(id = -1) {
+    static getOne(id = -1) {
         return request.post(`${HOST}major/getone`).send({ id });
     }
 }

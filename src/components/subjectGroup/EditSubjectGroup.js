@@ -14,7 +14,7 @@ class EditSubjectGroup extends Component {
                 code: '',
                 description: '',
                 id: undefined,
-                subjects: []
+                subjects: ''
             },
             isProcess: false
         }
@@ -38,10 +38,10 @@ class EditSubjectGroup extends Component {
         } catch (error) {
         }
         let subjectGroup = {
-            id: undefined, code: '', description: '', subjects: []
+            id: undefined, code: '', description: '', subjects: ''
         };
         if (isUpdate) {
-            SubjectGroupApi.getone(match.params.id).end((error, data) => {
+            SubjectGroupApi.getOne(match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);
@@ -71,7 +71,7 @@ class EditSubjectGroup extends Component {
                 code: '',
                 description: '',
                 id: undefined,
-                subjects: []
+                subjects: ''
             }
         });
     }

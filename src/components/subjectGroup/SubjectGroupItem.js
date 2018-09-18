@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import {Link} from 'react-router-dom';
+import React, { Component, Fragment } from 'react';
+import { Link } from 'react-router-dom';
 
 class SubjectGroupItem extends Component {
     render() {
@@ -8,7 +8,7 @@ class SubjectGroupItem extends Component {
             <tr>
                 <td>{subjectGroup.id}</td>
                 <td>{subjectGroup.code}</td>
-                <td>{subjectGroup.subjects}</td>
+                <td>{JSON.parse(subjectGroup.subjects).map((el, index) => <Fragment key={index}>{el}<br /></Fragment>)}</td>
                 <td>{subjectGroup.description}</td>
                 <td>
                     <Link className="btn btn-warning btn-xs" to={'/subjectGroup/update/' + subjectGroup.id}>Sửa</Link>

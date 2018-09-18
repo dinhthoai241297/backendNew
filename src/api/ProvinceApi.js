@@ -14,11 +14,11 @@ class ProvinceApi {
         return request.post(`${HOST}province/delete`).send({ id });
     }
 
-    static getall(page = 1) {
+    static getAll(page = 1) {
         return request.post(`${HOST}province/getall`).send({ page });
     }
 
-    static getone(id = -1) {
+    static getOne(id = -1) {
         return request.post(`${HOST}province/getone`).send({ id });
     }
 }
