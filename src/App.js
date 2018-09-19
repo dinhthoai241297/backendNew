@@ -13,7 +13,7 @@ class App extends Component {
                 {/* Left side column. contains the logo and sidebar */}
                 <Sidebar />
                 {/* Content Wrapper. Contains page content */}
-                <div className="content-wrapper">
+                <div className="content-wrapper" style={{minHeight: 1000}}>
                     {this.props.children}
                 </div>
                 {/* /.content-wrapper */}

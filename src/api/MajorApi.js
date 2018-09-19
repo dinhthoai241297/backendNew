@@ -21,6 +21,10 @@ class MajorApi {
     static getOne(id = -1) {
         return request.post(`${HOST}major/getone`).send({ id });
     }
+
+    static getAllInSchool (school = '') {
+        return request.post(`${HOST}major/getallinschool`).send({ school });
+    }
 }
 
 export default MajorApi;

@@ -3,6 +3,20 @@ import ProvinceApi from '../../api/ProvinceApi';
 import { connect } from 'react-redux';
 import * as provinceAction from '../../actions/ProvinceActions';
 import toastr from 'toastr';
+import Select from 'react-select';
+import SectorApi from '../../api/SectorApi';
+
+const customStyles = {
+    control: (base) => ({
+        ...base,
+        minHeight: 34,
+        borderRadius: 0
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        padding: "0 8px"
+    })
+}
 
 class EditProvince extends Component {
 
@@ -16,47 +30,52 @@ class EditProvince extends Component {
                 sector: '',
                 id: undefined
             },
-            isProcess: false
+            isProcess: false,
+            options: [],
+            selectedOption: null
         }
     }
 
     componentDidMount() {
-        this.updateAction(this.props.match);
+        this.updateAction(this.props);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.updateAction(nextProps.match);
+        this.updateAction(nextProps);
     }
 
-    updateAction = (match) => {
-        let isUpdate = false;
-        try {
-            isUpdate = match.path.split('/')[2] === 'update' ? true : false;
-            this.setState({
-                isUpdate
-            });
-        } catch (error) {
+    updateAction = async (props) => {
+        let isUpdate = props.do === 'update' ? true : false
+        // get all sector in database
+        let next = true, rs = [], tmp, page = 1, options = [];
+        while (next) {
+            tmp = await SectorApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
         }
+        this.setState({
+            options: rs.map(el => ({ value: el.id, label: el.name }))
+        });
         let province = {
             id: undefined, name: '', description: '', sector: ''
         };
         if (isUpdate) {
-            ProvinceApi.getOne(match.params.id).end((error, data) => {
-                if (error) {
-                    //
-                    throw (error);
-                } else {
-                    let p = JSON.parse(data.text).data;
-                    if (p) {
-                        province.id = p.id;
-                        province.name = p.name;
-                        province.description = p.description;
-                        province.sector = p.sector
-                    }
+            ProvinceApi.getOne(props.match.params.id).then(res => {
+                let p = JSON.parse(res.text).data;
+                if (p) {
+                    province.id = p.id;
+                    province.name = p.name;
+                    province.description = p.description;
+                    province.sector = p.sector
                     this.setState({
-                        province
+                        selectedOption: this.state.options.filter(el => el.value === province.sector)
                     });
                 }
+                this.setState({
+                    province
+                });
+            }).catch(error => {
+                throw(error);
             });
         } else {
             this.setState({
@@ -136,6 +155,15 @@ class EditProvince extends Component {
         }
     }
 
+    handleChange = (selectedOption) => {
+        this.setState({ selectedOption });
+        let { province } = this.state;
+        province.sector = selectedOption.value
+        this.setState({
+            province
+        });
+    }
+
     render() {
         let { province } = this.state;
         return (
@@ -192,18 +220,14 @@ class EditProvince extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-xs-12 col-lg-6">
+                                        <div className="col-xs-12">
                                             <div className="form-group">
-                                                <label htmlFor="sector">Mã Khu Vực</label>
-                                                <input
-                                                    autoComplete="off"
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="sector"
-                                                    name="sector"
-                                                    placeholder="Mã khu vực"
-                                                    value={province.sector}
-                                                    onChange={(e) => this.onChange(e)}
+                                                <Select
+                                                    styles={customStyles}
+                                                    onChange={this.handleChange}
+                                                    options={this.state.options}
+                                                    value={this.state.selectedOption}
+                                                    placeholder="Khu Vực"
                                                 />
                                             </div>
                                         </div>

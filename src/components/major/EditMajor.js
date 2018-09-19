@@ -3,6 +3,20 @@ import MajorApi from '../../api/MajorApi';
 import { connect } from 'react-redux';
 import * as majorAction from '../../actions/MajorActions';
 import toastr from 'toastr';
+import Select from 'react-select';
+import SchoolApi from '../../api/SchoolApi';
+
+const customStyles = {
+    control: (base) => ({
+        ...base,
+        minHeight: 34,
+        borderRadius: 0
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        padding: "0 8px"
+    })
+}
 
 class EditMajor extends Component {
 
@@ -16,48 +30,53 @@ class EditMajor extends Component {
                 code: '',
                 school: '',
             },
-            isProcess: false
+            isProcess: false,
+            options: [],
+            selectedOption: null
         }
     }
 
     componentDidMount() {
-        this.updateAction(this.props.match);
+        this.updateAction(this.props);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.updateAction(nextProps.match);
+        this.updateAction(nextProps);
     }
 
-    updateAction = (match) => {
-        let isUpdate = false;
-        try {
-            isUpdate = match.path.split('/')[2] === 'update' ? true : false;
-            this.setState({
-                isUpdate
-            });
-        } catch (error) {
+    updateAction = async (props) => {
+        let isUpdate = props.do === 'update' ? true : false;
+        // get all sector in database
+        let next = true, rs = [], tmp, page = 1, options = [];
+        while (next) {
+            tmp = await SchoolApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
         }
+        this.setState({
+            options: rs.map(el => ({ value: el.id, label: el.name }))
+        });
         let major = {
             id: undefined, name: '', code: '', school: ''
         };
         if (isUpdate) {
-            MajorApi.getOne(match.params.id).end((error, data) => {
-                if (error) {
-                    //
-                    throw (error);
-                } else {
-                    let m = JSON.parse(data.text).data;
-                    console.log(m.id);
-                    if (m) {
-                        major.id = m.id;
-                        major.name = m.name;
-                        major.code = m.code;
-                        major.school = m.school;
-                    }
+            MajorApi.getOne(props.match.params.id).then(res => {
+                let m = res.body.data;
+                console.log(m.id);
+                if (m) {
+                    major.id = m.id;
+                    major.name = m.name;
+                    major.code = m.code;
+                    major.school = m.school;
                     this.setState({
-                        major
+                        selectedOption: this.state.options.filter(el => el.value === major.school)
                     });
                 }
+                this.setState({
+                    major
+                });
+            }).catch(error => {
+                throw(error);
             });
         } else {
             this.setState({
@@ -108,7 +127,6 @@ class EditMajor extends Component {
             "hideMethod": "fadeOut"
         }
         let { major } = this.state;
-        console.log(major.id);
         if (major.id) {
             this.props.updateMajor(major).then(res => {
                 if (res) {
@@ -133,6 +151,15 @@ class EditMajor extends Component {
             });
             this.clearForm();
         }
+    }
+
+    handleChange = (selectedOption) => {
+        this.setState({ selectedOption });
+        let { major } = this.state;
+        major.school = selectedOption.value
+        this.setState({
+            major
+        });
     }
 
     render() {
@@ -191,19 +218,18 @@ class EditMajor extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-xs-12 col-lg-6">
+                                        <div className="col-xs-12">
                                             <div className="form-group">
-                                                <label htmlFor="school">Mã Trường</label>
-                                                <input
-                                                    value={major.school}
-                                                    autoComplete="off"
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="school"
-                                                    name="school"
-                                                    placeholder="Mã Trường"
-                                                    onChange={(e) => this.onChange(e)}
+                                                <label htmlFor="school">Trường</label>
+                                                <div className="form-group">
+                                                <Select
+                                                    styles={customStyles}
+                                                    onChange={this.handleChange}
+                                                    options={this.state.options}
+                                                    value={this.state.selectedOption}
+                                                    placeholder="Trường"
                                                 />
+                                            </div>
                                             </div>
                                         </div>
                                     </div>
