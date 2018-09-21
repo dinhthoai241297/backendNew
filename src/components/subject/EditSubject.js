@@ -20,27 +20,20 @@ class EditSubject extends Component {
     }
 
     componentDidMount() {
-        this.updateAction(this.props.match);
+        this.updateAction(this.props);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.updateAction(nextProps.match);
+        this.updateAction(nextProps);
     }
 
-    updateAction = (match) => {
-        let isUpdate = false;
-        try {
-            isUpdate = match.path.split('/')[2] === 'update' ? true : false;
-            this.setState({
-                isUpdate
-            });
-        } catch (error) {
-        }
+    updateAction = (props) => {
+        let isUpdate = props.do === 'update' ? true : false;
         let subject = {
             id: undefined, name: '', description: ''
         };
         if (isUpdate) {
-            SubjectApi.getOne(match.params.id).end((error, data) => {
+            SubjectApi.getOne(props.match.params.id).end((error, data) => {
                 if (error) {
                     //
                     throw (error);

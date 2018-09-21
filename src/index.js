@@ -3,10 +3,9 @@ import '@babel/polyfill';
 import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
-import routes from './routes';
+import MyRoute from './routes';
 import { Provider } from 'react-redux';
 import configureStore from './store/configureStore.dev';
-import * as sectorActions from './actions/SectorActions';
 
 // css
 import 'admin-lte/bower_components/bootstrap/dist/css/bootstrap.min.css';
@@ -27,9 +26,7 @@ const store = configureStore();
 
 render(
     <Provider store={store}>
-        <Router>
-            {routes}
-        </Router>
+        <MyRoute />
     </Provider>,
     document.getElementsByClassName('wrapper')[0]
 );
