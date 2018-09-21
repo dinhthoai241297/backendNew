@@ -6,6 +6,9 @@ import ProvinceReducer from './ProvinceReducer';
 import SchoolReducer from './SchoolReducer';
 import SubjectReducer from './SubjectReducer';
 import SubjectGroupReducer from './SubjectGroupReducer';
+import RoleReducer from './RoleReducer';
+
+
 
 const root = combineReducers({
     SectorReducer,
@@ -14,7 +17,10 @@ const root = combineReducers({
     SubjectGroupReducer,
     MajorReducer,
     MarkReducer,
-    ProvinceReducer
+    ProvinceReducer,
+    RoleReducer  
+
+ 
 });
 
 export default root;

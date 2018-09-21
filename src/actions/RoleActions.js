@@ -1,5 +1,5 @@
 import roleApi from './../api/RoleApi';
-import * as actionTypes from './../actionTypes/RoleActionsTypes';
+import * as actionTypes from './../actionTypes/RoleActionTypes';
 
 export const addRoleApi = role => {
     return dispatch => roleApi.add(JSON.stringify(role)).then(res => {
@@ -16,7 +16,7 @@ export const addRoleApi = role => {
 
 export const addRoleState = role => {
     return {
-        type: actionTypes.ADD_SECTOR,
+        type: actionTypes.ADD_ROLE,
         role
     };
 };
@@ -36,7 +36,7 @@ export const updateRoleApi = role => {
 
 export const updateRoleState = role => {
     return {
-        type: actionTypes.UPDATE_SECTOR,
+        type: actionTypes.UPDATE_ROLE,
         role
     };
 };
@@ -56,13 +56,13 @@ export const deleteRoleApi = id => {
 
 export const deleteRoleState = id => {
     return {
-        type: actionTypes.DELETE_SECTOR,
+        type: actionTypes.DELETE_ROLE,
         id
     };
 };
 
-export const loadAllRoleApi = () => {
-    return dispatch => roleApi.getAll().then(res => {
+export const loadAllRoleApi = page => {
+    return dispatch => roleApi.getAll(page).then(res => {
         if (res.body.code === 200) {
             dispatch(loadAllRoleState(res.body.data));
             return true;
@@ -71,12 +71,12 @@ export const loadAllRoleApi = () => {
         }
     }).catch(error => {
         throw (error);
-    });
+    });;
 };
 
 export const loadAllRoleState = data => {
     return {
-        type: actionTypes.LOAD_ALL_SECTOR,
+        type: actionTypes.LOAD_ALL_ROLE,
         data
     };
 };

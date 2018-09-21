@@ -57,7 +57,7 @@ class Sidebar extends Component {
                             nativeClass="treeview"
                             label={
                                 <Fragment>
-                                    <i className="fa fa-plus" /> <span>Sector</span>
+                                    <i className="fa fa-globe" /> <span>Sector</span>
                                     <span className="pull-right-container">
                                         <i className="fa fa-angle-left pull-right" />
                                     </span>
@@ -93,7 +93,7 @@ class Sidebar extends Component {
                             nativeClass="treeview"
                             label={
                                 <Fragment>
-                                    <i className="fa fa-plus" /> <span>Province</span>
+                                    <i className="fa fa-map-marker" /> <span>Province</span>
                                     <span className="pull-right-container">
                                         <i className="fa fa-angle-left pull-right" />
                                     </span>
@@ -129,7 +129,7 @@ class Sidebar extends Component {
                             nativeClass="treeview"
                             label={
                                 <Fragment>
-                                    <i className="fa fa-plus" /> <span>School</span>
+                                    <i className="fa fa-graduation-cap " /> <span>School</span>
                                     <span className="pull-right-container">
                                         <i className="fa fa-angle-left pull-right" />
                                     </span>
@@ -165,7 +165,7 @@ class Sidebar extends Component {
                             nativeClass="treeview"
                             label={
                                 <Fragment>
-                                    <i className="fa fa-plus" /> <span>Mark</span>
+                                    <i className="fa fa-diamond" /> <span>Mark</span>
                                     <span className="pull-right-container">
                                         <i className="fa fa-angle-left pull-right" />
                                     </span>
@@ -201,7 +201,7 @@ class Sidebar extends Component {
                             nativeClass="treeview"
                             label={
                                 <Fragment>
-                                    <i className="fa fa-plus" /> <span>Major</span>
+                                    <i className="fa fa-grav" /> <span>Major</span>
                                     <span className="pull-right-container">
                                         <i className="fa fa-angle-left pull-right" />
                                     </span>
@@ -237,7 +237,7 @@ class Sidebar extends Component {
                             nativeClass="treeview"
                             label={
                                 <Fragment>
-                                    <i className="fa fa-plus" /> <span>Subject</span>
+                                    <i className="fa fa-book" /> <span>Subject</span>
                                     <span className="pull-right-container">
                                         <i className="fa fa-angle-left pull-right" />
                                     </span>
@@ -273,7 +273,7 @@ class Sidebar extends Component {
                             nativeClass="treeview"
                             label={
                                 <Fragment>
-                                    <i className="fa fa-plus" /> <span>SubjectGroup</span>
+                                    <i className="fa fa-navicon" /> <span>SubjectGroup</span>
                                     <span className="pull-right-container">
                                         <i className="fa fa-angle-left pull-right" />
                                     </span>
@@ -304,12 +304,12 @@ class Sidebar extends Component {
                             }
                         </MyLink>
                         <MyLink
-                            to="/test"
+                            to="/role"
                             activeOnlyWhenExact={false}
                             nativeClass="treeview"
                             label={
                                 <Fragment>
-                                    <i className="fa fa-plus" /> <span>Test</span>
+                                    <i className="fa fa-shield" /> <span>Role</span>
                                     <span className="pull-right-container">
                                         <i className="fa fa-angle-left pull-right" />
                                     </span>
@@ -319,11 +319,56 @@ class Sidebar extends Component {
                             {
                                 <ul className="treeview-menu">
                                     <MyLink
-                                        to="/test"
+                                        to="/role/list"
                                         activeOnlyWhenExact={true}
                                         label={
                                             <Fragment>
-                                                <i className="fa fa-circle-o"></i> Test
+                                                <i className="fa fa-circle-o"></i> List Role
+                                            </Fragment>
+                                        }
+                                    />
+                                    <MyLink
+                                        to="/role/add"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> Add Role
+                                            </Fragment>
+                                        }
+                                    />
+                                </ul>
+                            }
+                        </MyLink>
+                           <MyLink
+                            to="/user"
+                            activeOnlyWhenExact={false}
+                            nativeClass="treeview"
+                            label={
+                                <Fragment>
+                                    <i className="fa fa-users" /> <span>User Management</span>
+                                    <span className="pull-right-container">
+                                        <i className="fa fa-angle-left pull-right" />
+                                    </span>
+                                </Fragment>
+                            }
+                        >
+                            {
+                                <ul className="treeview-menu">
+                                    <MyLink
+                                        to="/user/list"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> List User
+                                            </Fragment>
+                                        }
+                                    />
+                                    <MyLink
+                                        to="/user/add"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> Add User
                                             </Fragment>
                                         }
                                     />
@@ -384,6 +429,34 @@ class Sidebar extends Component {
                                 </ul>
                             }
                         </MyLink>
+                        <MyLink
+                            to="/test"
+                            activeOnlyWhenExact={false}
+                            nativeClass="treeview"
+                            label={
+                                <Fragment>
+                                    <i className="fa fa-plus" /> <span>Test</span>
+                                    <span className="pull-right-container">
+                                        <i className="fa fa-angle-left pull-right" />
+                                    </span>
+                                </Fragment>
+                            }
+                        >
+                            {
+                                <ul className="treeview-menu">
+                                    <MyLink
+                                        to="/test"
+                                        activeOnlyWhenExact={true}
+                                        label={
+                                            <Fragment>
+                                                <i className="fa fa-circle-o"></i> Test
+                                            </Fragment>
+                                        }
+                                    />
+                                </ul>
+                            }
+                        </MyLink>
+
                     </ul>
                     {/* /.sidebar-menu */}
                 </section>
