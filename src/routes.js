@@ -16,6 +16,13 @@ import Subject from './components/subject/Subject';
 import EditSubject from './components/subject/EditSubject';
 import SubjectGroup from './components/subjectGroup/SubjectGroup';
 import EditSubjectGroup from './components/subjectGroup/EditSubjectGroup';
+import User from './components/user/User';
+import EditUser from './components/user/EditUser';
+// import Role from './components/role/Role';
+// import EditRole from './components/role/EditRole';
+
+
+
 import Test from './components/test/Test';
 
 export default (
@@ -50,6 +57,16 @@ export default (
             <Route path="/subjectGroup/list" component={SubjectGroup} />
             <Route path="/subjectGroup/update/:id" exact render={props => <EditSubjectGroup do="update" {...props} />} />
             <Route path="/subjectGroup/add" exact render={props => <EditSubjectGroup do="add" {...props} />} />
+            //Role 
+            // <Route path="/role/list" component={Subject} />
+            // <Route path="/role/update/:id" exact render={props => <EditSubject do="update" {...props} />} />
+            // <Route path="/role/add" exact render={props => <EditSubject do="add" {...props} />} />
+          
+            <Route path="/user/list" component={User} />
+            <Route path="/user/update/:id" exact render={props => <EditUser do="update" {...props} />} />
+            <Route path="/user/add" exact render={props => <EditUser do="add" {...props} />} />
+
+
 
             <Route path="/test" render={props => <Test {...props} test='abcd' />} />
         </Switch>
