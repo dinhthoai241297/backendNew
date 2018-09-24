@@ -115,7 +115,6 @@ class Major extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Mã</th>
                                                 <th>Tên Ngành</th>
                                                 <th>Mã Ngành</th>
                                                 <th>Trường</th>

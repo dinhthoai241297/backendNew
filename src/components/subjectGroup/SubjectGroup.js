@@ -115,7 +115,6 @@ class SubjectGroup extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Mã</th>
                                                 <th>Mã Tổ Hợp Môn</th>
                                                 <th>Môn Thi</th>
                                                 <th>Mô tả</th>

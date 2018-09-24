@@ -121,7 +121,6 @@ class Roles extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Mã</th>
                                                 <th>Tên Quyền</th>
                                                 <th>Quyền</th>
                                             </tr>

@@ -121,7 +121,6 @@ class Sectors extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Mã KV</th>
                                                 <th>Tên KV</th>
                                                 <th>Mô tả KV</th>
                                                 <th>DS Tỉnh</th>

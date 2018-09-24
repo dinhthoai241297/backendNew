@@ -6,7 +6,6 @@ class ProvinceItem extends Component {
         let { province } = this.props;
         return (
             <tr>
-                <td>{province.id}</td>
                 <td>{province.name}</td>
                 <td>{province.description}</td>
                 <td>{province.sector}</td>

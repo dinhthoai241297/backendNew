@@ -29,6 +29,7 @@ class EditSchool extends Component {
                 code: '',
                 description: '',
                 province: '',
+                image: '',
                 id: undefined
             },
             isProcess: false,
@@ -58,7 +59,7 @@ class EditSchool extends Component {
             options: rs.map(el => ({ value: el.id, label: el.name }))
         });
         let school = {
-            id: undefined, name: '', description: '', code: '', province: ''
+            id: undefined, name: '', description: '', code: '', province: '',image: ''
         };
         if (isUpdate) {
             SchoolApi.getOne(props.match.params.id).then(res => {
@@ -70,6 +71,7 @@ class EditSchool extends Component {
                     school.description = s.description;
                     school.code = s.code;
                     school.province = s.province;
+                    school.image =s.image;
                     this.setState({
                         selectedOption: this.state.options.filter(el => el.value === school.province)
                     });
@@ -90,7 +92,7 @@ class EditSchool extends Component {
     clearForm = () => {
         this.setState({
             school: {
-                id: undefined, name: '', description: '', code: '', province: ''
+                id: undefined, name: '', description: '', code: '', province: '',image: '',
             }
         });
     }
@@ -163,7 +165,6 @@ class EditSchool extends Component {
             school
         });
     }
-
     render() {
         let { school } = this.state;
         return (
@@ -245,6 +246,21 @@ class EditSchool extends Component {
                                                     value={this.state.selectedOption}
                                                     placeholder="Tỉnh Thành"
                                                     id="province"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="image">Image</label>
+                                                <input
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="image"
+                                                    name="image"
+                                                    placeholder="Link Hình Ảnh"
+                                                    value={school.image}
+                                                    onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>

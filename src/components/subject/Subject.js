@@ -115,7 +115,6 @@ class Subject extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Mã Môn</th>
                                                 <th>Tên Môn</th>
                                                 <th>Mô Tả</th>
                                                 <th>Chức năng</th>

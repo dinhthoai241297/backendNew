@@ -6,7 +6,6 @@ class MajorItem extends Component {
         let { major } = this.props;
         return (
             <tr>
-                <td>{major.id}</td>
                 <td>{major.name}</td>
                 <td>{major.code}</td>
                 <td>{major.school}</td>

@@ -6,7 +6,6 @@ class SubjectGroupItem extends Component {
         let { subjectGroup } = this.props;
         return (
             <tr>
-                <td>{subjectGroup.id}</td>
                 <td>{subjectGroup.code}</td>
                 <td>{JSON.parse(subjectGroup.subjects).map((el, index) => <Fragment key={index}>{el}<br /></Fragment>)}</td>
                 <td>{subjectGroup.description}</td>

@@ -115,7 +115,6 @@ class Mark extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Mã</th>
                                                 <th>Mã Trường</th>
                                                 <th>Mã Ngành</th>
                                                 <th>Năm</th>

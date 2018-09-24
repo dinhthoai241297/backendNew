@@ -6,7 +6,6 @@ class SectorItem extends Component {
         let { sector } = this.props;
         return (
             <tr>
-                <td>{sector.id}</td>
                 <td>{sector.name}</td>
                 <td>{sector.description}</td>
                 <td>

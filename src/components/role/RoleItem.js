@@ -6,7 +6,6 @@ class RoleItem extends Component {
         let { role } = this.props;
         return (
             <tr>
-                <td>{role.id}</td>
                 <td>{role.name}</td>
                 <td>{role.roles}</td>
                 <td>

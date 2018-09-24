@@ -121,7 +121,6 @@ class Users extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Mã</th>
                                                 <th>Tài khoản</th>
                                                 <th>Mật khẩu</th>
                                                 <th>Tên</th>

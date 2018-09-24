@@ -115,7 +115,6 @@ class Province extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>Mã Tỉnh</th>
                                                 <th>Tên Tỉnh</th>
                                                 <th>Mô tả</th>
                                                 <th>Mã Khu vực</th>

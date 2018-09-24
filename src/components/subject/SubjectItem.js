@@ -6,7 +6,6 @@ class SubjectItem extends Component {
         let { subject } = this.props;
         return (
             <tr>
-                <td>{subject.id}</td>
                 <td>{subject.name}</td>
                 <td>{subject.description}</td>
                 <td>
