@@ -3,6 +3,7 @@ import * as actionTypes from './../actionTypes/RoleActionTypes';
 
 export const addRoleApi = role => {
     return dispatch => roleApi.add(JSON.stringify(role)).then(res => {
+        console.log(res.body);
         if (res.body.code === 200) {
             dispatch(addRoleState(role));
             return true;

@@ -7,11 +7,10 @@ class UserItem extends Component {
         return (
             <tr>
                 <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.description}</td>
-                <td>
-                    <button className="btn btn-success btn-xs">Xem</button>
-                </td>
+                <td>{user.username}</td>
+                <td>{user.password}</td>
+                <td>{user.fullName}</td>
+                <td>{user.role}</td>
                 <td>
                     <Link className="btn btn-warning btn-xs" to={'/user/update/' + user.id}>Sửa</Link>
                     <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteUser(user.id)}>Xóa</button>

@@ -1,7 +1,7 @@
 import request from 'superagent';
 import { HOST } from './../contants/index';
 
-class Role {
+class RoleApi {
     static add(data) {
         return request.post(`${HOST}role/add`).send({ data });
     }

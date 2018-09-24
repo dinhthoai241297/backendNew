@@ -2,8 +2,7 @@
 import '@babel/polyfill';
 import React from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter as Router } from 'react-router-dom';
-import MyRoute from './routes';
+import MyRoute from './MyRoute';
 import { Provider } from 'react-redux';
 import configureStore from './store/configureStore.dev';
 
@@ -13,7 +12,6 @@ import 'admin-lte/bower_components/font-awesome/css/font-awesome.min.css'
 import 'admin-lte/bower_components/Ionicons/css/ionicons.min.css'
 import 'admin-lte/dist/css/AdminLTE.min.css';
 import 'admin-lte/dist/css/skins/skin-blue.min.css';
-import 'admin-lte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css';
 import 'toastr/build/toastr.min.css'
 
 import './assets/styles/styles.css';

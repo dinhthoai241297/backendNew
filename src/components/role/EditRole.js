@@ -3,6 +3,20 @@ import RoleApi from './../../api/RoleApi';
 import { connect } from 'react-redux';
 import * as roleAction from './../../actions/RoleActions';
 import toastr from 'toastr';
+import Select from 'react-select';
+import * as roles from './../../contants/roles';
+
+const customStyles = {
+    control: (base) => ({
+        ...base,
+        minHeight: 34,
+        borderRadius: 0
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        padding: "0 8px"
+    })
+}
 
 class EditRole extends Component {
 
@@ -11,50 +25,70 @@ class EditRole extends Component {
         this.state = {
             isUpdate: false,
             role: {
+                id: '',
                 name: '',
-                description: '',
-                id: ''
+                roles: []
             },
-            isProcess: false
+            isProcess: false,
+            options: [
+                {
+                    value: roles.VIEW,
+                    label: 'VIEW'
+                },
+                {
+                    value: roles.ADD,
+                    label: 'ADD'
+                },
+                {
+                    value: roles.UPDATE,
+                    label: 'UPDATE'
+                },
+                {
+                    value: roles.DELETE,
+                    label: 'DELETE'
+                },
+                {
+                    value: roles.ROOT,
+                    label: 'ROOT'
+                }
+            ],
+            selectedOption: null
         }
     }
 
     componentDidMount() {
-        this.updateAction(this.props.match);
+        this.updateAction(this.props);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.updateAction(nextProps.match);
+        this.updateAction(nextProps);
     }
 
-    updateAction = (match) => {
-        let isUpdate = false;
-        try {
-            isUpdate = match.path.split('/')[2] === 'update' ? true : false;
-            this.setState({
-                isUpdate
-            });
-        } catch (error) {
-        }
+    updateAction = (props) => {
+        let isUpdate = props.do === 'update' ? true : false;
         let role = {
-            id: undefined, name: '', description: ''
+            id: undefined, roles: [], name: ''
         };
         if (isUpdate) {
-            RoleApi.getOne(match.params.id).end((error, data) => {
-                if (error) {
-                    //
-                    throw (error);
-                } else {
-                    let s = JSON.parse(data.text).data;
-                    if (s) {
-                        role.id = s.id;
-                        role.name = s.name;
-                        role.description = s.description;
+            RoleApi.getOne(props.match.params.id).then(res => {
+                let r = res.body.data;
+                if (r) {
+                    role.id = r.id;
+                    role.name = r.name;
+                    role.roles = JSON.parse(r.roles);
+                    let tmp = [];
+                    for (let i = 0; i < role.roles.length; i++) {
+                        tmp = tmp.concat(this.state.options.filter(el => el.value === role.roles[i]));
                     }
                     this.setState({
-                        role
+                        selectedOption: tmp
                     });
                 }
+                this.setState({
+                    role
+                });
+            }).catch(error => {
+                throw (error);
             });
         } else {
             this.setState({
@@ -67,7 +101,7 @@ class EditRole extends Component {
         this.setState({
             role: {
                 name: '',
-                description: '',
+                roles: [],
                 id: undefined
             }
         });
@@ -85,6 +119,7 @@ class EditRole extends Component {
     }
 
     onSave = (e) => {
+        console.log(this.state.role);
         this.setState({
             isProcess: true
         });
@@ -133,6 +168,15 @@ class EditRole extends Component {
         }
     }
 
+    handleChange = (selectedOption) => {
+        this.setState({ selectedOption });
+        let { role } = this.state;
+        role.roles = selectedOption.map(el => el.value);
+        this.setState({
+            role
+        });
+    }
+
     render() {
         let { role } = this.state;
         return (
@@ -159,9 +203,9 @@ class EditRole extends Component {
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
-                                        <div className="col-xs-12 col-lg-6">
+                                        <div className="col-xs-12">
                                             <div className="form-group">
-                                                <label htmlFor="name">IDRole</label>
+                                                <label htmlFor="name">Tên Quyền</label>
                                                 <input
                                                     value={role.name}
                                                     autoComplete="off"
@@ -169,23 +213,21 @@ class EditRole extends Component {
                                                     className="form-control"
                                                     id="name"
                                                     name="name"
-                                                    placeholder="IDRole"
+                                                    placeholder="Tên Quyền"
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-xs-12 col-lg-6">
+                                        <div className="col-xs-12">
                                             <div className="form-group">
-                                                <label htmlFor="description">RoleName</label>
-                                                <input
-                                                    autoComplete="off"
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="description"
-                                                    name="description"
-                                                    placeholder="RoleName"
-                                                    value={role.description}
-                                                    onChange={(e) => this.onChange(e)}
+                                                <label htmlFor="description">Quyền</label>
+                                                <Select
+                                                    isMulti={true}
+                                                    styles={customStyles}
+                                                    onChange={this.handleChange}
+                                                    options={this.state.options}
+                                                    value={this.state.selectedOption}
+                                                    placeholder="Quyền"
                                                 />
                                             </div>
                                         </div>

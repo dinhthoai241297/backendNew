@@ -17,7 +17,7 @@ export const addUserApi = user => {
 
 export const addUserState = user => {
     return {
-        type: actionTypes.ADD_SECTOR,
+        type: actionTypes.ADD_USER,
         user
     };
 };
@@ -37,7 +37,7 @@ export const updateUserApi = user => {
 
 export const updateUserState = user => {
     return {
-        type: actionTypes.UPDATE_SECTOR,
+        type: actionTypes.UPDATE_USER,
         user
     };
 };
@@ -57,7 +57,7 @@ export const deleteUserApi = id => {
 
 export const deleteUserState = id => {
     return {
-        type: actionTypes.DELETE_SECTOR,
+        type: actionTypes.DELETE_USER,
         id
     };
 };
@@ -77,27 +77,35 @@ export const loadAllUserApi = page => {
 
 export const loadAllUserState = data => {
     return {
-        type: actionTypes.LOAD_ALL_SECTOR,
+        type: actionTypes.LOAD_ALL_USER,
         data
     };
 };
 
-export const loadUserByUsernameApi = (username, password) => {
-    return dispatch => UserApi.loadUserByUsernameApi(JSON.stringify({username, password})).then(res => {
+export const loginApi = (username, password) => {
+    return dispatch => UserApi.login(JSON.stringify({ username, password })).then(res => {
         if (res.body.code === 200) {
-            dispatch(loadUserByUsernameState(res.body.data));
+            localStorage.setItem('user', JSON.stringify(res.body.data));
+            dispatch(loginState(res.body.data));
             return true;
         } else {
             return false;
         }
     }).catch(error => {
-        throw(error);
+        throw (error);
     });
 }
 
-export const loadUserByUsernameState = user => {
+export const loginState = user => {
     return {
-        type: actionTypes.LOAD_ALL_USER_BY_USERNAME,
+        type: actionTypes.LOGIN,
         user
+    }
+}
+
+export const logOutState = () => {
+    localStorage.setItem('user', null);
+    return {
+        type: actionTypes.LOGOUT
     }
 }

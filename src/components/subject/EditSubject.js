@@ -33,21 +33,18 @@ class EditSubject extends Component {
             id: undefined, name: '', description: ''
         };
         if (isUpdate) {
-            SubjectApi.getOne(props.match.params.id).end((error, data) => {
-                if (error) {
-                    //
-                    throw (error);
-                } else {
-                    let s = JSON.parse(data.text).data;
-                    if (s) {
-                        subject.id = s.id;
-                        subject.name = s.name;
-                        subject.description = s.description;
-                    }
-                    this.setState({
-                        subject
-                    });
+            SubjectApi.getOne(props.match.params.id).then(res => {
+                let s = res.body.data;
+                if (s) {
+                    subject.id = s.id;
+                    subject.name = s.name;
+                    subject.description = s.description;
                 }
+                this.setState({
+                    subject
+                });
+            }).catch(error => {
+                throw (error);
             });
         } else {
             this.setState({
@@ -182,7 +179,7 @@ class EditSubject extends Component {
                                                 />
                                             </div>
                                         </div>
-                                     </div>
+                                    </div>
                                     <div className="row">
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button

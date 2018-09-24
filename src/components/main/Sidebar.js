@@ -6,7 +6,7 @@ const MyLink = ({ children, nativeClass, ...linkProps }) => (
         path={linkProps.to}
         exact={linkProps.activeOnlyWhenExact}
         children={({ match }) => (
-            <li className={nativeClass + (match ? ' menu-open active' : '')}>
+            <li className={nativeClass + (match ? ' active' : '') + (nativeClass && match ? ' menu-open' : '')}>
                 <Link to={linkProps.to}>{linkProps.label}</Link>
                 {children}
             </li>
@@ -15,7 +15,11 @@ const MyLink = ({ children, nativeClass, ...linkProps }) => (
 );
 
 class Sidebar extends Component {
+
+
     render() {
+        let { user } = this.props;
+
         return (
             <aside className="main-sidebar">
                 {/* sidebar: style can be found in sidebar.less */}
@@ -26,7 +30,7 @@ class Sidebar extends Component {
                             <img src="https://almsaeedstudio.com/themes/AdminLTE/dist/img/user2-160x160.jpg" className="img-circle" alt="User Image" />
                         </div>
                         <div className="pull-left info">
-                            <p>Alexander Pierce</p>
+                            <p>ADMIN</p>
                             {/* Status */}
                             <a href="#"><i className="fa fa-circle text-success" /> Online</a>
                         </div>
@@ -67,6 +71,7 @@ class Sidebar extends Component {
                             {
                                 <ul className="treeview-menu">
                                     <MyLink
+                                        nativeClass=""
                                         to="/sector/list"
                                         activeOnlyWhenExact={true}
                                         label={
@@ -76,6 +81,7 @@ class Sidebar extends Component {
                                         }
                                     />
                                     <MyLink
+                                        nativeClass=""
                                         to="/sector/add"
                                         activeOnlyWhenExact={true}
                                         label={
@@ -339,13 +345,13 @@ class Sidebar extends Component {
                                 </ul>
                             }
                         </MyLink>
-                           <MyLink
+                        <MyLink
                             to="/user"
                             activeOnlyWhenExact={false}
                             nativeClass="treeview"
                             label={
                                 <Fragment>
-                                    <i className="fa fa-users" /> <span>User Management</span>
+                                    <i className="fa fa-users" /> <span>User</span>
                                     <span className="pull-right-container">
                                         <i className="fa fa-angle-left pull-right" />
                                     </span>
@@ -375,88 +381,6 @@ class Sidebar extends Component {
                                 </ul>
                             }
                         </MyLink>
-                        <MyLink
-                            to="/test"
-                            activeOnlyWhenExact={false}
-                            nativeClass="treeview"
-                            label={
-                                <Fragment>
-                                    <i className="fa fa-plus" /> <span>Test</span>
-                                    <span className="pull-right-container">
-                                        <i className="fa fa-angle-left pull-right" />
-                                    </span>
-                                </Fragment>
-                            }
-                        >
-                            {
-                                <ul className="treeview-menu">
-                                    <MyLink
-                                        to="/test"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Test
-                                            </Fragment>
-                                        }
-                                    />
-                                </ul>
-                            }
-                        </MyLink>
-                        <MyLink
-                            to="/test"
-                            activeOnlyWhenExact={false}
-                            nativeClass="treeview"
-                            label={
-                                <Fragment>
-                                    <i className="fa fa-plus" /> <span>Test</span>
-                                    <span className="pull-right-container">
-                                        <i className="fa fa-angle-left pull-right" />
-                                    </span>
-                                </Fragment>
-                            }
-                        >
-                            {
-                                <ul className="treeview-menu">
-                                    <MyLink
-                                        to="/test"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Test
-                                            </Fragment>
-                                        }
-                                    />
-                                </ul>
-                            }
-                        </MyLink>
-                        <MyLink
-                            to="/test"
-                            activeOnlyWhenExact={false}
-                            nativeClass="treeview"
-                            label={
-                                <Fragment>
-                                    <i className="fa fa-plus" /> <span>Test</span>
-                                    <span className="pull-right-container">
-                                        <i className="fa fa-angle-left pull-right" />
-                                    </span>
-                                </Fragment>
-                            }
-                        >
-                            {
-                                <ul className="treeview-menu">
-                                    <MyLink
-                                        to="/test"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Test
-                                            </Fragment>
-                                        }
-                                    />
-                                </ul>
-                            }
-                        </MyLink>
-
                     </ul>
                     {/* /.sidebar-menu */}
                 </section>

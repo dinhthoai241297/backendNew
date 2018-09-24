@@ -1,8 +1,22 @@
 import React, { Component, Fragment } from 'react';
 import UserApi from './../../api/UserApi';
+import RoleApi from './../../api/RoleApi';
 import { connect } from 'react-redux';
 import * as userAction from './../../actions/UserActions';
 import toastr from 'toastr';
+import Select from 'react-select';
+
+const customStyles = {
+    control: (base) => ({
+        ...base,
+        minHeight: 34,
+        borderRadius: 0
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        padding: "0 8px"
+    })
+}
 
 class EditUser extends Component {
 
@@ -11,50 +25,63 @@ class EditUser extends Component {
         this.state = {
             isUpdate: false,
             user: {
-                name: '',
-                description: '',
-                id: ''
+                id: undefined,
+                username: '',
+                password: '',
+                email: '',
+                fullName: '',
+                role: ''
             },
-            isProcess: false
+            isProcess: false,
+            options: [],
+            selectedOption: null
         }
     }
 
     componentDidMount() {
-        this.updateAction(this.props.match);
+        this.updateAction(this.props);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.updateAction(nextProps.match);
+        this.updateAction(nextProps);
     }
 
-    updateAction = (match) => {
-        let isUpdate = false;
-        try {
-            isUpdate = match.path.split('/')[2] === 'update' ? true : false;
-            this.setState({
-                isUpdate
-            });
-        } catch (error) {
-        }
+    updateAction = (props) => {
+        let isUpdate = props.do === 'update' ? true : false;
         let user = {
-            id: undefined, name: '', description: ''
-        };
+            id: undefined,
+            username: '',
+            password: '',
+            email: '',
+            fullName: '',
+            role: ''
+        }
+        RoleApi.getAll().then(res => {
+            this.setState({
+                options: res.body.data.list.map(el => ({ value: el.id, label: el.name }))
+            });
+        });
         if (isUpdate) {
-            UserApi.getOne(match.params.id).end((error, data) => {
-                if (error) {
-                    //
-                    throw (error);
-                } else {
-                    let s = JSON.parse(data.text).data;
-                    if (s) {
-                        user.id = s.id;
-                        user.name = s.name;
-                        user.description = s.description;
-                    }
+            UserApi.getOne(props.match.params.id).then(res => {
+                let u = res.body.data;
+                if (u) {
+                    user.id = u.id;
+                    user.username = u.username;
+                    user.password = u.password;
+                    user.email = u.email;
+                    user.fullName = u.fullName;
+                    user.role = u.role;
+                    console.log(user.role);
                     this.setState({
-                        user
+                        selectedOption: this.state.options.filter(el => el.value === user.role)
                     });
+                    console.log(this.state.options);
                 }
+                this.setState({
+                    user
+                });
+            }).catch(error => {
+                throw (error);
             });
         } else {
             this.setState({
@@ -66,9 +93,12 @@ class EditUser extends Component {
     clearForm = () => {
         this.setState({
             user: {
-                name: '',
-                description: '',
-                id: undefined
+                id: undefined,
+                username: '',
+                password: '',
+                email: '',
+                fullName: '',
+                role: ''
             }
         });
     }
@@ -133,6 +163,15 @@ class EditUser extends Component {
         }
     }
 
+    handleChange = (selectedOption) => {
+        this.setState({ selectedOption });
+        let { user } = this.state;
+        user.role = selectedOption.value
+        this.setState({
+            user
+        });
+    }
+
     render() {
         let { user } = this.state;
         return (
@@ -161,77 +200,73 @@ class EditUser extends Component {
                                     <div className="row">
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">IDRole</label>
-                                                <input
-                                                    value={user.name}
-                                                    autoComplete="off"
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="name"
-                                                    name="name"
-                                                    placeholder="IDRole"
-                                                    onChange={(e) => this.onChange(e)}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="col-xs-12 col-lg-6">
-                                            <div className="form-group">
-                                                <label htmlFor="description">UserName</label>
+                                                <label htmlFor="fullName">Tên</label>
                                                 <input
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
-                                                    id="description"
-                                                    name="description"
-                                                    placeholder="User Name"
-                                                    value={user.description}
+                                                    id="fullName"
+                                                    name="fullName"
+                                                    placeholder="Tên"
+                                                    value={user.fullName}
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="description">Password</label>
+                                                <label htmlFor="username">Tài Khoản</label>
                                                 <input
                                                     autoComplete="off"
                                                     type="text"
                                                     className="form-control"
-                                                    id="description"
-                                                    name="description"
-                                                    placeholder="Password"
-                                                    value={user.description}
+                                                    id="username"
+                                                    name="username"
+                                                    placeholder="Tài khoản"
+                                                    value={user.username}
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="description">Email</label>
+                                                <label htmlFor="password">Mật khẩu</label>
                                                 <input
                                                     autoComplete="off"
-                                                    type="text"
+                                                    type="password"
                                                     className="form-control"
-                                                    id="description"
-                                                    name="description"
+                                                    id="password"
+                                                    name="password"
+                                                    placeholder="Mật khẩu"
+                                                    value={user.password}
+                                                    onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="email">Email</label>
+                                                <input
+                                                    autoComplete="off"
+                                                    type="email"
+                                                    className="form-control"
+                                                    id="email"
+                                                    name="email"
                                                     placeholder="Email"
-                                                    value={user.description}
+                                                    value={user.email}
                                                     onChange={(e) => this.onChange(e)}
                                                 />
                                             </div>
                                         </div>
-                                         <div className="col-xs-12 col-lg-6">
+                                        <div className="col-xs-12">
                                             <div className="form-group">
-                                                <label htmlFor="description">FullName</label>
-                                                <input
-                                                    autoComplete="off"
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="description"
-                                                    name="description"
-                                                    placeholder="FullName"
-                                                    value={user.description}
-                                                    onChange={(e) => this.onChange(e)}
+                                                <label htmlFor="role">Quyền</label>
+                                                <Select
+                                                    styles={customStyles}
+                                                    onChange={this.handleChange}
+                                                    options={this.state.options}
+                                                    value={this.state.selectedOption}
+                                                    placeholder="Quyền"
                                                 />
                                             </div>
                                         </div>

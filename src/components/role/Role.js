@@ -121,9 +121,9 @@ class Roles extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>IDRole</th>
-                                                <th>RoleName</th>
-                                                <th>Chức năng</th>
+                                                <th>Mã</th>
+                                                <th>Tên Quyền</th>
+                                                <th>Quyền</th>
                                             </tr>
                                             {this.genListRole()}
                                         </tbody>

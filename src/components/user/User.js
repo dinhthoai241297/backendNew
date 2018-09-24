@@ -10,7 +10,7 @@ class Users extends Component {
         super(props);
         this.state = {
             page: 1,
-            next: true,
+            next: false,
             users: []
         }
     }
@@ -121,11 +121,11 @@ class Users extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <th>IDRole</th>
-                                                <th>UserName</th>
-                                                <th>Password</th>
-                                                <th>Email</th>
-                                                <th>FullName</th>
+                                                <th>Mã</th>
+                                                <th>Tài khoản</th>
+                                                <th>Mật khẩu</th>
+                                                <th>Tên</th>
+                                                <th>Quyền</th>
                                                 <th>Chức năng</th>
                                             </tr>
                                             {this.genListUser()}

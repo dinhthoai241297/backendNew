@@ -6,14 +6,15 @@ import ControlSidebar from './components/main/ControlSidebar';
 
 class App extends Component {
     render() {
+        let {user} = this.props;
         return (
             <Fragment>
                 {/* Main Header */}
-               <Header/>
+               <Header user={user} />
                 {/* Left side column. contains the logo and sidebar */}
-                <Sidebar />
+                <Sidebar user={user} />
                 {/* Content Wrapper. Contains page content */}
-                <div className="content-wrapper" style={{minHeight: 1000}}>
+                <div className="content-wrapper">
                     {this.props.children}
                 </div>
                 {/* /.content-wrapper */}

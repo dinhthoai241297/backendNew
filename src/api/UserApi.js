@@ -22,8 +22,8 @@ class UserApi {
         return request.post(`${HOST}user/getone`).send({ id });
     }
 
-    static getByUsername(data) {
-        return request.post(`${HOST}user/getbyusername`).send({ data });
+    static login(data) {
+        return request.post(`${HOST}user/login`).send({ data });
     }
 }
 

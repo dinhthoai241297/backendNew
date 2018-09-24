@@ -8,10 +8,7 @@ class RoleItem extends Component {
             <tr>
                 <td>{role.id}</td>
                 <td>{role.name}</td>
-                <td>{role.description}</td>
-                <td>
-                    <button className="btn btn-success btn-xs">Xem</button>
-                </td>
+                <td>{role.roles}</td>
                 <td>
                     <Link className="btn btn-warning btn-xs" to={'/role/update/' + role.id}>Sửa</Link>
                     <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteRole(role.id)}>Xóa</button>

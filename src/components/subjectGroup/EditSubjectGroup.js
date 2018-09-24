@@ -63,29 +63,26 @@ class EditSubjectGroup extends Component {
             subjects: []
         }
         if (isUpdate) {
-            SubjectGroupApi.getOne(props.match.params.id).end((error, data) => {
-                if (error) {
-                    //
-                    throw (error);
-                } else {
-                    let sg = JSON.parse(data.text).data;
-                    if (sg) {
-                        subjectGroup.id = sg.id;
-                        subjectGroup.code = sg.code;
-                        subjectGroup.description = sg.description;
-                        subjectGroup.subjects = JSON.parse(sg.subjects);
-                        let t = [];
-                        for (let i = 0; i < subjectGroup.subjects.length; i++) {
-                            t = t.concat(this.state.options.filter(el => el.value === subjectGroup.subjects[i]));
-                        }
-                        this.setState({
-                            selectedOption: t
-                        });
+            SubjectGroupApi.getOne(props.match.params.id).then(res => {
+                let sg = res.body.data;
+                if (sg) {
+                    subjectGroup.id = sg.id;
+                    subjectGroup.code = sg.code;
+                    subjectGroup.description = sg.description;
+                    subjectGroup.subjects = JSON.parse(sg.subjects);
+                    let t = [];
+                    for (let i = 0; i < subjectGroup.subjects.length; i++) {
+                        t = t.concat(this.state.options.filter(el => el.value === subjectGroup.subjects[i]));
                     }
                     this.setState({
-                        subjectGroup
+                        selectedOption: t
                     });
                 }
+                this.setState({
+                    subjectGroup
+                });
+            }).catch(error => {
+                throw (error);
             });
         } else {
             this.setState({

@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import * as actions from './../../actions/UserActions';
 
 class Header extends Component {
+
+    signOut = (e) => {
+        e.preventDefault();
+        this.props.signOut();
+    }
+
     render() {
         return (
             <header className="main-header">
@@ -125,14 +133,14 @@ class Header extends Component {
                                     {/* The user image in the navbar*/}
                                     <img src="https://almsaeedstudio.com/themes/AdminLTE/dist/img/user2-160x160.jpg" className="user-image" alt="User Image" />
                                     {/* hidden-xs hides the username on small devices so only the image appears. */}
-                                    <span className="hidden-xs">Alexander Pierce</span>
+                                    <span className="hidden-xs">ADMIN</span>
                                 </a>
                                 <ul className="dropdown-menu">
                                     {/* The user image in the menu */}
                                     <li className="user-header">
                                         <img src="https://almsaeedstudio.com/themes/AdminLTE/dist/img/user2-160x160.jpg" className="img-circle" alt="User Image" />
                                         <p>
-                                            Alexander Pierce - Web Developer
+                                            ADMIN - FullStack Developer
                       <small>Member since Nov. 2012</small>
                                         </p>
                                     </li>
@@ -157,7 +165,7 @@ class Header extends Component {
                                             <a href="#" className="btn btn-default btn-flat">Profile</a>
                                         </div>
                                         <div className="pull-right">
-                                            <a href="#" className="btn btn-default btn-flat">Sign out</a>
+                                            <a href="#" className="btn btn-default btn-flat" onClick={(e) => this.signOut(e)}>Sign out</a>
                                         </div>
                                     </li>
                                 </ul>
@@ -174,4 +182,10 @@ class Header extends Component {
     }
 }
 
-export default Header;
+const mapDispatchToProps = (dispatch, props) => {
+    return {
+        signOut: () => dispatch(actions.logOutState())
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Header);

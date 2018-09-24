@@ -33,21 +33,18 @@ class EditSector extends Component {
             id: undefined, name: '', description: ''
         };
         if (isUpdate) {
-            SectorApi.getOne(props.match.params.id).end((error, data) => {
-                if (error) {
-                    //
-                    throw (error);
-                } else {
-                    let s = JSON.parse(data.text).data;
-                    if (s) {
-                        sector.id = s.id;
-                        sector.name = s.name;
-                        sector.description = s.description;
-                    }
-                    this.setState({
-                        sector
-                    });
+            SectorApi.getOne(props.match.params.id).then(res => {
+                let s = res.body.data;
+                if (s) {
+                    sector.id = s.id;
+                    sector.name = s.name;
+                    sector.description = s.description;
                 }
+                this.setState({
+                    sector
+                });
+            }).catch(error => {
+                throw (error);
             });
         } else {
             this.setState({
