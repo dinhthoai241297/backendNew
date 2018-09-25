@@ -1,22 +1,35 @@
 import React, { Component, Fragment } from 'react';
-import SubjectApi from '../../api/SubjectApi';
 import { connect } from 'react-redux';
 import * as subjectAction from '../../actions/SubjectActions';
 import toastr from 'toastr';
+import SubjectApi from '../../api/SubjectApi';
+import StatusApi from '../../api/StatusApi';
+import Select from 'react-select';
+import { selectStyle, toastrOption } from './../../custom/Custom';
 
 class EditSubject extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isUpdate: false,
+
+        this.init = {
             subject: {
                 name: '',
                 description: '',
-                id: undefined
+                id: undefined,
+                status: 1
             },
+            statusSelectedOption: null,
             isProcess: false
         }
+
+        this.state = {
+            isUpdate: false,
+            statusOptions: [],
+            ...this.init
+        }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -27,43 +40,46 @@ class EditSubject extends Component {
         this.updateAction(nextProps);
     }
 
-    updateAction = (props) => {
+    loadStatusOption = async () => {
+        // lấy tất cả status trong db
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await StatusApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
+        }
+        this.setState({
+            statusOptions: rs.map(el => ({ value: el.id, label: el.name }))
+        });
+    }
+
+    updateAction = async (props) => {
         let isUpdate = props.do === 'update' ? true : false;
-        let subject = {
-            id: undefined, name: '', description: ''
-        };
+        this.setState({ isUpdate });
+        await this.loadStatusOption();
+        // lấy dữ liệu lên nếu là update
         if (isUpdate) {
             SubjectApi.getOne(props.match.params.id).then(res => {
-                let s = res.body.data;
-                if (s) {
-                    subject.id = s.id;
-                    subject.name = s.name;
-                    subject.description = s.description;
+                let subject = res.body.data;
+                if (subject) {
+                    this.setState({
+                        statusSelectedOption: this.state.statusOptions.filter(el => el.value === subject.status),
+                        subject
+                    });
                 }
-                this.setState({
-                    subject
-                });
             }).catch(error => {
                 throw (error);
             });
         } else {
-            this.setState({
-                subject
-            });
+            this.renewForm();
         }
     }
 
-    clearForm = () => {
-        this.setState({
-            subject: {
-                name: '',
-                description: '',
-                id: undefined
-            }
-        });
+    renewForm = () => {
+        this.setState(preState => ({ ...preState, ...this.init }));
     }
 
-    onChange = (e) => {
+    handleChangeInput = (e) => {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
@@ -74,28 +90,11 @@ class EditSubject extends Component {
         }));
     }
 
-    onSave = (e) => {
+    handleSave = (e) => {
+        e.preventDefault();
         this.setState({
             isProcess: true
         });
-        e.preventDefault();
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         let { subject } = this.state;
         if (subject.id) {
             this.props.updateSubject(subject).then(res => {
@@ -119,8 +118,18 @@ class EditSubject extends Component {
                     isProcess: false
                 });
             });
-            this.clearForm();
+            this.renewForm();
         }
+    }
+
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
+        let { subject } = this.state;
+        subject.status = statusSelectedOption.value
+        this.setState({
+            subject
+        });
     }
 
     render() {
@@ -160,7 +169,7 @@ class EditSubject extends Component {
                                                     id="name"
                                                     name="name"
                                                     placeholder="Tên môn"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -175,7 +184,18 @@ class EditSubject extends Component {
                                                     id="description"
                                                     name="description"
                                                     placeholder="Mô Tả"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12">
+                                            <div className="form-group">
+                                                <Select
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeStatus}
+                                                    options={this.state.statusOptions}
+                                                    value={this.state.statusSelectedOption}
+                                                    placeholder="Trạng thái"
                                                 />
                                             </div>
                                         </div>
@@ -184,7 +204,7 @@ class EditSubject extends Component {
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button
                                                 className="btn btn-block btn-primary btn-flat"
-                                                onClick={(e) => this.onSave(e)}
+                                                onClick={(e) => this.handleSave(e)}
                                                 disabled={this.state.isProcess}
                                             >
                                                 Lưu lại  {this.state.isProcess ? (<i className="fa fa-spinner faa-spin animated"></i>) : ''}

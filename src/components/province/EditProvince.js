@@ -1,39 +1,37 @@
 import React, { Component, Fragment } from 'react';
-import ProvinceApi from '../../api/ProvinceApi';
 import { connect } from 'react-redux';
-import * as provinceAction from '../../actions/ProvinceActions';
-import toastr from 'toastr';
 import Select from 'react-select';
+import toastr from 'toastr';
+import * as provinceAction from '../../actions/ProvinceActions';
+import ProvinceApi from '../../api/ProvinceApi';
 import SectorApi from '../../api/SectorApi';
-
-const customStyles = {
-    control: (base) => ({
-        ...base,
-        minHeight: 34,
-        borderRadius: 0
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: "0 8px"
-    })
-}
+import StatusApi from '../../api/StatusApi';
+import { selectStyle, toastrOption } from './../../custom/Custom';
 
 class EditProvince extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isUpdate: false,
+
+        this.init = {
             province: {
                 name: '',
                 description: '',
                 sector: '',
-                id: undefined
+                id: undefined,
+                status: 1
             },
             isProcess: false,
-            options: [],
-            selectedOption: null
+            sectorSelectedOption: null
         }
+
+        this.state = {
+            isUpdate: false,
+            sectorOptions: [],
+            ...this.init
+        }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -44,58 +42,61 @@ class EditProvince extends Component {
         this.updateAction(nextProps);
     }
 
-    updateAction = async (props) => {
-        let isUpdate = props.do === 'update' ? true : false
+    loadStatusOption = async () => {
+        // lấy tất cả status trong db
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await StatusApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
+        }
+        this.setState({
+            statusOptions: rs.map(el => ({ value: el.id, label: el.name }))
+        });
+    }
+
+    loadSectorOption = async () => {
         // get all sector in database
-        let next = true, rs = [], tmp, page = 1, options = [];
+        let next = true, rs = [], tmp, page = 1;
         while (next) {
             tmp = await SectorApi.getAll(page++);
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
         this.setState({
-            options: rs.map(el => ({ value: el.id, label: el.name }))
+            sectorOptions: rs.map(el => ({ value: el.id, label: el.name }))
         });
-        let province = {
-            id: undefined, name: '', description: '', sector: ''
-        };
+    }
+
+    updateAction = async (props) => {
+        let isUpdate = props.do === 'update' ? true : false
+        this.setState({ isUpdate });
+        await this.loadSectorOption();
+        await this.loadStatusOption();
+        // lấy dữ liệu lên nếu là update
         if (isUpdate) {
             ProvinceApi.getOne(props.match.params.id).then(res => {
-                let p = JSON.parse(res.text).data;
-                if (p) {
-                    province.id = p.id;
-                    province.name = p.name;
-                    province.description = p.description;
-                    province.sector = p.sector
+                let province = res.body.data;
+                if (province) {
                     this.setState({
-                        selectedOption: this.state.options.filter(el => el.value === province.sector)
+                        sectorSelectedOption: this.state.sectorOptions.filter(el => el.value === province.sector),
+                        statusSelectedOption: this.state.statusOptions.filter(el => el.value === province.status),
+                        province
                     });
                 }
-                this.setState({
-                    province
-                });
             }).catch(error => {
-                throw(error);
+                throw (error);
             });
         } else {
-            this.setState({
-                province
-            });
+            this.renewForm();
         }
     }
 
-    clearForm = () => {
-        this.setState({
-            province: {
-                name: '',
-                description: '',
-                sector: '',
-                id: undefined
-            }
-        });
+    renewForm = () => {
+        this.setState(preState => ({ ...preState, ...this.init }));
     }
 
-    onChange = (e) => {
+    handleChangeInput = (e) => {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
@@ -106,28 +107,11 @@ class EditProvince extends Component {
         }));
     }
 
-    onSave = (e) => {
+    handleSave = (e) => {
+        e.preventDefault();
         this.setState({
             isProcess: true
         });
-        e.preventDefault();
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         let { province } = this.state;
         if (province.id) {
             this.props.updateProvince(province).then(res => {
@@ -151,14 +135,24 @@ class EditProvince extends Component {
                     isProcess: false
                 });
             });
-            this.clearForm();
+            this.renewForm();
         }
     }
 
-    handleChange = (selectedOption) => {
-        this.setState({ selectedOption });
+    handleChangeSector = (sectorSelectedOption) => {
+        this.setState({ sectorSelectedOption });
         let { province } = this.state;
-        province.sector = selectedOption.value
+        province.sector = sectorSelectedOption.value
+        this.setState({
+            province
+        });
+    }
+
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
+        let { province } = this.state;
+        province.status = statusSelectedOption.value
         this.setState({
             province
         });
@@ -201,7 +195,7 @@ class EditProvince extends Component {
                                                     id="name"
                                                     name="name"
                                                     placeholder="Tên tỉnh thành"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -216,18 +210,31 @@ class EditProvince extends Component {
                                                     name="description"
                                                     placeholder="Mô tả tỉnh thành"
                                                     value={province.description}
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-xs-12">
+                                        <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
+                                                <label htmlFor="sector">Khu vực</label>
                                                 <Select
-                                                    styles={customStyles}
-                                                    onChange={this.handleChange}
-                                                    options={this.state.options}
-                                                    value={this.state.selectedOption}
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeSector}
+                                                    options={this.state.sectorOptions}
+                                                    value={this.state.sectorSelectedOption}
                                                     placeholder="Khu Vực"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="status">Trạng thái</label>
+                                                <Select
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeStatus}
+                                                    options={this.state.statusOptions}
+                                                    value={this.state.statusSelectedOption}
+                                                    placeholder="Trạng thái"
                                                 />
                                             </div>
                                         </div>
@@ -236,7 +243,7 @@ class EditProvince extends Component {
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button
                                                 className="btn btn-block btn-primary btn-flat"
-                                                onClick={(e) => this.onSave(e)}
+                                                onClick={(e) => this.handleSave(e)}
                                                 disabled={this.state.isProcess}
                                             >
                                                 Lưu lại  {this.state.isProcess ? (<i className="fa fa-spinner faa-spin animated"></i>) : ''}

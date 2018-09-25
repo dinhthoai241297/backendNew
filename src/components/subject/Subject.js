@@ -117,6 +117,7 @@ class Subject extends Component {
                                             <tr>
                                                 <th>Tên Môn</th>
                                                 <th>Mô Tả</th>
+                                                <th>Trạng thái</th>
                                                 <th>Chức năng</th>
                                             </tr>
                                             {this.genListSubject()}

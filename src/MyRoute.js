@@ -51,7 +51,7 @@ class MyRoute extends Component {
         return (
             <Router>
                 <Switch>
-                    <Route path="/login" exact render={() => (logged ? (<Redirect to="/" />) : (<Login />))} />
+                    <Route path="/login" exact render={() => (logged ? (<Redirect to="/sector/list" />) : (<Login />))} />
                     <Route render={(props) => (!logged ? (<Redirect to="/login" />) : (
                         <App {...props}>
                             <Switch>

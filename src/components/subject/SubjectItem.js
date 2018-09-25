@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 class SubjectItem extends Component {
     render() {
@@ -8,6 +8,7 @@ class SubjectItem extends Component {
             <tr>
                 <td>{subject.name}</td>
                 <td>{subject.description}</td>
+                <td>{subject.status.name}</td>
                 <td>
                     <Link className="btn btn-warning btn-xs" to={'/subject/update/' + subject.id}>Sửa</Link>
                     <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteSubject(subject.id)}>Xóa</button>

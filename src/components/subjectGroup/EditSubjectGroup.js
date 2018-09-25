@@ -1,39 +1,39 @@
 import React, { Component, Fragment } from 'react';
+import { connect } from 'react-redux';
+import toastr from 'toastr';
+import * as subjectGroupAction from './../../actions/SubjectGroupActions';
 import SubjectGroupApi from './../../api/SubjectGroupApi';
 import SubjectApi from './../../api/SubjectApi';
-import { connect } from 'react-redux';
-import * as subjectGroupAction from './../../actions/SubjectGroupActions';
-import toastr from 'toastr';
 import Select from 'react-select';
-
-const customStyles = {
-    control: (base) => ({
-        ...base,
-        minHeight: 34,
-        borderRadius: 0
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: "0 8px"
-    })
-}
+import { selectStyle, toastrOption } from './../../custom/Custom';
+import StatusApi from '../../api/StatusApi';
 
 class EditSubjectGroup extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isUpdate: false,
+
+        this.init = {
             subjectGroup: {
                 code: '',
                 description: '',
                 id: undefined,
-                subjects: []
+                subjects: [],
+                status: 1
             },
             isProcess: false,
-            options: [],
-            selectedOption: []
+            subjectSelectedOption: [],
+            statusSelectedOption: null,
         }
+
+        this.state = {
+            isUpdate: false,
+            subjectOptions: [],
+            statusOptions: [],
+            ...this.init
+        }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -44,65 +44,66 @@ class EditSubjectGroup extends Component {
         this.updateAction(nextProps);
     }
 
-    updateAction = async (props) => {
-        let isUpdate = props.do === 'update' ? true : false
+    loadSubjectOption = async () => {
         // get all subject in database
-        let next = true, rs = [], tmp, page = 1, options = [];
+        let next = true, rs = [], tmp, page = 1;
         while (next) {
             tmp = await SubjectApi.getAll(page++);
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
         this.setState({
-            options: rs.map(el => ({ value: el.id, label: el.name }))
+            subjectOptions: rs.map(el => ({ value: el.id, label: el.name }))
         });
-        let subjectGroup = {
-            code: '',
-            description: '',
-            id: undefined,
-            subjects: []
+    }
+
+    loadStatusOption = async () => {
+        // lấy tất cả status trong db
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await StatusApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
         }
+        this.setState({
+            statusOptions: rs.map(el => ({ value: el.id, label: el.name }))
+        });
+    }
+
+    updateAction = async (props) => {
+        let isUpdate = props.do === 'update' ? true : false;
+        this.setState({ isUpdate });
+        await this.loadStatusOption();
+        await this.loadSubjectOption();
+        //
         if (isUpdate) {
             SubjectGroupApi.getOne(props.match.params.id).then(res => {
-                let sg = res.body.data;
-                if (sg) {
-                    subjectGroup.id = sg.id;
-                    subjectGroup.code = sg.code;
-                    subjectGroup.description = sg.description;
-                    subjectGroup.subjects = JSON.parse(sg.subjects);
-                    let t = [];
+                let subjectGroup = res.body.data;
+                if (subjectGroup) {
+                    subjectGroup.subjects = JSON.parse(subjectGroup.subjects);
+                    let subjectSelectedOption = [];
                     for (let i = 0; i < subjectGroup.subjects.length; i++) {
-                        t = t.concat(this.state.options.filter(el => el.value === subjectGroup.subjects[i]));
+                        subjectSelectedOption = subjectSelectedOption.concat(this.state.subjectOptions.filter(el => el.value === subjectGroup.subjects[i]));
                     }
                     this.setState({
-                        selectedOption: t
+                        subjectSelectedOption,
+                        statusSelectedOption: this.state.statusOptions.filter(el => el.value === subjectGroup.status),
+                        subjectGroup
                     });
                 }
-                this.setState({
-                    subjectGroup
-                });
             }).catch(error => {
                 throw (error);
             });
         } else {
-            this.setState({
-                subjectGroup
-            });
+            this.renewForm();
         }
     }
 
-    clearForm = () => {
-        this.setState({
-            subjectGroup: {
-                code: '',
-                description: '',
-                id: undefined,
-                subjects: []
-            }
-        });
+    renewForm = () => {
+        this.setState(preState => ({ ...preState, ...this.init }));
     }
 
-    onChange = (e) => {
+    handleChangeInput = (e) => {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
@@ -113,28 +114,11 @@ class EditSubjectGroup extends Component {
         }));
     }
 
-    onSave = (e) => {
+    handleSave = (e) => {
         this.setState({
             isProcess: true
         });
         e.preventDefault();
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         let { subjectGroup } = this.state;
         if (subjectGroup.id) {
             this.props.updateSubjectGroup(subjectGroup).then(res => {
@@ -158,15 +142,24 @@ class EditSubjectGroup extends Component {
                     isProcess: false
                 });
             });
-            this.clearForm();
+            this.renewForm();
         }
     }
 
-    handleChange = (selectedOption) => {
-        console.log(selectedOption);
-        this.setState({ selectedOption });
+    handleChangeSubject = (subjectSelectedOption) => {
+        this.setState({ subjectSelectedOption });
         let { subjectGroup } = this.state;
-        subjectGroup.subjects = selectedOption.map(el => el.value);
+        subjectGroup.subjects = subjectSelectedOption.map(el => el.value);
+        this.setState({
+            subjectGroup
+        });
+    }
+
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
+        let { subjectGroup } = this.state;
+        subjectGroup.status = statusSelectedOption.value
         this.setState({
             subjectGroup
         });
@@ -209,7 +202,7 @@ class EditSubjectGroup extends Component {
                                                     id="code"
                                                     name="code"
                                                     placeholder="Mã tổ hợp môn"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -224,19 +217,32 @@ class EditSubjectGroup extends Component {
                                                     name="description"
                                                     placeholder="Mô tả"
                                                     value={subjectGroup.description}
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-xs-12">
+                                        <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
+                                                <label htmlFor="subject">Môn</label>
                                                 <Select
                                                     isMulti={true}
-                                                    styles={customStyles}
-                                                    onChange={this.handleChange}
-                                                    options={this.state.options}
-                                                    value={this.state.selectedOption}
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeSubject}
+                                                    options={this.state.subjectOptions}
+                                                    value={this.state.subjectSelectedOption}
                                                     placeholder="Môn"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="status">Trạng thái</label>
+                                                <Select
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeStatus}
+                                                    options={this.state.statusOptions}
+                                                    value={this.state.statusSelectedOption}
+                                                    placeholder="Trạng thái"
                                                 />
                                             </div>
                                         </div>
@@ -245,7 +251,7 @@ class EditSubjectGroup extends Component {
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button
                                                 className="btn btn-block btn-primary btn-flat"
-                                                onClick={(e) => this.onSave(e)}
+                                                onClick={(e) => this.handleSave(e)}
                                                 disabled={this.state.isProcess}
                                             >
                                                 Lưu lại  {this.state.isProcess ? (<i className="fa fa-spinner faa-spin animated"></i>) : ''}

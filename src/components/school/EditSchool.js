@@ -5,37 +5,37 @@ import * as schoolAction from '../../actions/SchoolActions';
 import toastr from 'toastr';
 import Select from 'react-select';
 import ProvinceApi from '../../api/ProvinceApi';
-
-const customStyles = {
-    control: (base) => ({
-        ...base,
-        minHeight: 34,
-        borderRadius: 0
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: "0 8px"
-    })
-}
+import StatusApi from '../../api/StatusApi';
+import { selectStyle, toastrOption } from './../../custom/Custom';
 
 class EditSchool extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isUpdate: false,
+
+        this.init = {
             school: {
                 name: '',
                 code: '',
                 description: '',
                 province: '',
                 image: '',
-                id: undefined
+                id: undefined,
+                status: 1
             },
-            isProcess: false,
-            options: [],
-            selectedOption: null
+            provinceSelectedOption: null,
+            statusSelectedOption: null,
+            isProcess: false
         }
+
+        this.state = {
+            isUpdate: false,
+            provinceOptions: [],
+            statusOptions: [],
+            ...this.init
+        }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -46,58 +46,60 @@ class EditSchool extends Component {
         this.updateAction(nextProps);
     }
 
-    updateAction = async (props) => {
-        let isUpdate = props.do === 'update' ? true : false;
-        // get all province in database
-        let next = true, rs = [], tmp, page = 1, options = [];
+    loadProvinceOption = async () => {
+        // lấy lên tất cả Province trong db
+        let next = true, rs = [], tmp, page = 1;
         while (next) {
             tmp = await ProvinceApi.getAll(page++);
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
         this.setState({
-            options: rs.map(el => ({ value: el.id, label: el.name }))
+            provinceOptions: rs.map(el => ({ value: el.id, label: el.name }))
         });
-        let school = {
-            id: undefined, name: '', description: '', code: '', province: '',image: ''
-        };
+    }
+
+    loadStatusOption = async () => {
+        // lấy tất cả status trong db
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await StatusApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
+        }
+        this.setState({
+            statusOptions: rs.map(el => ({ value: el.id, label: el.name }))
+        });
+    }
+
+    updateAction = async (props) => {
+        let isUpdate = props.do === 'update' ? true : false;
+        this.setState({ isUpdate });
+        await this.loadProvinceOption();
+        await this.loadStatusOption();
         if (isUpdate) {
             SchoolApi.getOne(props.match.params.id).then(res => {
-
-                let s = JSON.parse(res.text).data;
-                if (s) {
-                    school.id = s.id;
-                    school.name = s.name;
-                    school.description = s.description;
-                    school.code = s.code;
-                    school.province = s.province;
-                    school.image =s.image;
+                let school = res.body.data;
+                if (school) {
                     this.setState({
-                        selectedOption: this.state.options.filter(el => el.value === school.province)
+                        provinceSelectedOption: this.state.provinceOptions.filter(el => el.value === school.province),
+                        statusSelectedOption: this.state.statusOptions.filter(el => el.value === school.status),
+                        school
                     });
                 }
-                this.setState({
-                    school
-                });
             }).catch(error => {
                 throw (error);
             });
         } else {
-            this.setState({
-                school
-            });
+            this.renewForm();
         }
     }
 
-    clearForm = () => {
-        this.setState({
-            school: {
-                id: undefined, name: '', description: '', code: '', province: '',image: '',
-            }
-        });
+    renewForm = () => {
+        this.setState(preState => ({ ...preState, ...this.init }));
     }
 
-    onChange = (e) => {
+    handleChangeInput = (e) => {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
@@ -108,28 +110,11 @@ class EditSchool extends Component {
         }));
     }
 
-    onSave = (e) => {
+    handleSave = (e) => {
         this.setState({
             isProcess: true
         });
         e.preventDefault();
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         let { school } = this.state;
         if (school.id) {
             this.props.updateSchool(school).then(res => {
@@ -153,18 +138,28 @@ class EditSchool extends Component {
                     isProcess: false
                 });
             });
-            this.clearForm();
+            this.renewForm();
         }
     }
 
-    handleChange = (selectedOption) => {
-        this.setState({ selectedOption });
+    handleChangeProvince = (provinceSelectedOption) => {
+        this.setState({ provinceSelectedOption });
         let { school } = this.state;
-        school.province = selectedOption.value
+        school.province = provinceSelectedOption.value
         this.setState({
             school
         });
     }
+
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
+        let { school } = this.state;
+        school.status = statusSelectedOption.value
+        this.setState({
+            school
+        });
+    }
+
     render() {
         let { school } = this.state;
         return (
@@ -202,7 +197,7 @@ class EditSchool extends Component {
                                                     id="name"
                                                     name="name"
                                                     placeholder="Tên trường"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -217,7 +212,7 @@ class EditSchool extends Component {
                                                     id="code"
                                                     name="code"
                                                     placeholder="Mã trường"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -232,26 +227,13 @@ class EditSchool extends Component {
                                                     name="description"
                                                     placeholder="Mô tả trường"
                                                     value={school.description}
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="province">Tỉnh Thành</label>
-                                                <Select
-                                                    styles={customStyles}
-                                                    onChange={this.handleChange}
-                                                    options={this.state.options}
-                                                    value={this.state.selectedOption}
-                                                    placeholder="Tỉnh Thành"
-                                                    id="province"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-xs-12 col-lg-6">
-                                            <div className="form-group">
-                                                <label htmlFor="image">Image</label>
+                                                <label htmlFor="image">Hình Ảnh</label>
                                                 <input
                                                     autoComplete="off"
                                                     type="text"
@@ -260,7 +242,33 @@ class EditSchool extends Component {
                                                     name="image"
                                                     placeholder="Link Hình Ảnh"
                                                     value={school.image}
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="province">Tỉnh Thành</label>
+                                                <Select
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeProvince}
+                                                    options={this.state.provinceOptions}
+                                                    value={this.state.provinceSelectedOption}
+                                                    placeholder="Tỉnh Thành"
+                                                    id="province"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="status">Trạng Thái</label>
+                                                <Select
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeStatus}
+                                                    options={this.state.statusOptions}
+                                                    value={this.state.statusSelectedOption}
+                                                    placeholder="Trạng Thái"
+                                                    id="status"
                                                 />
                                             </div>
                                         </div>
@@ -269,7 +277,7 @@ class EditSchool extends Component {
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button
                                                 className="btn btn-block btn-primary btn-flat"
-                                                onClick={(e) => this.onSave(e)}
+                                                onClick={(e) => this.handleSave(e)}
                                                 disabled={this.state.isProcess}
                                             >
                                                 Lưu lại  {this.state.isProcess ? (<i className="fa fa-spinner faa-spin animated"></i>) : ''}

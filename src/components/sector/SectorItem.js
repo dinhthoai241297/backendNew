@@ -8,9 +8,7 @@ class SectorItem extends Component {
             <tr>
                 <td>{sector.name}</td>
                 <td>{sector.description}</td>
-                <td>
-                    <button className="btn btn-success btn-xs">Xem</button>
-                </td>
+                <td>{sector.status.name}</td>
                 <td>
                     <Link className="btn btn-warning btn-xs" to={'/sector/update/' + sector.id}>Sửa</Link>
                     <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteSector(sector.id)}>Xóa</button>

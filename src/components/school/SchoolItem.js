@@ -10,6 +10,7 @@ class SchoolItem extends Component {
                 <td>{school.description}</td>
                 <td>{school.province.name}</td>
                 <td>{school.image}</td>
+                <td>{school.status.name}</td>
                 <td>
                     <Link className="btn btn-warning btn-xs" to={'/school/update/' + school.id}>Sửa</Link>
                     <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteSchool(school.id)}>Xóa</button>

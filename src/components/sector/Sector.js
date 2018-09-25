@@ -123,7 +123,7 @@ class Sectors extends Component {
                                             <tr>
                                                 <th>Tên KV</th>
                                                 <th>Mô tả KV</th>
-                                                <th>DS Tỉnh</th>
+                                                <th>Trạng thái</th>
                                                 <th>Chức năng</th>
                                             </tr>
                                             {this.genListSector()}

@@ -14,8 +14,8 @@ class RoleApi {
         return request.post(`${HOST}role/delete`).send({ id });
     }
 
-    static getAll() {
-        return request.post(`${HOST}role/getall`).send();
+    static getAll(page) {
+        return request.post(`${HOST}role/getall`).send({ page });
     }
 
     static getOne(id = -1) {

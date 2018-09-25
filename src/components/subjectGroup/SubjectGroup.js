@@ -118,6 +118,7 @@ class SubjectGroup extends Component {
                                                 <th>Mã Tổ Hợp Môn</th>
                                                 <th>Môn Thi</th>
                                                 <th>Mô tả</th>
+                                                <th>Trạng thái</th>
                                                 <th>Chức năng</th>
                                             </tr>
                                             {this.genListSubjectGroup()}

@@ -1,39 +1,35 @@
 import React, { Component, Fragment } from 'react';
 import SectorApi from './../../api/SectorApi';
-import StateApi from './../../api/StateApi';
 import { connect } from 'react-redux';
 import * as sectorAction from './../../actions/SectorActions';
 import toastr from 'toastr';
+import StatusApi from '../../api/StatusApi';
 import Select from 'react-select';
-
-const customStyles = {
-    control: (base) => ({
-        ...base,
-        minHeight: 34,
-        borderRadius: 0
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: "0 8px"
-    })
-}
+import { selectStyle, toastrOption } from './../../custom/Custom';
 
 class EditSector extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isUpdate: false,
+
+        this.init = {
             sector: {
                 name: '',
                 description: '',
-                id: '',
-                state: 1
+                id: undefined,
+                status: 1
             },
-            isProcess: false,
-            optionsState: [],
-            selectedOptionState: null
+            statusSelectedOption: null,
+            isProcess: false
         }
+
+        this.state = {
+            isUpdate: false,
+            statusOptions: [],
+            ...this.init
+        }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -44,58 +40,49 @@ class EditSector extends Component {
         this.updateAction(nextProps);
     }
 
-    updateAction = async (props) => {
-        let isUpdate = props.do === 'update' ? true : false;
-        // get all state in database
+    loadStatusOption = async () => {
+        // lấy tất cả status trong db
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await StateApi.getAll(page++);
+            tmp = await StatusApi.getAll(page++);
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
         this.setState({
-            optionsState: rs.map(el => ({ value: el.id, label: el.name }))
+            statusOptions: rs.map(el => ({ value: el.id, label: el.name }))
         });
-        let sector = {
-            id: undefined, name: '', description: '', state: 1
-        };
+    }
+
+    updateAction = async (props) => {
+        let isUpdate = props.do === 'update' ? true : false;
+        this.setState({ isUpdate });
+        await this.loadStatusOption();
+        // lấy dữ liệu lên nếu là update
         if (isUpdate) {
             SectorApi.getOne(props.match.params.id).then(res => {
-                let s = res.body.data;
-                if (s) {
-                    sector.id = s.id;
-                    sector.name = s.name;
-                    sector.description = s.description;
-                    sector.state = s.state;
+                let sector = res.body.data;
+                if (sector) {
+                    // khởi tạo dữ liệu selected ban đầu
                     this.setState({
-                        selectedOptionState: this.state.optionsState.filter(el => el.value === sector.state)
+                        statusSelectedOption: this.state.statusOptions.filter(el => el.value === sector.status),
+                        sector
                     });
                 }
-                this.setState({
-                    sector
-                });
             }).catch(error => {
                 throw (error);
             });
         } else {
-            this.setState({
-                sector
-            });
+            this.renewForm();
         }
     }
 
-    clearForm = () => {
-        this.setState({
-            sector: {
-                name: '',
-                description: '',
-                id: undefined,
-                state: 1
-            }
-        });
+    // xóa trắng form nhập
+    renewForm = () => {
+        this.setState(preState => ({ ...preState, ...this.init }));
     }
 
-    onChange = (e) => {
+    // sự kiện nhập input
+    handleChangeInput = (e) => {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
@@ -106,28 +93,11 @@ class EditSector extends Component {
         }));
     }
 
-    onSave = (e) => {
+    handleSave = (e) => {
+        e.preventDefault();
         this.setState({
             isProcess: true
         });
-        e.preventDefault();
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         let { sector } = this.state;
         if (sector.id) {
             this.props.updateSector(sector).then(res => {
@@ -151,14 +121,15 @@ class EditSector extends Component {
                     isProcess: false
                 });
             });
-            this.clearForm();
+            this.renewForm();
         }
     }
 
-    handleChangeState = (selectedOption) => {
-        this.setState({ selectedOption });
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
         let { sector } = this.state;
-        sector.state = selectedOption.value
+        sector.status = statusSelectedOption.value
         this.setState({
             sector
         });
@@ -201,7 +172,7 @@ class EditSector extends Component {
                                                     id="name"
                                                     name="name"
                                                     placeholder="Tên khu vực"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -216,17 +187,17 @@ class EditSector extends Component {
                                                     name="description"
                                                     placeholder="Mô tả khu vực"
                                                     value={sector.description}
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12">
                                             <div className="form-group">
                                                 <Select
-                                                    styles={customStyles}
-                                                    onChange={this.handleChangeState}
-                                                    options={this.state.optionsState}
-                                                    value={this.state.selectedOptionState}
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeStatus}
+                                                    options={this.state.statusOptions}
+                                                    value={this.state.statusSelectedOption}
                                                     placeholder="Trạng thái"
                                                 />
                                             </div>
@@ -236,7 +207,7 @@ class EditSector extends Component {
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button
                                                 className="btn btn-block btn-primary btn-flat"
-                                                onClick={(e) => this.onSave(e)}
+                                                onClick={(e) => this.handleSave(e)}
                                                 disabled={this.state.isProcess}
                                             >
                                                 Lưu lại  {this.state.isProcess ? (<i className="fa fa-spinner faa-spin animated"></i>) : ''}
