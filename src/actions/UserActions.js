@@ -1,6 +1,5 @@
 import userApi from './../api/UserApi';
 import * as actionTypes from './../actionTypes/UserActionTypes';
-import UserApi from './../api/UserApi';
 
 export const addUserApi = user => {
     return dispatch => userApi.add(JSON.stringify(user)).then(res => {
@@ -83,7 +82,7 @@ export const loadAllUserState = data => {
 };
 
 export const loginApi = (username, password) => {
-    return dispatch => UserApi.login(JSON.stringify({ username, password })).then(res => {
+    return dispatch => userApi.login(JSON.stringify({ username, password })).then(res => {
         if (res.body.code === 200) {
             localStorage.setItem('user', JSON.stringify(res.body.data));
             dispatch(loginState(res.body.data));
@@ -107,5 +106,26 @@ export const logOutState = () => {
     localStorage.setItem('user', null);
     return {
         type: actionTypes.LOGOUT
+    }
+}
+
+export const updateStateApi = (id, state) => {
+    return dispatch => userApi.updateState(JSON.stringify({ id, state })).then(res => {
+        if (res.body.code === 200) {
+            dispatch();
+            return true;
+        } else {
+            return false;
+        }
+    }).catch(error => {
+        throw (error);
+    });
+}
+
+export const updateStateState = (id, state) => {
+    return {
+        type: actionTypes.UPDATE_STATE,
+        id,
+        state
     }
 }

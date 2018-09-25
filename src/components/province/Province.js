@@ -117,7 +117,7 @@ class Province extends Component {
                                             <tr>
                                                 <th>Tên Tỉnh</th>
                                                 <th>Mô tả</th>
-                                                <th>Mã Khu vực</th>
+                                                <th>Khu vực</th>
                                                 <th>Chức năng</th>
                                             </tr>
                                             {this.genListProvince()}

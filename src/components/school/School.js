@@ -117,7 +117,7 @@ class School extends Component {
                                             <tr>
                                                 <th>Tên Trường</th>
                                                 <th>Mô tả Trường</th>
-                                                <th>Mã Tỉnh</th>
+                                                <th>Tỉnh</th>
                                                 <th>Image</th>
                                                 <th>Chức năng</th>
                                             </tr>

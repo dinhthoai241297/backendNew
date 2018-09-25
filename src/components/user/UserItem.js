@@ -9,7 +9,7 @@ class UserItem extends Component {
                 <td>{user.username}</td>
                 <td>{user.password}</td>
                 <td>{user.fullName}</td>
-                <td>{user.role}</td>
+                <td>{user.role.name}</td>
                 <td>
                     <Link className="btn btn-warning btn-xs" to={'/user/update/' + user.id}>Sửa</Link>
                     <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteUser(user.id)}>Xóa</button>

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Switch, BrowserRouter as Router, Redirect } from 'react-router-dom';
 import App from './App';
-import DashBoard from './components/dashBoard/DashBoard';
 import Sector from './components/sector/Sector';
 import EditSector from './components/sector/EditSector';
 import Province from './components/province/Province';
@@ -35,7 +34,6 @@ class MyRoute extends Component {
         if (user) {
             this.props.login(user);
         }
-        console.log('constructor: ', user);
     }
 
     validateRole = (roles, role) => {
@@ -49,7 +47,6 @@ class MyRoute extends Component {
 
     render() {
         let { user } = this.props;
-        console.log('render: ', user);
         let logged = (user && user.username !== '' && user.password !== '') ? true : false;
         return (
             <Router>
@@ -58,7 +55,7 @@ class MyRoute extends Component {
                     <Route render={(props) => (!logged ? (<Redirect to="/login" />) : (
                         <App {...props}>
                             <Switch>
-                                <Route path="/" exact component={DashBoard} />
+                                <Route path="/" exact render={() => (<Redirect to="/sector/list" />)} />
 
                                 <Route path="/sector/list" render={() => (this.validateRole(user.roles, roles.VIEW) ? <Sector /> : <Permission />)} />
                                 <Route path="/sector/update/:id" exact render={(props) => (this.validateRole(user.roles, roles.UPDATE) ? <EditSector {...props} do='update' /> : <Permission />)} />

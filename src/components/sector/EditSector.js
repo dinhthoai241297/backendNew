@@ -1,8 +1,22 @@
 import React, { Component, Fragment } from 'react';
 import SectorApi from './../../api/SectorApi';
+import StateApi from './../../api/StateApi';
 import { connect } from 'react-redux';
 import * as sectorAction from './../../actions/SectorActions';
 import toastr from 'toastr';
+import Select from 'react-select';
+
+const customStyles = {
+    control: (base) => ({
+        ...base,
+        minHeight: 34,
+        borderRadius: 0
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        padding: "0 8px"
+    })
+}
 
 class EditSector extends Component {
 
@@ -13,9 +27,12 @@ class EditSector extends Component {
             sector: {
                 name: '',
                 description: '',
-                id: ''
+                id: '',
+                state: 1
             },
-            isProcess: false
+            isProcess: false,
+            optionsState: [],
+            selectedOptionState: null
         }
     }
 
@@ -27,10 +44,20 @@ class EditSector extends Component {
         this.updateAction(nextProps);
     }
 
-    updateAction = (props) => {
+    updateAction = async (props) => {
         let isUpdate = props.do === 'update' ? true : false;
+        // get all state in database
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await StateApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
+        }
+        this.setState({
+            optionsState: rs.map(el => ({ value: el.id, label: el.name }))
+        });
         let sector = {
-            id: undefined, name: '', description: ''
+            id: undefined, name: '', description: '', state: 1
         };
         if (isUpdate) {
             SectorApi.getOne(props.match.params.id).then(res => {
@@ -39,6 +66,10 @@ class EditSector extends Component {
                     sector.id = s.id;
                     sector.name = s.name;
                     sector.description = s.description;
+                    sector.state = s.state;
+                    this.setState({
+                        selectedOptionState: this.state.optionsState.filter(el => el.value === sector.state)
+                    });
                 }
                 this.setState({
                     sector
@@ -58,7 +89,8 @@ class EditSector extends Component {
             sector: {
                 name: '',
                 description: '',
-                id: undefined
+                id: undefined,
+                state: 1
             }
         });
     }
@@ -123,6 +155,15 @@ class EditSector extends Component {
         }
     }
 
+    handleChangeState = (selectedOption) => {
+        this.setState({ selectedOption });
+        let { sector } = this.state;
+        sector.state = selectedOption.value
+        this.setState({
+            sector
+        });
+    }
+
     render() {
         let { sector } = this.state;
         return (
@@ -176,6 +217,17 @@ class EditSector extends Component {
                                                     placeholder="Mô tả khu vực"
                                                     value={sector.description}
                                                     onChange={(e) => this.onChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12">
+                                            <div className="form-group">
+                                                <Select
+                                                    styles={customStyles}
+                                                    onChange={this.handleChangeState}
+                                                    options={this.state.optionsState}
+                                                    value={this.state.selectedOptionState}
+                                                    placeholder="Trạng thái"
                                                 />
                                             </div>
                                         </div>

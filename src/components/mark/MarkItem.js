@@ -6,8 +6,8 @@ class MarkItem extends Component {
         let { mark } = this.props;
         return (
             <tr>
-                <td>{mark.school}</td>
-                <td>{mark.major}</td>
+                <td>{mark.school.name}</td>
+                <td>{mark.major.name}</td>
                 <td>{mark.year}</td>
                 <td>{mark.aspiration}</td>
                 <td>{mark.mark}</td>

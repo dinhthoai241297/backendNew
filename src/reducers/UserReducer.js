@@ -18,27 +18,34 @@ const userReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.ADD_USER: {
             state.users.push(action.user);
-            return {...state};
+            return { ...state };
         }
         case actionTypes.UPDATE_USER: {
             let index = findIndex(state.users, action.user.id);
             if (index > -1) {
                 state.users[index] = action.user;
             }
-            return {...state};
+            return { ...state };
         }
         case actionTypes.DELETE_USER: {
             let index = findIndex(state.users, action.id);
             if (index > -1) {
                 state.users.splice(index, 1);
             }
-            return {...state};
+            return { ...state };
         }
         case actionTypes.LOAD_ALL_USER: {
             return {
                 users: action.data.list,
                 next: action.data.next
             };
+        }
+        case actionTypes.UPDATE_STATE: {
+            let index = findIndex(state.users, action.id);
+            if (index > -1) {
+                state.users[index] = action.state;
+            }
+            return { ...state };
         }
         default: {
             return state;
