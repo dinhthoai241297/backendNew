@@ -11,7 +11,7 @@ class MarkItem extends Component {
                 <td>{mark.year}</td>
                 <td>{mark.aspiration}</td>
                 <td>{mark.mark}</td>
-                <td>{JSON.parse(mark.subjectGroups).map((sg, index) => (<Fragment key={index}>{sg}<br /></Fragment>))}</td>
+                <td>{mark.subjectGroups.map((sg, index) => (<Fragment key={index}>{sg.code}<br /></Fragment>))}</td>
                 <td>{mark.note}</td>
                 <td>{mark.status.name}</td>
                 <td>

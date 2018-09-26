@@ -63,7 +63,7 @@ class SubjectGroup extends Component {
                     <SubjectGroupItem
                         key={index}
                         subjectGroup={subjectGroup}
-                        updateStatus={() => this.updateStatus(subjectGroups)}
+                        updateStatus={() => this.updateStatus(subjectGroup.id)}
                         update={this.state.update}
                         delete={this.state.delete}
                     />
@@ -73,8 +73,13 @@ class SubjectGroup extends Component {
         return rs;
     }
 
-    updateStatus = (subjectGroup) => {
-
+    updateStatus = (id) => {
+        if (confirm('Bạn có chắc muốn xóa')) {
+            let st = this.props.status.find(el => el.status === status.DELETE);
+            if (st) {
+                this.props.updateStatus(id, st);
+            }
+        }
     }
 
     render() {
@@ -152,14 +157,15 @@ class SubjectGroup extends Component {
 const mapStateToProps = (state) => {
     return {
         data: state.SubjectGroupReducer,
-        user: state.LoginReducer
+        user: state.LoginReducer,
+        status: state.StatusReducer.status
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loadSubjectGroups: (page) => dispatch(actions.loadAllSubjectGroupApi(page)),
-        deleteSubjectGroup: (id) => dispatch(actions.deleteSubjectGroupApi(id))
+        updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }
 

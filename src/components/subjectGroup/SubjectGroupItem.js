@@ -7,7 +7,7 @@ class SubjectGroupItem extends Component {
         return (
             <tr>
                 <td>{subjectGroup.code}</td>
-                <td>{JSON.parse(subjectGroup.subjects).map((el, index) => <Fragment key={index}>{el}<br /></Fragment>)}</td>
+                <td>{subjectGroup.subjects.map((el, index) => <Fragment key={index}>{el.name}<br /></Fragment>)}</td>
                 <td>{subjectGroup.description}</td>
                 <td>{subjectGroup.status.name}</td>
                 <td>
