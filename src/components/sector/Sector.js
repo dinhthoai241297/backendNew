@@ -6,6 +6,7 @@ import toastr from 'toastr';
 import { toastrOption } from './../../custom/Custom';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
+import * as status from './../../contants/status';
 
 class Sectors extends Component {
 
@@ -60,7 +61,7 @@ class Sectors extends Component {
                     <SectorItem
                         key={index}
                         sector={sector}
-                        deleteSector={this.deleteSector}
+                        updateStatus={() => this.updateStatus(sector)}
                         update={this.state.update}
                         delete={this.state.delete}
                     />
@@ -70,17 +71,18 @@ class Sectors extends Component {
         return rs;
     }
 
-    deleteSector = (id) => {
+    updateStatus = (sector) => {
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteSector(id).then(res => {
-                if (res) {
-                    toastr.warning('Deleted!');
-                } else {
-                    toastr.warning('Error!');
-                }
-            }).catch(error => {
-                toastr.warning('Error!');
-            });
+            let st = this.props.status.find(el => el.status === status.DELETE);
+            if (st) {
+                sector.status = st.id;
+                this.props.updateSectorApi(sector).then(res => {
+                    if (res) {
+                        sector.status = st;
+                        this.props.updateSectorState(sector);
+                    }
+                });
+            }
         }
     }
 
@@ -158,14 +160,16 @@ class Sectors extends Component {
 const mapStateToProps = (state) => {
     return {
         data: state.SectorReducer,
-        user: state.LoginReducer
+        user: state.LoginReducer,
+        status: state.StatusReducer.status
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loadSectors: (page) => dispatch(actions.loadAllSectorApi(page)),
-        deleteSector: (id) => dispatch(actions.deleteSectorApi(id))
+        updateSectorApi: (sector) => dispatch(actions.updateSectorApi(sector)),
+        updateSectorState: (sector) => dispatch(actions.updateSectorState(sector))
     }
 }
 

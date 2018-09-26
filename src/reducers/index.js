@@ -9,6 +9,7 @@ import SubjectGroupReducer from './SubjectGroupReducer';
 import RoleReducer from './RoleReducer';
 import UserReducer from './UserReducer';
 import LoginReducer from './LoginReducer';
+import StatusReducer from './StatusReducer';
 
 const root = combineReducers({
     SectorReducer,
@@ -20,7 +21,8 @@ const root = combineReducers({
     ProvinceReducer,
     RoleReducer,
     UserReducer,
-    LoginReducer
+    LoginReducer,
+    StatusReducer
 });
 
 export default root;

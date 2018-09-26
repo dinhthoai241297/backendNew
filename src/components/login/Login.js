@@ -38,25 +38,25 @@ class Login extends Component {
                                 <div className="box-body">
                                     <div className="col-xs-12">
                                         <div className="form-group">
-                                            <label htmlFor="username">Username</label>
+                                            <label htmlFor="username">Tên đăng nhập</label>
                                             <input
                                                 type="text"
                                                 className="form-control"
                                                 id="username"
                                                 name="username"
-                                                placeholder="Enter Username"
+                                                placeholder="Tên đăng nhập"
                                                 value={this.state.username}
                                                 onChange={(e) => this.onChange(e)}
                                             />
                                         </div>
                                         <div className="form-group">
-                                            <label htmlFor="password">Password</label>
+                                            <label htmlFor="password">Mật khẩu</label>
                                             <input
                                                 type="password"
                                                 className="form-control"
                                                 id="password"
                                                 name="password"
-                                                placeholder="Enter Password"
+                                                placeholder="Mật khẩu"
                                                 value={this.state.password}
                                                 onChange={(e) => this.onChange(e)}
                                             />

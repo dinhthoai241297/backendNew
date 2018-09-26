@@ -1,10 +1,10 @@
 import * as actionTypes from '../actionTypes/StatusActionTypes';
 import statusApi from './../api/StatusApi';
 
-export const loadAllStateApi = page => {
+export const loadAllStatusApi = page => {
     return dispatch => statusApi.getAll(page).then(res => {
         if (res.body.code === 200) {
-            dispatch(loadAllStateState(res.body.data));
+            dispatch(loadAllStatusState(res.body.data));
             return true;
         } else {
             return false;
@@ -14,7 +14,7 @@ export const loadAllStateApi = page => {
     });;
 };
 
-export const loadAllStateState = data => {
+export const loadAllStatusState = data => {
     return {
         type: actionTypes.LOAD_ALL_STATUS,
         data

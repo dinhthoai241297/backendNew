@@ -25,6 +25,8 @@ import Permission from './components/permission/Permission';
 import Login from './components/login/Login';
 import * as roles from './contants/roles';
 import * as actions from './actions/UserActions';
+import * as actionsStatus from './actions/StatusActions';
+import StatusApi from './api/StatusApi';
 
 class MyRoute extends Component {
 
@@ -35,6 +37,17 @@ class MyRoute extends Component {
             this.props.login(user);
         }
     }
+
+    async componentDidMount() {
+        let next = true, tmp, list = [], page = 1;
+        while (next) {
+            tmp = await StatusApi.getAll(page++);
+            list = list.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
+        }
+        this.props.loadStatus({ list, next });
+    }
+
 
     validateRole = (roles, role) => {
         for (let i = 0; i < roles.length; i++) {
@@ -104,7 +117,6 @@ class MyRoute extends Component {
 }
 
 const mapStateToProps = state => {
-
     return {
         user: state.LoginReducer
     }
@@ -112,7 +124,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        login: (user) => dispatch(actions.loginState(user))
+        login: (user) => dispatch(actions.loginState(user)),
+        loadStatus: (data) => dispatch(actionsStatus.loadAllStatusState(data))
     }
 }
 

@@ -10,6 +10,8 @@ class Header extends Component {
     }
 
     render() {
+
+        let { user } = this.props;
         return (
             <header className="main-header">
                 {/* Logo */}
@@ -106,7 +108,7 @@ class Header extends Component {
                                                     {/* Task title and progress text */}
                                                     <h3>
                                                         Design some buttons
-                            <small className="pull-right">20%</small>
+                                                        <small className="pull-right">20%</small>
                                                     </h3>
                                                     {/* The progress bar */}
                                                     <div className="progress xs">
@@ -132,14 +134,14 @@ class Header extends Component {
                                     {/* The user image in the navbar*/}
                                     <img src="https://almsaeedstudio.com/themes/AdminLTE/dist/img/user2-160x160.jpg" className="user-image" alt="User Image" />
                                     {/* hidden-xs hides the username on small devices so only the image appears. */}
-                                    <span className="hidden-xs">ADMIN</span>
+                                    <span className="hidden-xs">{user.fullName}</span>
                                 </a>
                                 <ul className="dropdown-menu">
                                     {/* The user image in the menu */}
                                     <li className="user-header">
                                         <img src="https://almsaeedstudio.com/themes/AdminLTE/dist/img/user2-160x160.jpg" className="img-circle" alt="User Image" />
                                         <p>
-                                            ADMIN - FullStack Developer
+                                            {user.fullName} - FullStack Developer
                                             <small>Member since Nov. 2012</small>
                                         </p>
                                     </li>
@@ -187,10 +189,4 @@ const mapDispatchToProps = (dispatch, props) => {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        user: state.UserReducer
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connect(null, mapDispatchToProps)(Header);

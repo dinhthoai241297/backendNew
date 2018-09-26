@@ -21,6 +21,10 @@ class SectorApi {
     static getOne(id = -1) {
         return request.post(`${HOST}sector/getone`).send({ id });
     }
+
+    static updateStatus(data) {
+        return request.post(`${HOST}sector/updatestatus`).send({ data });
+    }
 }
 
 export default SectorApi;

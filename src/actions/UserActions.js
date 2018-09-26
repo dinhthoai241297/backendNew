@@ -109,10 +109,10 @@ export const logOutState = () => {
     }
 }
 
-export const updateStateApi = (id, state) => {
-    return dispatch => userApi.updateState(JSON.stringify({ id, state })).then(res => {
+export const updateStatusApi = (id, status) => {
+    return dispatch => userApi.updateStatus(JSON.stringify({ id, status })).then(res => {
         if (res.body.code === 200) {
-            dispatch();
+            dispatch(updateStatusState(id, status));
             return true;
         } else {
             return false;
@@ -122,10 +122,10 @@ export const updateStateApi = (id, state) => {
     });
 }
 
-export const updateStateState = (id, state) => {
+export const updateStatusState = (id, status) => {
     return {
         type: actionTypes.UPDATE_STATE,
         id,
-        state
+        status
     }
 }

@@ -31,7 +31,7 @@ class Sidebar extends Component {
                             <img src="https://almsaeedstudio.com/themes/AdminLTE/dist/img/user2-160x160.jpg" className="img-circle" alt="User Image" />
                         </div>
                         <div className="pull-left info">
-                            <p>user.fullName</p>
+                            <p>{user.fullName}</p>
                             {/* Status */}
                             <a href="#"><i className="fa fa-circle text-success" /> Online</a>
                         </div>
