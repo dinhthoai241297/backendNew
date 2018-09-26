@@ -40,6 +40,13 @@ const schoolReducer = (state = initState, action) => {
                 next: action.data.next
             };
         }
+        case actionTypes.UPDATE_STATUS: {
+            let index = findIndex(state.schools, action.id);
+            if (index > -1) {
+                state.schools[index].status = action.status;
+            }
+            return { ...state };
+        }
         default: {
             return state;
         }

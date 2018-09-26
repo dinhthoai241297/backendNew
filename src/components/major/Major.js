@@ -6,6 +6,7 @@ import MajorItem from './MajorItem';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
 import { toastrOption } from './../../custom/Custom';
+import * as status from './../../contants/status';
 
 class Major extends Component {
 
@@ -62,7 +63,7 @@ class Major extends Component {
                     <MajorItem
                         key={index}
                         major={major}
-                        deleteMajor={this.deleteMajor}
+                        updateStatus={() => this.updateStatus(major.id)}
                         delete={this.state.delete}
                         update={this.state.update}
                     />
@@ -72,11 +73,12 @@ class Major extends Component {
         return rs;
     }
 
-    deleteMajor = (id) => {
+    updateStatus = (id) => {
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteMajor(id).then(res => {
-                toastr.warning('Deleted!');
-            });
+            let st = this.props.status.find(el => el.status === status.DELETE);
+            if (st) {
+                this.props.updateStatus(id, st);
+            }
         }
     }
 
@@ -155,14 +157,15 @@ class Major extends Component {
 const mapStateToProps = (state) => {
     return {
         data: state.MajorReducer,
-        user: state.LoginReducer
+        user: state.LoginReducer,
+        status: state.StatusReducer.status
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loadMajors: (page) => dispatch(actions.loadAllMajorApi(page)),
-        deleteMajor: (id) => dispatch(actions.deleteMajorApi(id))
+        updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }
 

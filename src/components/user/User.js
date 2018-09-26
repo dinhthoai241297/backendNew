@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import * as actions from './../../actions/UserActions';
 import toastr from 'toastr';
 import { toastrOption } from './../../custom/Custom';
+import * as status from './../../contants/status';
 
 class Users extends Component {
 
@@ -50,24 +51,23 @@ class Users extends Component {
         if (users) {
             rs = users.map((user, index) => {
                 return (
-                    <UserItem key={index} user={user} deleteUser={this.deleteUser} />
+                    <UserItem
+                        key={index}
+                        user={user}
+                        updateStatus={() => this.updateStatus(user.id)}
+                    />
                 );
             });
         }
         return rs;
     }
 
-    deleteUser = (id) => {
+    updateStatus = (id) => {
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteUser(id).then(res => {
-                if (res) {
-                    toastr.warning('Deleted!');
-                } else {
-                    toastr.warning('Error!');
-                }
-            }).catch(error => {
-                toastr.warning('Error!');
-            });
+            let st = this.props.status.find(el => el.status === status.DELETE);
+            if (st) {
+                this.props.updateStatus(id, st);
+            }
         }
     }
 
@@ -144,14 +144,15 @@ class Users extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.UserReducer
+        data: state.UserReducer,
+        status: state.StatusReducer.status
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loadUsers: (page) => dispatch(actions.loadAllUserApi(page)),
-        deleteUser: (id) => dispatch(actions.deleteUserApi(id))
+        updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }
 

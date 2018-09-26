@@ -6,6 +6,7 @@ import toastr from 'toastr';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
 import { toastrOption } from './../../custom/Custom';
+import * as status from './../../contants/status';
 
 class Mark extends Component {
 
@@ -61,7 +62,7 @@ class Mark extends Component {
                     <MarkItem
                         key={index}
                         mark={mark}
-                        deleteMark={this.deleteMark}
+                        updateStatus={() => this.updateStatus(mark.id)}
                         delete={this.state.delete}
                         update={this.state.update}
                     />
@@ -71,11 +72,12 @@ class Mark extends Component {
         return rs;
     }
 
-    deleteMark = (id) => {
+    updateStatus = (id) => {
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteMark(id).then(res => {
-                toastr.warning('Deleted!');
-            });
+            let st = this.props.status.find(el => el.status === status.DELETE);
+            if (st) {
+                this.props.updateStatus(id, st);
+            }
         }
     }
 
@@ -158,14 +160,15 @@ class Mark extends Component {
 const mapStateToProps = (state) => {
     return {
         data: state.MarkReducer,
-        user: state.LoginReducer
+        user: state.LoginReducer,
+        status: state.StatusReducer.status
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loadMarks: (page) => dispatch(actions.loadAllMarkApi(page)),
-        deleteMark: (id) => dispatch(actions.deleteMarkApi(id))
+        updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }
 

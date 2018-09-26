@@ -6,6 +6,7 @@ import toastr from 'toastr';
 import { toastrOption } from './../../custom/Custom';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
+import * as status from './../../contants/status';
 
 class SubjectGroup extends Component {
 
@@ -62,7 +63,7 @@ class SubjectGroup extends Component {
                     <SubjectGroupItem
                         key={index}
                         subjectGroup={subjectGroup}
-                        deleteSubjectGroup={this.deleteSubjectGroup}
+                        updateStatus={() => this.updateStatus(subjectGroups)}
                         update={this.state.update}
                         delete={this.state.delete}
                     />
@@ -72,12 +73,8 @@ class SubjectGroup extends Component {
         return rs;
     }
 
-    deleteSubjectGroup = (id) => {
-        if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteSubjectGroup(id).then(res => {
-                toastr.warning('Deleted!');
-            });
-        }
+    updateStatus = (subjectGroup) => {
+
     }
 
     render() {

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import * as actions from './../../actions/RoleActions';
 import toastr from 'toastr';
 import { toastrOption } from './../../custom/Custom';
+import * as status from './../../contants/status';
 
 class Roles extends Component {
 
@@ -50,24 +51,23 @@ class Roles extends Component {
         if (roles) {
             rs = roles.map((role, index) => {
                 return (
-                    <RoleItem key={index} role={role} deleteRole={this.deleteRole} />
+                    <RoleItem
+                        key={index}
+                        role={role}
+                        updateStatus={() => this.updateStatus(role.id)}
+                    />
                 );
             });
         }
         return rs;
     }
 
-    deleteRole = (id) => {
+    updateStatus = (id) => {
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteRole(id).then(res => {
-                if (res) {
-                    toastr.warning('Deleted!');
-                } else {
-                    toastr.warning('Error!');
-                }
-            }).catch(error => {
-                toastr.warning('Error!');
-            });
+            let st = this.props.status.find(el => el.status === status.DELETE);
+            if (st) {
+                this.props.updateStatus(id, st);
+            }
         }
     }
 
@@ -142,14 +142,15 @@ class Roles extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.RoleReducer
+        data: state.RoleReducer,
+        status: state.StatusReducer.status
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loadRoles: (page) => dispatch(actions.loadAllRoleApi(page)),
-        deleteRole: (id) => dispatch(actions.deleteRoleApi(id))
+        updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }
 

@@ -40,6 +40,13 @@ const roleReducer = (state = initState, action) => {
                 next: action.data.next
             };
         }
+        case actionTypes.UPDATE_STATUS: {
+            let index = findIndex(state.roles, action.id);
+            if (index > -1) {
+                state.roles[index].status = action.status;
+            }
+            return { ...state };
+        }
         default: {
             return state;
         }

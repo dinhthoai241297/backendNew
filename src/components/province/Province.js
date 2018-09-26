@@ -6,6 +6,7 @@ import toastr from 'toastr';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
 import { toastrOption } from './../../custom/Custom';
+import * as status from './../../contants/status';
 
 class Province extends Component {
 
@@ -61,7 +62,7 @@ class Province extends Component {
                     <ProvinceItem
                         key={index}
                         province={province}
-                        deleteProvince={this.deleteProvince}
+                        updateStatus={() => this.updateStatus(province.id)}
                         delete={this.state.delete}
                         update={this.state.update}
                     />
@@ -71,11 +72,12 @@ class Province extends Component {
         return rs;
     }
 
-    deleteProvince = (id) => {
+    updateStatus = (id) => {
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteProvince(id).then(res => {
-                toastr.warning('Deleted!');
-            });
+            let st = this.props.status.find(el => el.status === status.DELETE);
+            if (st) {
+                this.props.updateStatus(id, st);
+            }
         }
     }
 
@@ -154,14 +156,15 @@ class Province extends Component {
 const mapStateToProps = (state) => {
     return {
         data: state.ProvinceReducer,
-        user: state.LoginReducer
+        user: state.LoginReducer,
+        status: state.StatusReducer.status
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loadProvinces: (page) => dispatch(actions.loadAllProvinceApi(page)),
-        deleteProvince: (id) => dispatch(actions.deleteProvinceApi(id))
+        updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }
 

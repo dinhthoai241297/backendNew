@@ -40,10 +40,10 @@ const userReducer = (state = initState, action) => {
                 next: action.data.next
             };
         }
-        case actionTypes.UPDATE_STATE: {
+        case actionTypes.UPDATE_STATUS: {
             let index = findIndex(state.users, action.id);
             if (index > -1) {
-                state.users[index] = action.state;
+                state.users[index].status = action.status;
             }
             return { ...state };
         }

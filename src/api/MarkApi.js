@@ -21,6 +21,10 @@ class MarkApi {
     static getOne(id = -1) {
         return request.post(`${HOST}mark/getone`).send({ id });
     }
+
+    static updateStatus(data) {
+        return request.post(`${HOST}mark/updatestatus`).send({ data });
+    }
 }
 
 export default MarkApi;

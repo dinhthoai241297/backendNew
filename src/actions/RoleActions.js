@@ -81,3 +81,24 @@ export const loadAllRoleState = data => {
         data
     };
 };
+
+export const updateStatusApi = (id, status) => {
+    return dispatch => roleApi.updateStatus({ id, status: status.id }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(updateStatusState(id, status));
+            return true;
+        } else {
+            return false;
+        }
+    }).catch(error => {
+        throw (error);
+    });
+}
+
+export const updateStatusState = (id, status) => {
+    return {
+        type: actionTypes.UPDATE_STATUS,
+        id,
+        status
+    }
+}

@@ -15,7 +15,7 @@ class ProvinceItem extends Component {
                         <Link className="btn btn-warning btn-xs" to={'/province/update/' + province.id}>Sửa</Link>
                     }
                     {this.props.delete &&
-                        <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteProvince(province.id)}>Xóa</button>
+                        <button className="btn btn-danger btn-xs" onClick={this.props.updateStatus}>Xóa</button>
                     }
                 </td>
             </tr>

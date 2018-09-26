@@ -6,6 +6,7 @@ import toastr from 'toastr';
 import { toastrOption } from './../../custom/Custom';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
+import * as status from './../../contants/status';
 
 class Subject extends Component {
 
@@ -62,7 +63,7 @@ class Subject extends Component {
                     <SubjectItem
                         key={index}
                         subject={subject}
-                        deleteSubject={this.deleteSubject}
+                        updateStatus={() => this.updateStatus(subject.id)}
                         update={this.state.update}
                         delete={this.state.delete}
                     />
@@ -72,11 +73,12 @@ class Subject extends Component {
         return rs;
     }
 
-    deleteSubject = (id) => {
+    updateStatus = (id) => {
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteSubject(id).then(res => {
-                toastr.warning('Deleted!');
-            });
+            let st = this.props.status.find(el => el.status === status.DELETE);
+            if (st) {
+                this.props.updateStatus(id, st);
+            }
         }
     }
 
@@ -154,14 +156,15 @@ class Subject extends Component {
 const mapStateToProps = (state) => {
     return {
         data: state.SubjectReducer,
-        user: state.LoginReducer
+        user: state.LoginReducer,
+        status: state.StatusReducer.status
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loadSubjects: (page) => dispatch(actions.loadAllSubjectApi(page)),
-        deleteSubject: (id) => dispatch(actions.deleteSubjectApi(id))
+        updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }
 

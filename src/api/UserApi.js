@@ -26,8 +26,8 @@ class UserApi {
         return request.post(`${HOST}user/login`).send({ data });
     }
 
-    static updateState(data) {
-        return request.post(`${HOST}user/updatestate`).send({ data });
+    static updateStatus(data) {
+        return request.post(`${HOST}user/updatestatus`).send({ data });
     }
 }
 

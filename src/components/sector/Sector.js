@@ -61,7 +61,7 @@ class Sectors extends Component {
                     <SectorItem
                         key={index}
                         sector={sector}
-                        updateStatus={() => this.updateStatus(sector)}
+                        updateStatus={() => this.updateStatus(sector.id)}
                         update={this.state.update}
                         delete={this.state.delete}
                     />
@@ -71,17 +71,11 @@ class Sectors extends Component {
         return rs;
     }
 
-    updateStatus = (sector) => {
+    updateStatus = (id) => {
         if (confirm('Bạn có chắc muốn xóa')) {
             let st = this.props.status.find(el => el.status === status.DELETE);
             if (st) {
-                sector.status = st.id;
-                this.props.updateSectorApi(sector).then(res => {
-                    if (res) {
-                        sector.status = st;
-                        this.props.updateSectorState(sector);
-                    }
-                });
+                this.props.updateStatus(id, st);
             }
         }
     }
@@ -168,8 +162,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loadSectors: (page) => dispatch(actions.loadAllSectorApi(page)),
-        updateSectorApi: (sector) => dispatch(actions.updateSectorApi(sector)),
-        updateSectorState: (sector) => dispatch(actions.updateSectorState(sector))
+        updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }
 

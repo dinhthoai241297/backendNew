@@ -41,6 +41,13 @@ const subjectReducer = (state = initState, action) => {
                 next: action.data.next
             };
         }
+        case actionTypes.UPDATE_STATUS: {
+            let index = findIndex(state.subjects, action.id);
+            if (index > -1) {
+                state.subjects[index].status = action.status;
+            }
+            return { ...state };
+        }
         default: {
             return state;
         }

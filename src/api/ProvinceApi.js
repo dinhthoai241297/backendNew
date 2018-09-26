@@ -21,6 +21,10 @@ class ProvinceApi {
     static getOne(id = -1) {
         return request.post(`${HOST}province/getone`).send({ id });
     }
+
+    static updateStatus(data) {
+        return request.post(`${HOST}province/updatestatus`).send({ data });
+    }
 }
 
 export default ProvinceApi;

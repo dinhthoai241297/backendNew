@@ -21,6 +21,10 @@ class SubjectApi {
     static getOne(id = -1) {
         return request.post(`${HOST}subject/getone`).send({ id });
     }
+
+    static updateStatus(data) {
+        return request.post(`${HOST}subject/updatestatus`).send({ data });
+    }
 }
 
 export default SubjectApi;

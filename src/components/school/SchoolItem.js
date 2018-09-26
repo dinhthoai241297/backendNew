@@ -16,7 +16,7 @@ class SchoolItem extends Component {
                         <Link className="btn btn-warning btn-xs" to={'/school/update/' + school.id}>Sửa</Link>
                     }
                     {this.props.delete &&
-                        <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteSchool(school.id)}>Xóa</button>
+                        <button className="btn btn-danger btn-xs" onClick={this.props.updateStatus}>Xóa</button>
                     }
                 </td>
             </tr>

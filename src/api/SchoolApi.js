@@ -21,6 +21,10 @@ class SchoolApi {
     static getOne(id = -1) {
         return request.post(`${HOST}school/getone`).send({ id });
     }
+
+    static updateStatus(data) {
+        return request.post(`${HOST}school/updatestatus`).send({ data });
+    }
 }
 
 export default SchoolApi;

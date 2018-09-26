@@ -15,7 +15,7 @@ class MajorItem extends Component {
                         <Link className="btn btn-warning btn-xs" to={'/major/update/' + major.id}>Sửa</Link>
                     }
                     {this.props.delete &&
-                        <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteMajor(major.id)}>Xóa</button>
+                        <button className="btn btn-danger btn-xs" onClick={this.props.updateStatus}>Xóa</button>
                     }
                 </td>
             </tr>

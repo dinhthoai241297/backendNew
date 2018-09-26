@@ -13,7 +13,7 @@ class UserItem extends Component {
                 <td>{user.status.name}</td>
                 <td>
                     <Link className="btn btn-warning btn-xs" to={'/user/update/' + user.id}>Sửa</Link>
-                    <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteUser(user.id)}>Xóa</button>
+                    <button className="btn btn-danger btn-xs" onClick={this.props.updateStatus}>Xóa</button>
                 </td>
             </tr>
         );

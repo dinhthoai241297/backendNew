@@ -21,6 +21,10 @@ class RoleApi {
     static getOne(id = -1) {
         return request.post(`${HOST}role/getone`).send({ id });
     }
+
+    static updateStatus(data) {
+        return request.post(`${HOST}role/updatestatus`).send({ data });
+    }
 }
 
 export default RoleApi;

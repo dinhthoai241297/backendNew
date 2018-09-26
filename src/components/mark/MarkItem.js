@@ -19,7 +19,7 @@ class MarkItem extends Component {
                         <Link className="btn btn-warning btn-xs" to={'/mark/update/' + mark.id}>Sửa</Link>
                     }
                     {this.props.delete &&
-                        <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteMark(mark.id)}>Xóa</button>
+                        <button className="btn btn-danger btn-xs" onClick={this.props.updateStatus}>Xóa</button>
                     }
                 </td>
             </tr>

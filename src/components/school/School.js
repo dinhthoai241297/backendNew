@@ -6,6 +6,7 @@ import toastr from 'toastr';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
 import { toastrOption } from './../../custom/Custom';
+import * as status from './../../contants/status';
 
 class School extends Component {
 
@@ -62,7 +63,7 @@ class School extends Component {
                     <SchoolItem
                         key={index}
                         school={school}
-                        deleteSchool={this.deleteSchool}
+                        updateStatus={() => this.updateStatus(school.id)}
                         delete={this.state.delete}
                         update={this.state.update}
                     />
@@ -72,11 +73,12 @@ class School extends Component {
         return rs;
     }
 
-    deleteSchool = (id) => {
+    updateStatus = (id) => {
         if (confirm('Bạn có chắc muốn xóa')) {
-            this.props.deleteSchool(id).then(res => {
-                toastr.warning('Deleted!');
-            });
+            let st = this.props.status.find(el => el.status === status.DELETE);
+            if (st) {
+                this.props.updateStatus(id, st);
+            }
         }
     }
 
@@ -156,14 +158,15 @@ class School extends Component {
 const mapStateToProps = (state) => {
     return {
         data: state.SchoolReducer,
-        user: state.LoginReducer
+        user: state.LoginReducer,
+        status: state.StatusReducer.status
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loadSchools: (page) => dispatch(actions.loadAllSchoolApi(page)),
-        deleteSchool: (id) => dispatch(actions.deleteSchoolApi(id))
+        updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }
 
