@@ -30,7 +30,7 @@ class Sectors extends Component {
     componentWillReceiveProps(nextProps) {
         let { sectors, next } = nextProps.data;
         let { user } = nextProps;
-        let update = findRole(user.roles, roles.UPDATE) !== -1, del = findRole(user.roles, roles.DELETE) !== -1;
+        let update = findRole(user.role, roles.UPDATE) !== -1, del = findRole(user.role, roles.DELETE) !== -1;
         this.setState({
             sectors,
             next,
@@ -154,7 +154,7 @@ class Sectors extends Component {
 const mapStateToProps = (state) => {
     return {
         data: state.SectorReducer,
-        user: state.LoginReducer,
+        user: state.LoginReducer.user,
         status: state.StatusReducer.status
     }
 }

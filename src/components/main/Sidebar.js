@@ -20,7 +20,7 @@ class Sidebar extends Component {
 
     render() {
         let { user } = this.props;
-        let add = findRole(user.roles, roles.ADD) !== -1;
+        let add = findRole(user.role, roles.ADD) !== -1;
         return (
             <aside className="main-sidebar">
                 {/* sidebar: style can be found in sidebar.less */}
@@ -324,7 +324,7 @@ class Sidebar extends Component {
                                 </ul>
                             }
                         </MyLink>
-                        {findRole(user.roles, roles.ROOT) !== -1 &&
+                        {findRole(user.role, roles.ROOT) !== -1 &&
                             <Fragment>
                                 <MyLink
                                     to="/role"

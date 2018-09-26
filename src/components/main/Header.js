@@ -4,9 +4,9 @@ import * as actions from './../../actions/UserActions';
 
 class Header extends Component {
 
-    signOut = (e) => {
+    logout = (e) => {
         e.preventDefault();
-        this.props.signOut();
+        this.props.logout(this.props.session);
     }
 
     render() {
@@ -166,7 +166,7 @@ class Header extends Component {
                                             <a href="#" className="btn btn-default btn-flat">Profile</a>
                                         </div>
                                         <div className="pull-right">
-                                            <a href="#" className="btn btn-default btn-flat" onClick={(e) => this.signOut(e)}>Sign out</a>
+                                            <a href="#" className="btn btn-default btn-flat" onClick={(e) => this.logout(e)}>Sign out</a>
                                         </div>
                                     </li>
                                 </ul>
@@ -185,7 +185,13 @@ class Header extends Component {
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        signOut: () => dispatch(actions.logOutState())
+        logout: (session) => dispatch(actions.logoutApi(session))
+    }
+}
+
+const mapStateToProps = state => {
+    return {
+        session: state.LoginReducer.session
     }
 }
 

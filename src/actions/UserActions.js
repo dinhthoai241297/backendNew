@@ -83,9 +83,9 @@ export const loadAllUserState = data => {
 };
 
 export const loginApi = (username, password) => {
-    return dispatch => userApi.login(JSON.stringify({ username, password })).then(res => {
+    return dispatch => userApi.login({ username, password }).then(res => {
         if (res.body.code === 200) {
-            localStorage.setItem('user', JSON.stringify(res.body.data));
+            localStorage.setItem('data', JSON.stringify(res.body.data));
             dispatch(loginState(res.body.data));
             return true;
         } else {
@@ -96,15 +96,29 @@ export const loginApi = (username, password) => {
     });
 }
 
-export const loginState = user => {
+export const loginState = data => {
     return {
         type: actionTypes.LOGIN,
-        user
+        data
     }
 }
 
-export const logOutState = () => {
-    localStorage.setItem('user', null);
+export const logoutApi = (session) => {
+    return dispatch => userApi.logout({ session }).then(res => {
+        console.log(res);
+        if (res.body.code === 200) {
+            dispatch(logoutState());
+            return true;
+        } else {
+            return false;
+        }
+    }).catch(error => {
+        throw (error);
+    });
+}
+
+export const logoutState = () => {
+    localStorage.setItem('data', null);
     return {
         type: actionTypes.LOGOUT
     }
