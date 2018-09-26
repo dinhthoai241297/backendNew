@@ -3,8 +3,8 @@ import SectorApi from './../../api/SectorApi';
 import { connect } from 'react-redux';
 import * as sectorAction from './../../actions/SectorActions';
 import toastr from 'toastr';
-import StatusApi from '../../api/StatusApi';
 import Select from 'react-select';
+import StatusApi from '../../api/StatusApi';
 import { selectStyle, toastrOption } from './../../custom/Custom';
 
 class EditSector extends Component {

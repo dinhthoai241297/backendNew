@@ -1,36 +1,33 @@
 import React, { Component, Fragment } from 'react';
-import RoleApi from './../../api/RoleApi';
 import { connect } from 'react-redux';
-import * as roleAction from './../../actions/RoleActions';
 import toastr from 'toastr';
 import Select from 'react-select';
 import * as roles from './../../contants/roles';
-
-const customStyles = {
-    control: (base) => ({
-        ...base,
-        minHeight: 34,
-        borderRadius: 0
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: "0 8px"
-    })
-}
+import * as roleAction from './../../actions/RoleActions';
+import RoleApi from './../../api/RoleApi';
+import StatusApi from '../../api/StatusApi';
+import { selectStyle, toastrOption } from './../../custom/Custom';
 
 class EditRole extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isUpdate: false,
+
+        this.init = {
             role: {
-                id: '',
+                id: undefined,
                 name: '',
-                roles: []
+                roles: [],
+                status: 1
             },
             isProcess: false,
-            options: [
+            statusSelectedOption: null,
+            roleSelectedOption: null
+        }
+
+        this.state = {
+            isUpdate: false,
+            roleOptions: [
                 {
                     value: roles.VIEW,
                     label: 'VIEW'
@@ -52,8 +49,11 @@ class EditRole extends Component {
                     label: 'ROOT'
                 }
             ],
-            selectedOption: null
+            statusOptions: [],
+            ...this.init
         }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -64,50 +64,51 @@ class EditRole extends Component {
         this.updateAction(nextProps);
     }
 
-    updateAction = (props) => {
+    loadStatusOption = async () => {
+        // lấy tất cả status trong db
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await StatusApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
+        }
+        this.setState({
+            statusOptions: rs.map(el => ({ value: el.id, label: el.name }))
+        });
+    }
+
+    updateAction = async (props) => {
         let isUpdate = props.do === 'update' ? true : false;
-        let role = {
-            id: undefined, roles: [], name: ''
-        };
+        this.setState({ isUpdate });
+        await this.loadStatusOption();
         if (isUpdate) {
             RoleApi.getOne(props.match.params.id).then(res => {
-                let r = res.body.data;
-                if (r) {
-                    role.id = r.id;
-                    role.name = r.name;
-                    role.roles = JSON.parse(r.roles);
-                    let tmp = [];
+                let role = res.body.data;
+                if (role) {
+                    role.roles = JSON.parse(role.roles);
+                    let roleSelectedOption = [];
                     for (let i = 0; i < role.roles.length; i++) {
-                        tmp = tmp.concat(this.state.options.filter(el => el.value === role.roles[i]));
+                        roleSelectedOption = roleSelectedOption.concat(this.state.roleOptions.filter(el => el.value === role.roles[i]));
                     }
                     this.setState({
-                        selectedOption: tmp
+                        roleSelectedOption,
+                        statusSelectedOption: this.state.statusOptions.filter(el => el.value === role.status),
+                        role
                     });
                 }
-                this.setState({
-                    role
-                });
             }).catch(error => {
                 throw (error);
             });
         } else {
-            this.setState({
-                role
-            });
+            this.renewForm();
         }
     }
 
-    clearForm = () => {
-        this.setState({
-            role: {
-                name: '',
-                roles: [],
-                id: undefined
-            }
-        });
+    renewForm = () => {
+        this.setState(preState => ({ ...preState, ...this.init }));
     }
 
-    onChange = (e) => {
+    handleChangeInput = (e) => {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
@@ -118,29 +119,11 @@ class EditRole extends Component {
         }));
     }
 
-    onSave = (e) => {
-        console.log(this.state.role);
+    handleSave = (e) => {
+        e.preventDefault();
         this.setState({
             isProcess: true
         });
-        e.preventDefault();
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         let { role } = this.state;
         if (role.id) {
             this.props.updateRole(role).then(res => {
@@ -164,14 +147,24 @@ class EditRole extends Component {
                     isProcess: false
                 });
             });
-            this.clearForm();
+            this.renewForm();
         }
     }
 
-    handleChange = (selectedOption) => {
-        this.setState({ selectedOption });
+    handleChangeRole = (roleSelectedOption) => {
+        this.setState({ roleSelectedOption });
         let { role } = this.state;
-        role.roles = selectedOption.map(el => el.value);
+        role.roles = roleSelectedOption.map(el => el.value);
+        this.setState({
+            role
+        });
+    }
+
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
+        let { role } = this.state;
+        role.status = statusSelectedOption.value
         this.setState({
             role
         });
@@ -214,20 +207,32 @@ class EditRole extends Component {
                                                     id="name"
                                                     name="name"
                                                     placeholder="Tên Quyền"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-xs-12">
+                                        <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
                                                 <label htmlFor="description">Quyền</label>
                                                 <Select
                                                     isMulti={true}
-                                                    styles={customStyles}
-                                                    onChange={this.handleChange}
-                                                    options={this.state.options}
-                                                    value={this.state.selectedOption}
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeRole}
+                                                    options={this.state.roleOptions}
+                                                    value={this.state.roleSelectedOption}
                                                     placeholder="Quyền"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="status">Trạng thái</label>
+                                                <Select
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeStatus}
+                                                    options={this.state.statusOptions}
+                                                    value={this.state.statusSelectedOption}
+                                                    placeholder="Trạng thái"
                                                 />
                                             </div>
                                         </div>
@@ -236,7 +241,7 @@ class EditRole extends Component {
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button
                                                 className="btn btn-block btn-primary btn-flat"
-                                                onClick={(e) => this.onSave(e)}
+                                                onClick={(e) => this.handleSave(e)}
                                                 disabled={this.state.isProcess}
                                             >
                                                 Lưu lại  {this.state.isProcess ? (<i className="fa fa-spinner faa-spin animated"></i>) : ''}

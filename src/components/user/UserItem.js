@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 class UserItem extends Component {
     render() {
@@ -10,6 +10,7 @@ class UserItem extends Component {
                 <td>{user.password}</td>
                 <td>{user.fullName}</td>
                 <td>{user.role.name}</td>
+                <td>{user.status.name}</td>
                 <td>
                     <Link className="btn btn-warning btn-xs" to={'/user/update/' + user.id}>Sửa</Link>
                     <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteUser(user.id)}>Xóa</button>

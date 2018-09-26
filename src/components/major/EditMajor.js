@@ -1,39 +1,38 @@
 import React, { Component, Fragment } from 'react';
-import MajorApi from '../../api/MajorApi';
 import { connect } from 'react-redux';
-import * as majorAction from '../../actions/MajorActions';
 import toastr from 'toastr';
 import Select from 'react-select';
+import * as majorAction from '../../actions/MajorActions';
+import MajorApi from '../../api/MajorApi';
 import SchoolApi from '../../api/SchoolApi';
-
-const customStyles = {
-    control: (base) => ({
-        ...base,
-        minHeight: 34,
-        borderRadius: 0
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: "0 8px"
-    })
-}
+import StatusApi from '../../api/StatusApi';
+import { selectStyle, toastrOption } from './../../custom/Custom';
 
 class EditMajor extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isUpdate: false,
+
+        this.init = {
             major: {
-                id: '',
+                id: undefined,
                 name: '',
                 code: '',
                 school: '',
+                status: 1
             },
             isProcess: false,
-            options: [],
-            selectedOption: null
+            statusSelectedOption: null,
+            schoolSelectedOption: null
         }
+
+        this.state = {
+            isUpdate: false,
+            schoolOptions: [],
+            statusOptions: [],
+            ...this.init
+        }
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -44,56 +43,60 @@ class EditMajor extends Component {
         this.updateAction(nextProps);
     }
 
-    updateAction = async (props) => {
-        let isUpdate = props.do === 'update' ? true : false;
+    loadSchoolOption = async () => {
         // get all sector in database
-        let next = true, rs = [], tmp, page = 1, options = [];
+        let next = true, rs = [], tmp, page = 1;
         while (next) {
             tmp = await SchoolApi.getAll(page++);
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
         this.setState({
-            options: rs.map(el => ({ value: el.id, label: el.name }))
+            schoolOptions: rs.map(el => ({ value: el.id, label: el.name }))
         });
-        let major = {
-            id: undefined, name: '', code: '', school: ''
-        };
+    }
+
+    loadStatusOption = async () => {
+        // lấy tất cả status trong db
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await StatusApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
+        }
+        this.setState({
+            statusOptions: rs.map(el => ({ value: el.id, label: el.name }))
+        });
+    }
+
+    updateAction = async (props) => {
+        let isUpdate = props.do === 'update' ? true : false;
+        this.setState({ isUpdate });
+        await this.loadStatusOption();
+        await this.loadSchoolOption();
         if (isUpdate) {
             MajorApi.getOne(props.match.params.id).then(res => {
-                let m = res.body.data;
-                console.log(m.id);
-                if (m) {
-                    major.id = m.id;
-                    major.name = m.name;
-                    major.code = m.code;
-                    major.school = m.school;
+                let major = res.body.data;
+                if (major) {
                     this.setState({
-                        selectedOption: this.state.options.filter(el => el.value === major.school)
+                        schoolSelectedOption: this.state.schoolOptions.filter(el => el.value === major.school),
+                        statusSelectedOption: this.state.statusOptions.filter(el => el.value === major.status),
+                        major
                     });
                 }
-                this.setState({
-                    major
-                });
             }).catch(error => {
-                throw(error);
+                throw (error);
             });
         } else {
-            this.setState({
-                major
-            });
+            this.renewForm();
         }
     }
 
-    clearForm = () => {
-        this.setState({
-            major: {
-                id: undefined, name: '', code: '', school: ''
-            }
-        });
+    renewForm = () => {
+        this.setState(preState => ({ ...preState, ...this.init }));
     }
 
-    onChange = (e) => {
+    handleChangeInput = (e) => {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
@@ -104,28 +107,11 @@ class EditMajor extends Component {
         }));
     }
 
-    onSave = (e) => {
+    handleSave = (e) => {
         this.setState({
             isProcess: true
         });
         e.preventDefault();
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         let { major } = this.state;
         if (major.id) {
             this.props.updateMajor(major).then(res => {
@@ -149,14 +135,24 @@ class EditMajor extends Component {
                     isProcess: false
                 });
             });
-            this.clearForm();
+            this.renewForm();
         }
     }
 
-    handleChange = (selectedOption) => {
-        this.setState({ selectedOption });
+    handleChangeSchool = (schoolSelectedOption) => {
+        this.setState({ schoolSelectedOption });
         let { major } = this.state;
-        major.school = selectedOption.value
+        major.school = schoolSelectedOption.value
+        this.setState({
+            major
+        });
+    }
+
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
+        let { major } = this.state;
+        major.status = statusSelectedOption.value
         this.setState({
             major
         });
@@ -199,7 +195,7 @@ class EditMajor extends Component {
                                                     id="name"
                                                     name="name"
                                                     placeholder="Tên Ngành"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -214,22 +210,36 @@ class EditMajor extends Component {
                                                     id="code"
                                                     name="code"
                                                     placeholder="Mã Ngành"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-xs-12">
+                                        <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
                                                 <label htmlFor="school">Trường</label>
                                                 <div className="form-group">
-                                                <Select
-                                                    styles={customStyles}
-                                                    onChange={this.handleChange}
-                                                    options={this.state.options}
-                                                    value={this.state.selectedOption}
-                                                    placeholder="Trường"
-                                                />
+                                                    <Select
+                                                        styles={selectStyle}
+                                                        onChange={this.handleChangeSchool}
+                                                        options={this.state.schoolOptions}
+                                                        value={this.state.schoolSelectedOption}
+                                                        placeholder="Trường"
+                                                    />
+                                                </div>
                                             </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="status">Trạng thái</label>
+                                                <div className="form-group">
+                                                    <Select
+                                                        styles={selectStyle}
+                                                        onChange={this.handleChangeStatus}
+                                                        options={this.state.statusOptions}
+                                                        value={this.state.statusSelectedOption}
+                                                        placeholder="Trạng thái"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -237,7 +247,7 @@ class EditMajor extends Component {
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button
                                                 className="btn btn-block btn-primary btn-flat"
-                                                onClick={(e) => this.onSave(e)}
+                                                onClick={(e) => this.handleSave(e)}
                                                 disabled={this.state.isProcess}
                                             >
                                                 Lưu lại  {this.state.isProcess ? (<i className="fa fa-spinner faa-spin animated"></i>) : ''}

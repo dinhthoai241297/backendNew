@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import * as actions from '../../actions/MajorActions';
 import toastr from 'toastr';
 import MajorItem from './MajorItem';
+import { findRole } from './../../custom/CusFunction';
+import * as roles from './../../contants/roles';
+import { toastrOption } from './../../custom/Custom';
 
 class Major extends Component {
 
@@ -11,8 +14,12 @@ class Major extends Component {
         this.state = {
             page: 1,
             next: true,
-            majors: []
+            majors: [],
+            update: false,
+            delete: false
         }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -22,9 +29,13 @@ class Major extends Component {
 
     componentWillReceiveProps(nextProps) {
         let { majors, next } = nextProps.data;
+        let { user } = nextProps;
+        let update = findRole(user.roles, roles.UPDATE) !== -1, del = findRole(user.roles, roles.DELETE) !== -1;
         this.setState({
             majors,
-            next
+            next,
+            update,
+            delete: del
         });
     }
 
@@ -48,7 +59,13 @@ class Major extends Component {
         if (majors) {
             rs = majors.map((major, index) => {
                 return (
-                    <MajorItem key={index} major={major} deleteMajor={this.deleteMajor} />
+                    <MajorItem
+                        key={index}
+                        major={major}
+                        deleteMajor={this.deleteMajor}
+                        delete={this.state.delete}
+                        update={this.state.update}
+                    />
                 );
             });
         }
@@ -56,23 +73,6 @@ class Major extends Component {
     }
 
     deleteMajor = (id) => {
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         if (confirm('Bạn có chắc muốn xóa')) {
             this.props.deleteMajor(id).then(res => {
                 toastr.warning('Deleted!');
@@ -118,7 +118,10 @@ class Major extends Component {
                                                 <th>Tên Ngành</th>
                                                 <th>Mã Ngành</th>
                                                 <th>Trường</th>
-                                                <th>Chức năng</th>
+                                                <th>Trạng thái</th>
+                                                {(this.state.delete || this.state.update) &&
+                                                    <th>Chức năng</th>
+                                                }
                                             </tr>
                                             {this.genListMajor()}
                                         </tbody>
@@ -151,7 +154,8 @@ class Major extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.MajorReducer
+        data: state.MajorReducer,
+        user: state.LoginReducer
     }
 }
 

@@ -3,6 +3,9 @@ import SectorItem from './SectorItem';
 import { connect } from 'react-redux';
 import * as actions from './../../actions/SectorActions';
 import toastr from 'toastr';
+import { toastrOption } from './../../custom/Custom';
+import { findRole } from './../../custom/CusFunction';
+import * as roles from './../../contants/roles';
 
 class Sectors extends Component {
 
@@ -11,8 +14,11 @@ class Sectors extends Component {
         this.state = {
             page: 1,
             next: true,
-            sectors: []
+            sectors: [],
+            update: false,
+            delete: false
         }
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -22,9 +28,13 @@ class Sectors extends Component {
 
     componentWillReceiveProps(nextProps) {
         let { sectors, next } = nextProps.data;
+        let { user } = nextProps;
+        let update = findRole(user.roles, roles.UPDATE) !== -1, del = findRole(user.roles, roles.DELETE) !== -1;
         this.setState({
             sectors,
-            next
+            next,
+            update,
+            delete: del
         });
     }
 
@@ -43,12 +53,17 @@ class Sectors extends Component {
     }
 
     genListSector = () => {
-        let { sectors } = this.state;
-        let rs = null;
+        let rs = null, { sectors } = this.state;
         if (sectors) {
             rs = sectors.map((sector, index) => {
                 return (
-                    <SectorItem key={index} sector={sector} deleteSector={this.deleteSector} />
+                    <SectorItem
+                        key={index}
+                        sector={sector}
+                        deleteSector={this.deleteSector}
+                        update={this.state.update}
+                        delete={this.state.delete}
+                    />
                 );
             });
         }
@@ -56,23 +71,6 @@ class Sectors extends Component {
     }
 
     deleteSector = (id) => {
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         if (confirm('Bạn có chắc muốn xóa')) {
             this.props.deleteSector(id).then(res => {
                 if (res) {
@@ -124,7 +122,9 @@ class Sectors extends Component {
                                                 <th>Tên KV</th>
                                                 <th>Mô tả KV</th>
                                                 <th>Trạng thái</th>
-                                                <th>Chức năng</th>
+                                                {(this.state.delete || this.state.update) &&
+                                                    <th>Chức năng</th>
+                                                }
                                             </tr>
                                             {this.genListSector()}
                                         </tbody>
@@ -157,7 +157,8 @@ class Sectors extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.SectorReducer
+        data: state.SectorReducer,
+        user: state.LoginReducer
     }
 }
 

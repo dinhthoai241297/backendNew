@@ -3,6 +3,9 @@ import SubjectGroupItem from './SubjectGroupItem';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/SubjectGroupActions';
 import toastr from 'toastr';
+import { toastrOption } from './../../custom/Custom';
+import { findRole } from './../../custom/CusFunction';
+import * as roles from './../../contants/roles';
 
 class SubjectGroup extends Component {
 
@@ -11,8 +14,12 @@ class SubjectGroup extends Component {
         this.state = {
             page: 1,
             next: true,
-            subjectGroups: []
+            subjectGroups: [],
+            update: false,
+            delete: false
         }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -22,9 +29,13 @@ class SubjectGroup extends Component {
 
     componentWillReceiveProps(nextProps) {
         let { subjectGroups, next } = nextProps.data;
+        let { user } = nextProps;
+        let update = findRole(user.roles, roles.UPDATE) !== -1, del = findRole(user.roles, roles.DELETE) !== -1;
         this.setState({
             subjectGroups,
-            next
+            next,
+            update,
+            delete: del
         });
     }
 
@@ -48,7 +59,13 @@ class SubjectGroup extends Component {
         if (subjectGroups) {
             rs = subjectGroups.map((subjectGroup, index) => {
                 return (
-                    <SubjectGroupItem key={index} subjectGroup={subjectGroup} deleteSubjectGroup={this.deleteSubjectGroup} />
+                    <SubjectGroupItem
+                        key={index}
+                        subjectGroup={subjectGroup}
+                        deleteSubjectGroup={this.deleteSubjectGroup}
+                        update={this.state.update}
+                        delete={this.state.delete}
+                    />
                 );
             });
         }
@@ -56,23 +73,6 @@ class SubjectGroup extends Component {
     }
 
     deleteSubjectGroup = (id) => {
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         if (confirm('Bạn có chắc muốn xóa')) {
             this.props.deleteSubjectGroup(id).then(res => {
                 toastr.warning('Deleted!');
@@ -119,7 +119,9 @@ class SubjectGroup extends Component {
                                                 <th>Môn Thi</th>
                                                 <th>Mô tả</th>
                                                 <th>Trạng thái</th>
-                                                <th>Chức năng</th>
+                                                {(this.state.delete || this.state.update) &&
+                                                    <th>Chức năng</th>
+                                                }
                                             </tr>
                                             {this.genListSubjectGroup()}
                                         </tbody>
@@ -152,7 +154,8 @@ class SubjectGroup extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.SubjectGroupReducer
+        data: state.SubjectGroupReducer,
+        user: state.LoginReducer
     }
 }
 

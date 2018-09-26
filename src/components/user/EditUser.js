@@ -1,41 +1,41 @@
 import React, { Component, Fragment } from 'react';
-import UserApi from './../../api/UserApi';
-import RoleApi from './../../api/RoleApi';
 import { connect } from 'react-redux';
-import * as userAction from './../../actions/UserActions';
 import toastr from 'toastr';
 import Select from 'react-select';
-
-const customStyles = {
-    control: (base) => ({
-        ...base,
-        minHeight: 34,
-        borderRadius: 0
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: "0 8px"
-    })
-}
+import * as userAction from './../../actions/UserActions';
+import UserApi from './../../api/UserApi';
+import RoleApi from './../../api/RoleApi';
+import StatusApi from '../../api/StatusApi';
+import { selectStyle, toastrOption } from './../../custom/Custom';
 
 class EditUser extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isUpdate: false,
+
+        this.init = {
             user: {
                 id: undefined,
                 username: '',
                 password: '',
                 email: '',
                 fullName: '',
-                role: ''
+                role: '',
+                status: 1
             },
             isProcess: false,
-            options: [],
-            selectedOption: null
+            roleSelectedOption: null,
+            statusSelectedOption: null
         }
+
+        this.state = {
+            isUpdate: false,
+            roleOptions: [],
+            statusOptions: [],
+            ...this.init
+        }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -46,64 +46,60 @@ class EditUser extends Component {
         this.updateAction(nextProps);
     }
 
-    updateAction = (props) => {
-        let isUpdate = props.do === 'update' ? true : false;
-        let user = {
-            id: undefined,
-            username: '',
-            password: '',
-            email: '',
-            fullName: '',
-            role: ''
+    loadStatusOption = async () => {
+        // lấy tất cả status trong db
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await StatusApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
         }
-        RoleApi.getAll().then(res => {
-            this.setState({
-                options: res.body.data.list.map(el => ({ value: el.id, label: el.name }))
-            });
+        this.setState({
+            statusOptions: rs.map(el => ({ value: el.id, label: el.name }))
         });
+    }
+
+    loadRoleOption = async () => {
+        // lấy tất cả status trong db
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await RoleApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
+        }
+        this.setState({
+            roleOptions: rs.map(el => ({ value: el.id, label: el.name }))
+        });
+    }
+
+    updateAction = async (props) => {
+        let isUpdate = props.do === 'update' ? true : false;
+        this.setState({ isUpdate });
+        await this.loadRoleOption();
+        await this.loadStatusOption();
         if (isUpdate) {
             UserApi.getOne(props.match.params.id).then(res => {
-                let u = res.body.data;
-                if (u) {
-                    user.id = u.id;
-                    user.username = u.username;
-                    user.password = u.password;
-                    user.email = u.email;
-                    user.fullName = u.fullName;
-                    user.role = u.role;
-                    console.log(user.role);
+                let user = res.body.data;
+                if (user) {
                     this.setState({
-                        selectedOption: this.state.options.filter(el => el.value === user.role)
+                        roleSelectedOption: this.state.roleOptions.filter(el => el.value === user.role),
+                        statusSelectedOption: this.state.statusOptions.filter(el => el.value === user.status),
+                        user
                     });
-                    console.log(this.state.options);
                 }
-                this.setState({
-                    user
-                });
             }).catch(error => {
                 throw (error);
             });
         } else {
-            this.setState({
-                user
-            });
+            this.renewForm();
         }
     }
 
-    clearForm = () => {
-        this.setState({
-            user: {
-                id: undefined,
-                username: '',
-                password: '',
-                email: '',
-                fullName: '',
-                role: ''
-            }
-        });
+    renewForm = () => {
+        this.setState(preState => ({ ...preState, ...this.init }));
     }
 
-    onChange = (e) => {
+    handleChangeInput = (e) => {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
@@ -114,28 +110,11 @@ class EditUser extends Component {
         }));
     }
 
-    onSave = (e) => {
+    handleSave = (e) => {
+        e.preventDefault();
         this.setState({
             isProcess: true
         });
-        e.preventDefault();
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         let { user } = this.state;
         if (user.id) {
             this.props.updateUser(user).then(res => {
@@ -159,14 +138,24 @@ class EditUser extends Component {
                     isProcess: false
                 });
             });
-            this.clearForm();
+            this.renewForm();
         }
     }
 
-    handleChange = (selectedOption) => {
-        this.setState({ selectedOption });
+    handleChangeRole = (roleSelectedOption) => {
+        this.setState({ roleSelectedOption });
         let { user } = this.state;
-        user.role = selectedOption.value
+        user.role = roleSelectedOption.value
+        this.setState({
+            user
+        });
+    }
+
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
+        let { user } = this.state;
+        user.status = statusSelectedOption.value
         this.setState({
             user
         });
@@ -209,7 +198,7 @@ class EditUser extends Component {
                                                     name="fullName"
                                                     placeholder="Tên"
                                                     value={user.fullName}
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -224,7 +213,7 @@ class EditUser extends Component {
                                                     name="username"
                                                     placeholder="Tài khoản"
                                                     value={user.username}
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -239,7 +228,7 @@ class EditUser extends Component {
                                                     name="password"
                                                     placeholder="Mật khẩu"
                                                     value={user.password}
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -254,19 +243,31 @@ class EditUser extends Component {
                                                     name="email"
                                                     placeholder="Email"
                                                     value={user.email}
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-xs-12">
+                                        <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
                                                 <label htmlFor="role">Quyền</label>
                                                 <Select
-                                                    styles={customStyles}
-                                                    onChange={this.handleChange}
-                                                    options={this.state.options}
-                                                    value={this.state.selectedOption}
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeRole}
+                                                    options={this.state.roleOptions}
+                                                    value={this.state.roleSelectedOption}
                                                     placeholder="Quyền"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="status">Trạng thái</label>
+                                                <Select
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeStatus}
+                                                    options={this.state.statusOptions}
+                                                    value={this.state.statusSelectedOption}
+                                                    placeholder="Trạng thái"
                                                 />
                                             </div>
                                         </div>
@@ -275,7 +276,7 @@ class EditUser extends Component {
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button
                                                 className="btn btn-block btn-primary btn-flat"
-                                                onClick={(e) => this.onSave(e)}
+                                                onClick={(e) => this.handleSave(e)}
                                                 disabled={this.state.isProcess}
                                             >
                                                 Lưu lại  {this.state.isProcess ? (<i className="fa fa-spinner faa-spin animated"></i>) : ''}

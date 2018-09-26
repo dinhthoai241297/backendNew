@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Link, Route } from 'react-router-dom';
+import { findRole } from './../../custom/CusFunction';
+import * as roles from './../../contants/roles';
 
 const MyLink = ({ children, nativeClass, ...linkProps }) => (
     <Route
@@ -16,10 +18,9 @@ const MyLink = ({ children, nativeClass, ...linkProps }) => (
 
 class Sidebar extends Component {
 
-
     render() {
         let { user } = this.props;
-
+        let add = findRole(user.roles, roles.ADD) !== -1;
         return (
             <aside className="main-sidebar">
                 {/* sidebar: style can be found in sidebar.less */}
@@ -30,7 +31,7 @@ class Sidebar extends Component {
                             <img src="https://almsaeedstudio.com/themes/AdminLTE/dist/img/user2-160x160.jpg" className="img-circle" alt="User Image" />
                         </div>
                         <div className="pull-left info">
-                            <p>ADMIN</p>
+                            <p>user.fullName</p>
                             {/* Status */}
                             <a href="#"><i className="fa fa-circle text-success" /> Online</a>
                         </div>
@@ -80,16 +81,18 @@ class Sidebar extends Component {
                                             </Fragment>
                                         }
                                     />
-                                    <MyLink
-                                        nativeClass=""
-                                        to="/sector/add"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Add Sector
-                                            </Fragment>
-                                        }
-                                    />
+                                    {add &&
+                                        <MyLink
+                                            nativeClass=""
+                                            to="/sector/add"
+                                            activeOnlyWhenExact={true}
+                                            label={
+                                                <Fragment>
+                                                    <i className="fa fa-circle-o"></i> Add Sector
+                                        </Fragment>
+                                            }
+                                        />
+                                    }
                                 </ul>
                             }
                         </MyLink>
@@ -117,15 +120,17 @@ class Sidebar extends Component {
                                             </Fragment>
                                         }
                                     />
-                                    <MyLink
-                                        to="/province/add"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Add Province
-                                            </Fragment>
-                                        }
-                                    />
+                                    {add &&
+                                        <MyLink
+                                            to="/province/add"
+                                            activeOnlyWhenExact={true}
+                                            label={
+                                                <Fragment>
+                                                    <i className="fa fa-circle-o"></i> Add Province
+                                        </Fragment>
+                                            }
+                                        />
+                                    }
                                 </ul>
                             }
                         </MyLink>
@@ -153,15 +158,17 @@ class Sidebar extends Component {
                                             </Fragment>
                                         }
                                     />
-                                    <MyLink
-                                        to="/school/add"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Add School
+                                    {add &&
+                                        <MyLink
+                                            to="/school/add"
+                                            activeOnlyWhenExact={true}
+                                            label={
+                                                <Fragment>
+                                                    <i className="fa fa-circle-o"></i> Add School
                                             </Fragment>
-                                        }
-                                    />
+                                            }
+                                        />
+                                    }
                                 </ul>
                             }
                         </MyLink>
@@ -189,15 +196,17 @@ class Sidebar extends Component {
                                             </Fragment>
                                         }
                                     />
-                                    <MyLink
-                                        to="/mark/add"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Add Mark
+                                    {add &&
+                                        <MyLink
+                                            to="/mark/add"
+                                            activeOnlyWhenExact={true}
+                                            label={
+                                                <Fragment>
+                                                    <i className="fa fa-circle-o"></i> Add Mark
                                             </Fragment>
-                                        }
-                                    />
+                                            }
+                                        />
+                                    }
                                 </ul>
                             }
                         </MyLink>
@@ -225,15 +234,17 @@ class Sidebar extends Component {
                                             </Fragment>
                                         }
                                     />
-                                    <MyLink
-                                        to="/major/add"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Add Major
-                                            </Fragment>
-                                        }
-                                    />
+                                    {add &&
+                                        <MyLink
+                                            to="/major/add"
+                                            activeOnlyWhenExact={true}
+                                            label={
+                                                <Fragment>
+                                                    <i className="fa fa-circle-o"></i> Add Major
+                                                </Fragment>
+                                            }
+                                        />
+                                    }
                                 </ul>
                             }
                         </MyLink>
@@ -261,15 +272,17 @@ class Sidebar extends Component {
                                             </Fragment>
                                         }
                                     />
-                                    <MyLink
-                                        to="/subject/add"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Add Subject
+                                    {add &&
+                                        <MyLink
+                                            to="/subject/add"
+                                            activeOnlyWhenExact={true}
+                                            label={
+                                                <Fragment>
+                                                    <i className="fa fa-circle-o"></i> Add Subject
                                             </Fragment>
-                                        }
-                                    />
+                                            }
+                                        />
+                                    }
                                 </ul>
                             }
                         </MyLink>
@@ -297,90 +310,96 @@ class Sidebar extends Component {
                                             </Fragment>
                                         }
                                     />
-                                    <MyLink
-                                        to="/subjectGroup/add"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Add SubjectGroup
+                                    {add &&
+                                        <MyLink
+                                            to="/subjectGroup/add"
+                                            activeOnlyWhenExact={true}
+                                            label={
+                                                <Fragment>
+                                                    <i className="fa fa-circle-o"></i> Add SubjectGroup
                                             </Fragment>
-                                        }
-                                    />
+                                            }
+                                        />
+                                    }
                                 </ul>
                             }
                         </MyLink>
-                        <MyLink
-                            to="/role"
-                            activeOnlyWhenExact={false}
-                            nativeClass="treeview"
-                            label={
-                                <Fragment>
-                                    <i className="fa fa-shield" /> <span>Role</span>
-                                    <span className="pull-right-container">
-                                        <i className="fa fa-angle-left pull-right" />
-                                    </span>
-                                </Fragment>
-                            }
-                        >
-                            {
-                                <ul className="treeview-menu">
-                                    <MyLink
-                                        to="/role/list"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> List Role
+                        {findRole(user.roles, roles.ROOT) !== -1 &&
+                            <Fragment>
+                                <MyLink
+                                    to="/role"
+                                    activeOnlyWhenExact={false}
+                                    nativeClass="treeview"
+                                    label={
+                                        <Fragment>
+                                            <i className="fa fa-shield" /> <span>Role</span>
+                                            <span className="pull-right-container">
+                                                <i className="fa fa-angle-left pull-right" />
+                                            </span>
+                                        </Fragment>
+                                    }
+                                >
+                                    {
+                                        <ul className="treeview-menu">
+                                            <MyLink
+                                                to="/role/list"
+                                                activeOnlyWhenExact={true}
+                                                label={
+                                                    <Fragment>
+                                                        <i className="fa fa-circle-o"></i> List Role
                                             </Fragment>
-                                        }
-                                    />
-                                    <MyLink
-                                        to="/role/add"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Add Role
+                                                }
+                                            />
+                                            <MyLink
+                                                to="/role/add"
+                                                activeOnlyWhenExact={true}
+                                                label={
+                                                    <Fragment>
+                                                        <i className="fa fa-circle-o"></i> Add Role
                                             </Fragment>
-                                        }
-                                    />
-                                </ul>
-                            }
-                        </MyLink>
-                        <MyLink
-                            to="/user"
-                            activeOnlyWhenExact={false}
-                            nativeClass="treeview"
-                            label={
-                                <Fragment>
-                                    <i className="fa fa-users" /> <span>User</span>
-                                    <span className="pull-right-container">
-                                        <i className="fa fa-angle-left pull-right" />
-                                    </span>
-                                </Fragment>
-                            }
-                        >
-                            {
-                                <ul className="treeview-menu">
-                                    <MyLink
-                                        to="/user/list"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> List User
+                                                }
+                                            />
+                                        </ul>
+                                    }
+                                </MyLink>
+                                <MyLink
+                                    to="/user"
+                                    activeOnlyWhenExact={false}
+                                    nativeClass="treeview"
+                                    label={
+                                        <Fragment>
+                                            <i className="fa fa-users" /> <span>User</span>
+                                            <span className="pull-right-container">
+                                                <i className="fa fa-angle-left pull-right" />
+                                            </span>
+                                        </Fragment>
+                                    }
+                                >
+                                    {
+                                        <ul className="treeview-menu">
+                                            <MyLink
+                                                to="/user/list"
+                                                activeOnlyWhenExact={true}
+                                                label={
+                                                    <Fragment>
+                                                        <i className="fa fa-circle-o"></i> List User
                                             </Fragment>
-                                        }
-                                    />
-                                    <MyLink
-                                        to="/user/add"
-                                        activeOnlyWhenExact={true}
-                                        label={
-                                            <Fragment>
-                                                <i className="fa fa-circle-o"></i> Add User
+                                                }
+                                            />
+                                            <MyLink
+                                                to="/user/add"
+                                                activeOnlyWhenExact={true}
+                                                label={
+                                                    <Fragment>
+                                                        <i className="fa fa-circle-o"></i> Add User
                                             </Fragment>
-                                        }
-                                    />
-                                </ul>
-                            }
-                        </MyLink>
+                                                }
+                                            />
+                                        </ul>
+                                    }
+                                </MyLink>
+                            </Fragment>
+                        }
                     </ul>
                     {/* /.sidebar-menu */}
                 </section>

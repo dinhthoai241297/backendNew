@@ -3,6 +3,9 @@ import MarkItem from './MarkItem';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/MarkActions';
 import toastr from 'toastr';
+import { findRole } from './../../custom/CusFunction';
+import * as roles from './../../contants/roles';
+import { toastrOption } from './../../custom/Custom';
 
 class Mark extends Component {
 
@@ -11,8 +14,11 @@ class Mark extends Component {
         this.state = {
             page: 1,
             next: true,
-            marks: []
+            marks: [],
+            update: false,
+            delete: false
         }
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -22,9 +28,13 @@ class Mark extends Component {
 
     componentWillReceiveProps(nextProps) {
         let { marks, next } = nextProps.data;
+        let { user } = nextProps;
+        let update = findRole(user.roles, roles.UPDATE) !== -1, del = findRole(user.roles, roles.DELETE) !== -1;
         this.setState({
             marks,
-            next
+            next,
+            update,
+            delete: del
         });
     }
 
@@ -48,7 +58,13 @@ class Mark extends Component {
         if (marks) {
             rs = marks.map((mark, index) => {
                 return (
-                    <MarkItem key={index} mark={mark} deleteMark={this.deleteMark} />
+                    <MarkItem
+                        key={index}
+                        mark={mark}
+                        deleteMark={this.deleteMark}
+                        delete={this.state.delete}
+                        update={this.state.update}
+                    />
                 );
             });
         }
@@ -56,23 +72,6 @@ class Mark extends Component {
     }
 
     deleteMark = (id) => {
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         if (confirm('Bạn có chắc muốn xóa')) {
             this.props.deleteMark(id).then(res => {
                 toastr.warning('Deleted!');
@@ -122,7 +121,10 @@ class Mark extends Component {
                                                 <th>Điểm Chuẩn</th>
                                                 <th>Tổ Hợp Môn</th>
                                                 <th>Ghi Chú</th>
-                                                <th>Chức năng</th>
+                                                <th>Trạng thái</th>
+                                                {(this.state.delete || this.state.update) &&
+                                                    <th>Chức năng</th>
+                                                }
                                             </tr>
                                             {this.genListMark()}
                                         </tbody>
@@ -155,7 +157,8 @@ class Mark extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.MarkReducer
+        data: state.MarkReducer,
+        user: state.LoginReducer
     }
 }
 

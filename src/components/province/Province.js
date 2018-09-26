@@ -3,6 +3,9 @@ import ProvinceItem from './ProvinceItem';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/ProvinceActions';
 import toastr from 'toastr';
+import { findRole } from './../../custom/CusFunction';
+import * as roles from './../../contants/roles';
+import { toastrOption } from './../../custom/Custom';
 
 class Province extends Component {
 
@@ -11,8 +14,11 @@ class Province extends Component {
         this.state = {
             page: 1,
             next: true,
-            provinces: []
+            provinces: [],
+            update: false,
+            delete: false
         }
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -22,9 +28,13 @@ class Province extends Component {
 
     componentWillReceiveProps(nextProps) {
         let { provinces, next } = nextProps.data;
+        let { user } = nextProps;
+        let update = findRole(user.roles, roles.UPDATE) !== -1, del = findRole(user.roles, roles.DELETE) !== -1;
         this.setState({
             provinces,
-            next
+            next,
+            update,
+            delete: del
         });
     }
 
@@ -48,7 +58,13 @@ class Province extends Component {
         if (provinces) {
             rs = provinces.map((province, index) => {
                 return (
-                    <ProvinceItem key={index} province={province} deleteProvince={this.deleteProvince} />
+                    <ProvinceItem
+                        key={index}
+                        province={province}
+                        deleteProvince={this.deleteProvince}
+                        delete={this.state.delete}
+                        update={this.state.update}
+                    />
                 );
             });
         }
@@ -56,23 +72,6 @@ class Province extends Component {
     }
 
     deleteProvince = (id) => {
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         if (confirm('Bạn có chắc muốn xóa')) {
             this.props.deleteProvince(id).then(res => {
                 toastr.warning('Deleted!');
@@ -119,7 +118,9 @@ class Province extends Component {
                                                 <th>Mô tả</th>
                                                 <th>Khu vực</th>
                                                 <th>Trạng thái</th>
-                                                <th>Chức năng</th>
+                                                {(this.state.update || this.state.delete) &&
+                                                    <th>Chức năng</th>
+                                                }
                                             </tr>
                                             {this.genListProvince()}
                                         </tbody>
@@ -152,7 +153,8 @@ class Province extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.ProvinceReducer
+        data: state.ProvinceReducer,
+        user: state.LoginReducer
     }
 }
 

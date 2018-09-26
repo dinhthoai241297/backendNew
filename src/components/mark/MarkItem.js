@@ -13,9 +13,14 @@ class MarkItem extends Component {
                 <td>{mark.mark}</td>
                 <td>{JSON.parse(mark.subjectGroups).map((sg, index) => (<Fragment key={index}>{sg}<br /></Fragment>))}</td>
                 <td>{mark.note}</td>
+                <td>{mark.status.name}</td>
                 <td>
-                    <Link className="btn btn-warning btn-xs" to={'/mark/update/' + mark.id}>Sửa</Link>
-                    <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteMark(mark.id)}>Xóa</button>
+                    {this.props.update &&
+                        <Link className="btn btn-warning btn-xs" to={'/mark/update/' + mark.id}>Sửa</Link>
+                    }
+                    {this.props.delete &&
+                        <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteMark(mark.id)}>Xóa</button>
+                    }
                 </td>
             </tr>
         );

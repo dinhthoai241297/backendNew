@@ -3,6 +3,7 @@ import RoleItem from './RoleItem';
 import { connect } from 'react-redux';
 import * as actions from './../../actions/RoleActions';
 import toastr from 'toastr';
+import { toastrOption } from './../../custom/Custom';
 
 class Roles extends Component {
 
@@ -13,6 +14,7 @@ class Roles extends Component {
             next: true,
             roles: []
         }
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -56,23 +58,6 @@ class Roles extends Component {
     }
 
     deleteRole = (id) => {
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         if (confirm('Bạn có chắc muốn xóa')) {
             this.props.deleteRole(id).then(res => {
                 if (res) {
@@ -123,6 +108,8 @@ class Roles extends Component {
                                             <tr>
                                                 <th>Tên Quyền</th>
                                                 <th>Quyền</th>
+                                                <th>Trạng thái</th>
+                                                <th>Chức năng</th>
                                             </tr>
                                             {this.genListRole()}
                                         </tbody>

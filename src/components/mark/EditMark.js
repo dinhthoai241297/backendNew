@@ -5,27 +5,17 @@ import * as markAction from '../../actions/MarkActions';
 import toastr from 'toastr';
 import Select from 'react-select';
 import SchoolApi from '../../api/SchoolApi';
-import MajorApi from '../../api/MajorApi';
 import SubjectGroupApi from '../../api/SubjectGroupApi';
-
-const customStyles = {
-    control: (base) => ({
-        ...base,
-        minHeight: 34,
-        borderRadius: 0
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: "0 8px"
-    })
-}
+import MajorApi from '../../api/MajorApi';
+import StatusApi from '../../api/StatusApi';
+import { selectStyle, toastrOption } from './../../custom/Custom';
 
 class EditMark extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isUpdate: false,
+
+        this.init = {
             mark: {
                 id: undefined,
                 school: '',
@@ -34,17 +24,25 @@ class EditMark extends Component {
                 mark: 0,
                 aspiration: 0,
                 subjectGroups: '',
-                note: ''
-
+                note: '',
+                status: 1
             },
-            isProcess: false,
-            optionsSchool: [],
-            selectedOptionSchool: null,
-            optionsMajor: [],
-            selectedOptionMajor: null,
-            optionsSG: [],
-            selectedOptionSG: null,
+            schoolSelectedOption: null,
+            majorSelectedOption: null,
+            sGSelectedOption: null,
+            statusSelectedOption: null,
+            isProcess: false
         }
+
+        this.state = {
+            isUpdate: false,
+            schoolOptions: [],
+            majorOptions: [],
+            sGOptions: [],
+            statusOptions: [],
+            ...this.init
+        }
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -55,21 +53,33 @@ class EditMark extends Component {
         this.updateAction(nextProps);
     }
 
-    loadMajors = (school, select) => {
+    loadMajorOption = (school, select) => {
         // get all major in school with id = mark.school
         MajorApi.getAllInSchool(school).then(res => {
-            let optionsMajor = res.body.data.list.map(el => ({ value: el.id, label: el.name }));
+            let majorOptions = res.body.data.list.map(el => ({ value: el.id, label: el.name }));
             this.setState({
-                optionsMajor,
-                selectedOptionMajor: select !== '' ? optionsMajor.filter(el => el.value === select) : ''
+                majorOptions,
+                majorSelectedOption: select !== '' ? majorOptions.filter(el => el.value === select) : ''
             });
         }).catch(error => {
             throw (error);
         });
     }
 
-    updateAction = async (props) => {
-        let isUpdate = props.do === 'update' ? true : false;
+    loadStatusOption = async () => {
+        // lấy tất cả status trong db
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await StatusApi.getAll(page++);
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
+        }
+        this.setState({
+            statusOptions: rs.map(el => ({ value: el.id, label: el.name }))
+        });
+    }
+
+    loadSchoolOption = async () => {
         // get all school in database
         let next = true, rs = [], tmp = null, page = 1;
         while (next) {
@@ -78,80 +88,59 @@ class EditMark extends Component {
             next = tmp.body.data.next;
         }
         this.setState({
-            optionsSchool: rs.map(el => ({ value: el.id, label: el.name }))
+            schoolOptions: rs.map(el => ({ value: el.id, label: el.name }))
         });
+    }
+
+    loadSGOption = async () => {
         // get all subjectGroup in database
-        next = true, rs = [], tmp = null, page = 1;
+        let next = true, rs = [], tmp = null, page = 1;
         while (next) {
             tmp = await SubjectGroupApi.getAll(page++);
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
         this.setState({
-            optionsSG: rs.map(el => ({ value: el.id, label: el.code }))
+            sGOptions: rs.map(el => ({ value: el.id, label: el.code }))
         });
-        let mark = {
-            id: undefined,
-            school: '',
-            major: '',
-            year: 0,
-            mark: 0,
-            aspiration: 0,
-            subjectGroups: '',
-            note: ''
-        }
+    }
+
+    updateAction = async (props) => {
+        let isUpdate = props.do === 'update' ? true : false;
+        this.setState({ isUpdate });
+        await this.loadStatusOption();
+        await this.loadSGOption();
+        await this.loadSchoolOption();
         if (isUpdate) {
             MarkApi.getOne(props.match.params.id).then(data => {
-                let m = data.body.data;
-                if (m) {
-                    mark.id = m.id;
-                    mark.school = m.school;
-                    mark.major = m.major;
-                    mark.year = m.year;
-                    mark.mark = m.mark;
-                    mark.aspiration = m.aspiration;
-                    mark.note = m.note;
-                    mark.subjectGroups = JSON.parse(m.subjectGroups);
-                    let t = [];
+                let mark = data.body.data;
+                if (mark) {
+                    mark.subjectGroups = JSON.parse(mark.subjectGroups);
+                    let sGSelectedOption = [];
                     for (let i = 0; i < mark.subjectGroups.length; i++) {
-                        t = t.concat(this.state.optionsSG.filter(el => el.value === mark.subjectGroups[i]));
+                        sGSelectedOption = sGSelectedOption.concat(this.state.sGOptions.filter(el => el.value === mark.subjectGroups[i]));
                     }
-                    this.loadMajors(mark.school, mark.major);
+                    this.loadMajorOption(mark.school, mark.major);
                     this.setState({
                         mark,
-                        selectedOptionSchool: this.state.optionsSchool.filter(el => el.value === mark.school),
-                        selectedOptionSG: t
+                        schoolSelectedOption: this.state.schoolOptions.filter(el => el.value === mark.school),
+                        statusSelectedOption: this.state.statusOptions.filter(el => el.value === mark.status),
+                        sGSelectedOption
                     });
                 }
             }).catch(error => {
                 throw (error)
             });
         } else {
-            this.setState({
-                mark
-            });
+            this.renewForm();
         }
     }
 
-    clearForm = () => {
-        this.setState({
-            mark: {
-                id: undefined,
-                school: '',
-                major: '',
-                year: 0,
-                mark: 0,
-                aspiration: 0,
-                subjectGroups: '',
-                note: ''
-            },
-            selectedOptionMajor: '',
-            selectedOptionSchool: '',
-            selectedOptionSG: '',
-        });
+    renewForm = () => {
+        this.setState(preState => ({ ...preState, ...this.init }));
     }
 
-    onChange = (e) => {
+    handleChangeInput = (e) => {
         let { name, value } = e.target;
         this.setState(preState => ({
             ...preState,
@@ -162,28 +151,11 @@ class EditMark extends Component {
         }));
     }
 
-    onSave = (e) => {
+    handleSave = (e) => {
+        e.preventDefault();
         this.setState({
             isProcess: true
         });
-        e.preventDefault();
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         let { mark } = this.state;
         if (mark.id) {
             this.props.updateMark(mark).then(res => {
@@ -207,13 +179,13 @@ class EditMark extends Component {
                     isProcess: false
                 });
             });
-            this.clearForm();
+            this.renewForm();
         }
     }
 
     handleChangeSchool = (selectedOption) => {
         this.setState({
-            selectedOptionSchool: selectedOption
+            schoolSelectedOption: selectedOption
         });
         let { mark } = this.state;
         mark.school = selectedOption.value;
@@ -226,7 +198,7 @@ class EditMark extends Component {
 
     handleChangeMajor = (selectedOption) => {
         this.setState({
-            selectedOptionMajor: selectedOption
+            majorSelectedOption: selectedOption
         });
         let { mark } = this.state;
         mark.major = selectedOption.value;
@@ -237,10 +209,20 @@ class EditMark extends Component {
 
     handleChangeSG = (selectedOption) => {
         this.setState({
-            selectedOptionSG: selectedOption
+            sGSelectedOption: selectedOption
         });
         let { mark } = this.state;
         mark.subjectGroups = selectedOption.map(el => el.value);
+        this.setState({
+            mark
+        });
+    }
+
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
+        let { mark } = this.state;
+        mark.status = statusSelectedOption.value
         this.setState({
             mark
         });
@@ -276,10 +258,10 @@ class EditMark extends Component {
                                             <div className="form-group">
                                                 <label htmlFor="school">Trường</label>
                                                 <Select
-                                                    styles={customStyles}
+                                                    styles={selectStyle}
                                                     onChange={this.handleChangeSchool}
-                                                    options={this.state.optionsSchool}
-                                                    value={this.state.selectedOptionSchool}
+                                                    options={this.state.schoolOptions}
+                                                    value={this.state.schoolSelectedOption}
                                                     placeholder="Trường"
                                                 />
                                             </div>
@@ -288,10 +270,10 @@ class EditMark extends Component {
                                             <div className="form-group">
                                                 <label htmlFor="major">Ngành</label>
                                                 <Select
-                                                    styles={customStyles}
+                                                    styles={selectStyle}
                                                     onChange={this.handleChangeMajor}
-                                                    options={this.state.optionsMajor}
-                                                    value={this.state.selectedOptionMajor}
+                                                    options={this.state.majorOptions}
+                                                    value={this.state.majorSelectedOption}
                                                     placeholder="Ngành"
                                                 />
                                             </div>
@@ -307,7 +289,7 @@ class EditMark extends Component {
                                                     id="year"
                                                     name="year"
                                                     placeholder="Năm"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -322,7 +304,7 @@ class EditMark extends Component {
                                                     id="mark"
                                                     name="mark"
                                                     placeholder="Điểm chuẩn"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -337,7 +319,7 @@ class EditMark extends Component {
                                                     id="aspiration"
                                                     name="aspiration"
                                                     placeholder="Nguyện Vọng"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
@@ -352,20 +334,32 @@ class EditMark extends Component {
                                                     id="note"
                                                     name="note"
                                                     placeholder="Nghi Chú"
-                                                    onChange={(e) => this.onChange(e)}
+                                                    onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-xs-12">
+                                        <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
                                                 <label htmlFor="subjectGroups">Tổ Hợp Môn</label>
                                                 <Select
                                                     isMulti={true}
-                                                    styles={customStyles}
+                                                    styles={selectStyle}
                                                     onChange={this.handleChangeSG}
-                                                    options={this.state.optionsSG}
-                                                    value={this.state.selectedOptionSG}
+                                                    options={this.state.sGOptions}
+                                                    value={this.state.sGSelectedOption}
                                                     placeholder="Tổ hợp môn"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-6">
+                                            <div className="form-group">
+                                                <label htmlFor="status">Trạng thái</label>
+                                                <Select
+                                                    styles={selectStyle}
+                                                    onChange={this.handleChangeStatus}
+                                                    options={this.state.statusOptions}
+                                                    value={this.state.statusSelectedOption}
+                                                    placeholder="Trạng thái"
                                                 />
                                             </div>
                                         </div>
@@ -374,7 +368,7 @@ class EditMark extends Component {
                                         <div className="col-xs-6 col-md-3 col-xs-offset-6 col-md-offset-9">
                                             <button
                                                 className="btn btn-block btn-primary btn-flat"
-                                                onClick={(e) => this.onSave(e)}
+                                                onClick={(e) => this.handleSave(e)}
                                                 disabled={this.state.isProcess}
                                             >
                                                 Lưu lại  {this.state.isProcess ? (<i className="fa fa-spinner faa-spin animated"></i>) : ''}

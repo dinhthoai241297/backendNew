@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from './../../actions/UserActions';
 
@@ -51,7 +50,7 @@ class Header extends Component {
                                                     {/* Message title and timestamp */}
                                                     <h4>
                                                         Support Team
-                            <small><i className="fa fa-clock-o" /> 5 mins</small>
+                                                        <small><i className="fa fa-clock-o" /> 5 mins</small>
                                                     </h4>
                                                     {/* The message */}
                                                     <p>Why not buy a new awesome theme?</p>
@@ -81,7 +80,7 @@ class Header extends Component {
                                                 {/* start notification */}
                                                 <a href="#">
                                                     <i className="fa fa-users text-aqua" /> 5 new members joined today
-                        </a>
+                                                </a>
                                             </li>
                                             {/* end notification */}
                                         </ul>
@@ -141,7 +140,7 @@ class Header extends Component {
                                         <img src="https://almsaeedstudio.com/themes/AdminLTE/dist/img/user2-160x160.jpg" className="img-circle" alt="User Image" />
                                         <p>
                                             ADMIN - FullStack Developer
-                      <small>Member since Nov. 2012</small>
+                                            <small>Member since Nov. 2012</small>
                                         </p>
                                     </li>
                                     {/* Menu Body */}
@@ -188,4 +187,10 @@ const mapDispatchToProps = (dispatch, props) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(Header);
+const mapStateToProps = (state) => {
+    return {
+        user: state.UserReducer
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

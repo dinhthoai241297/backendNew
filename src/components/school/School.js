@@ -3,6 +3,9 @@ import SchoolItem from './SchoolItem';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/SchoolActions';
 import toastr from 'toastr';
+import { findRole } from './../../custom/CusFunction';
+import * as roles from './../../contants/roles';
+import { toastrOption } from './../../custom/Custom';
 
 class School extends Component {
 
@@ -11,8 +14,12 @@ class School extends Component {
         this.state = {
             page: 1,
             next: true,
-            schools: []
+            schools: [],
+            update: false,
+            delete: false
         }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -22,9 +29,13 @@ class School extends Component {
 
     componentWillReceiveProps(nextProps) {
         let { schools, next } = nextProps.data;
+        let { user } = nextProps;
+        let update = findRole(user.roles, roles.UPDATE) !== -1, del = findRole(user.roles, roles.DELETE) !== -1;
         this.setState({
             schools,
-            next
+            next,
+            update,
+            delete: del
         });
     }
 
@@ -48,7 +59,13 @@ class School extends Component {
         if (schools) {
             rs = schools.map((school, index) => {
                 return (
-                    <SchoolItem key={index} school={school} deleteSchool={this.deleteSchool} />
+                    <SchoolItem
+                        key={index}
+                        school={school}
+                        deleteSchool={this.deleteSchool}
+                        delete={this.state.delete}
+                        update={this.state.update}
+                    />
                 );
             });
         }
@@ -56,23 +73,6 @@ class School extends Component {
     }
 
     deleteSchool = (id) => {
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         if (confirm('Bạn có chắc muốn xóa')) {
             this.props.deleteSchool(id).then(res => {
                 toastr.warning('Deleted!');
@@ -120,7 +120,9 @@ class School extends Component {
                                                 <th>Tỉnh</th>
                                                 <th>Image</th>
                                                 <th>Trạng thái</th>
-                                                <th>Chức năng</th>
+                                                {(this.state.delete || this.state.update) &&
+                                                    <th>Chức năng</th>
+                                                }
                                             </tr>
                                             {this.genListSchool()}
                                         </tbody>
@@ -153,7 +155,8 @@ class School extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.SchoolReducer
+        data: state.SchoolReducer,
+        user: state.LoginReducer
     }
 }
 

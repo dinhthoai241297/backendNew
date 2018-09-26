@@ -3,6 +3,9 @@ import SubjectItem from './SubjectItem';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/SubjectActions';
 import toastr from 'toastr';
+import { toastrOption } from './../../custom/Custom';
+import { findRole } from './../../custom/CusFunction';
+import * as roles from './../../contants/roles';
 
 class Subject extends Component {
 
@@ -11,8 +14,12 @@ class Subject extends Component {
         this.state = {
             page: 1,
             next: true,
-            subjects: []
+            subjects: [],
+            update: false,
+            delete: false
         }
+
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -22,9 +29,13 @@ class Subject extends Component {
 
     componentWillReceiveProps(nextProps) {
         let { subjects, next } = nextProps.data;
+        let { user } = nextProps;
+        let update = findRole(user.roles, roles.UPDATE) !== -1, del = findRole(user.roles, roles.DELETE) !== -1;
         this.setState({
             subjects,
-            next
+            next,
+            update,
+            delete: del
         });
     }
 
@@ -48,7 +59,13 @@ class Subject extends Component {
         if (subjects) {
             rs = subjects.map((subject, index) => {
                 return (
-                    <SubjectItem key={index} subject={subject} deleteSubject={this.deleteSubject} />
+                    <SubjectItem
+                        key={index}
+                        subject={subject}
+                        deleteSubject={this.deleteSubject}
+                        update={this.state.update}
+                        delete={this.state.delete}
+                    />
                 );
             });
         }
@@ -56,23 +73,6 @@ class Subject extends Component {
     }
 
     deleteSubject = (id) => {
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         if (confirm('Bạn có chắc muốn xóa')) {
             this.props.deleteSubject(id).then(res => {
                 toastr.warning('Deleted!');
@@ -118,7 +118,9 @@ class Subject extends Component {
                                                 <th>Tên Môn</th>
                                                 <th>Mô Tả</th>
                                                 <th>Trạng thái</th>
-                                                <th>Chức năng</th>
+                                                {(this.state.update || this.state.delete) &&
+                                                    <th>Chức năng</th>
+                                                }
                                             </tr>
                                             {this.genListSubject()}
                                         </tbody>
@@ -151,7 +153,8 @@ class Subject extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.SubjectReducer
+        data: state.SubjectReducer,
+        user: state.LoginReducer
     }
 }
 

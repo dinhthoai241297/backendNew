@@ -10,8 +10,12 @@ class SubjectItem extends Component {
                 <td>{subject.description}</td>
                 <td>{subject.status.name}</td>
                 <td>
-                    <Link className="btn btn-warning btn-xs" to={'/subject/update/' + subject.id}>Sửa</Link>
-                    <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteSubject(subject.id)}>Xóa</button>
+                    {this.props.update &&
+                        <Link className="btn btn-warning btn-xs" to={'/subject/update/' + subject.id}>Sửa</Link>
+                    }
+                    {this.props.delete &&
+                        <button className="btn btn-danger btn-xs" onClick={() => this.props.deleteSubject(subject.id)}>Xóa</button>
+                    }
                 </td>
             </tr>
         );

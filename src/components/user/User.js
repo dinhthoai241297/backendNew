@@ -3,6 +3,7 @@ import UserItem from './UserItem';
 import { connect } from 'react-redux';
 import * as actions from './../../actions/UserActions';
 import toastr from 'toastr';
+import { toastrOption } from './../../custom/Custom';
 
 class Users extends Component {
 
@@ -13,6 +14,7 @@ class Users extends Component {
             next: false,
             users: []
         }
+        toastr.options = toastrOption;
     }
 
     componentDidMount() {
@@ -56,23 +58,6 @@ class Users extends Component {
     }
 
     deleteUser = (id) => {
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-bottom-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "2000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
         if (confirm('Bạn có chắc muốn xóa')) {
             this.props.deleteUser(id).then(res => {
                 if (res) {
@@ -125,6 +110,7 @@ class Users extends Component {
                                                 <th>Mật khẩu</th>
                                                 <th>Tên</th>
                                                 <th>Quyền</th>
+                                                <th>Trạng thái</th>
                                                 <th>Chức năng</th>
                                             </tr>
                                             {this.genListUser()}
