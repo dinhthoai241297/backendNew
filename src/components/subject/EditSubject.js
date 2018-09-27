@@ -62,7 +62,10 @@ class EditSubject extends Component {
         await this.loadStatusOption();
         // lấy dữ liệu lên nếu là update
         if (isUpdate) {
-            SubjectApi.getOne(props.match.params.id).then(res => {
+            SubjectApi.getOne({
+                id: props.match.params.id,
+                session: this.props.session
+            }).then(res => {
                 let subject = res.body.data;
                 if (subject) {
                     this.setState({
@@ -239,4 +242,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(null, mapDispatchToProps, mapStateToProps)(EditSubject);
+export default connect(mapStateToProps, mapDispatchToProps)(EditSubject);

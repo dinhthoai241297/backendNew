@@ -124,7 +124,10 @@ class EditMark extends Component {
         await this.loadSGOption();
         await this.loadSchoolOption();
         if (isUpdate) {
-            MarkApi.getOne(props.match.params.id).then(data => {
+            MarkApi.getOne({
+                id: props.match.params.id,
+                session: this.props.session
+            }).then(data => {
                 let mark = data.body.data;
                 if (mark) {
                     mark.subjectGroups = JSON.parse(mark.subjectGroups);
@@ -205,7 +208,7 @@ class EditMark extends Component {
         this.setState({
             mark
         });
-        this.loadMajors(selectedOption.value, '');
+        this.loadMajorOption(selectedOption.value, '');
     }
 
     handleChangeMajor = (selectedOption) => {
@@ -412,4 +415,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(null, mapDispatchToProps,mapStateToProps)(EditMark);
+export default connect(mapStateToProps, mapDispatchToProps)(EditMark);

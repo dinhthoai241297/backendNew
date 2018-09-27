@@ -68,7 +68,10 @@ class EditRole extends Component {
         // lấy tất cả status trong db
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await StatusApi.getAll(page++);
+            tmp = await StatusApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -82,7 +85,10 @@ class EditRole extends Component {
         this.setState({ isUpdate });
         await this.loadStatusOption();
         if (isUpdate) {
-            RoleApi.getOne(props.match.params.id).then(res => {
+            RoleApi.getOne({
+                id: props.match.params.id,
+                session: this.props.session
+            }).then(res => {
                 let role = res.body.data;
                 if (role) {
                     role.roles = JSON.parse(role.roles);
@@ -267,4 +273,10 @@ const mapDispatchToProps = (dispatch, props) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(EditRole);
+const mapStateToProps = (state) => {
+    return {
+        session: state.LoginReducer.session
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditRole);

@@ -27,11 +27,11 @@ export const addMajorState = major => {
 };
 
 export const updateMajorApi = major => {
-    return (dispatch,getState) =>{
-            return majorApi.update({
-                major,
-                session: getState().LoginReducer.session
-            }).then(res => {
+    return (dispatch, getState) => {
+        return majorApi.update({
+            major,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(updateMajorState(major));
                 return true;
@@ -41,7 +41,7 @@ export const updateMajorApi = major => {
         }).catch(error => {
             throw (error);
         });
-   }
+    }
 };
 
 export const updateMajorState = major => {
@@ -77,7 +77,7 @@ export const deleteMajorState = id => {
 };
 
 export const loadAllMajorApi = page => {
-    return (dispatch, getState) =>{
+    return (dispatch, getState) => {
         return majorApi.getAll({
             page,
             session: getState().LoginReducer.session
@@ -103,11 +103,11 @@ export const loadAllMajorState = data => {
 
 export const updateStatusApi = (id, status) => {
     return (dispatch, getState) => {
-            return majorApi.updateStatus({
-                id,
-                status: status.id,
-                session: getState().LoginReducer.session
-                }).then(res => {
+        return majorApi.updateStatus({
+            id,
+            status: status.id,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(updateStatusState(id, status));
                 return true;

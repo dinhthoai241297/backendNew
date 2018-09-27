@@ -8,7 +8,8 @@ class Login extends Component {
         super(props);
         this.state = {
             username: '',
-            password: ''
+            password: '',
+            mes: ''
         }
     }
 
@@ -22,7 +23,17 @@ class Login extends Component {
     login = (e) => {
         e.preventDefault();
         let { username, password } = this.state;
-        this.props.login(username, password);
+        this.props.login(username, password).then(res => {
+            let mes = '';
+            if (res.code === 804) {
+                mes = 'Tài khoản chưa kích hoạt!';
+            } else if (res.code === 803) {
+                mes = 'Tài khoản hoặc mật khẩu không hợp lệ!';
+            } else {
+                mes = 'Error: ' + res.code;
+            }
+            this.setState({ mes });
+        });
     }
 
     render() {
@@ -61,6 +72,9 @@ class Login extends Component {
                                                 onChange={(e) => this.onChange(e)}
                                             />
                                         </div>
+                                    </div>
+                                    <div className="col-xs-12 text-center" style={{ color: 'red' }}>
+                                        <h5>{this.state.mes}</h5>
                                     </div>
                                 </div>
                                 {/* /.box-body */}

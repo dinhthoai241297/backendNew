@@ -3,10 +3,10 @@ import * as actionTypes from './../actionTypes/SchoolActionTypes';
 
 export const addSchoolApi = school => {
     return (dispatch, getState) => {
-            return schoolApi.add({
-                school,
-                session: getState().LoginReducer.session
-            }).then(res => {
+        return schoolApi.add({
+            school,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(addSchoolState(school));
                 return true;
@@ -28,10 +28,10 @@ export const addSchoolState = school => {
 
 export const updateSchoolApi = school => {
     return (dispatch, getState) => {
-            return schoolApi.update({
-                school,
-                session: getState().LoginReducer.session
-            }.then(res => {
+        return schoolApi.update({
+            school,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(updateSchoolState(school));
                 return true;
@@ -53,10 +53,10 @@ export const updateSchoolState = school => {
 
 export const deleteSchoolApi = id => {
     return (dispatch, getState) => {
-            return schoolApi.delete({
-                id,
-                session: getState().LoginReducer.session
-            }).then(res => {
+        return schoolApi.delete({
+            id,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(deleteSchoolState(id));
                 return true;
@@ -78,10 +78,10 @@ export const deleteSchoolState = id => {
 
 export const loadAllSchoolApi = page => {
     return (dispatch, getState) => {
-            return schoolApi.getAll({
-                page,
-                session: getState().LoginReducer.session
-            }).then(res => {
+        return schoolApi.getAll({
+            page,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(loadAllSchoolState(res.body.data));
                 return true;
@@ -103,10 +103,11 @@ export const loadAllSchoolState = data => {
 
 export const updateStatusApi = (id, status) => {
     return (dispatch, getState) => {
-            return schoolApi.updateStatus({ id,
-                status: status.id,
-                session: getState().LoginReducer.session
-                }).then(res => {
+        return schoolApi.updateStatus({
+            id,
+            status: status.id,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(updateStatusState(id, status));
                 return true;

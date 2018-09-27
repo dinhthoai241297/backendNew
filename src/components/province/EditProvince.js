@@ -50,7 +50,7 @@ class EditProvince extends Component {
                 page: page++,
                 session: this.props.session
             });
-            
+
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -82,7 +82,10 @@ class EditProvince extends Component {
         await this.loadStatusOption();
         // lấy dữ liệu lên nếu là update
         if (isUpdate) {
-            ProvinceApi.getOne(props.match.params.id).then(res => {
+            ProvinceApi.getOne({
+                id: props.match.params.id,
+                session: this.props.session
+            }).then(res => {
                 let province = res.body.data;
                 if (province) {
                     this.setState({
@@ -281,4 +284,4 @@ const mapStateToProps = (state) => {
         session: state.LoginReducer.session
     }
 }
-export default connect(null, mapDispatchToProps,mapStateToProps)(EditProvince);
+export default connect(mapStateToProps, mapDispatchToProps)(EditProvince);

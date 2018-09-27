@@ -3,12 +3,12 @@ import * as actionTypes from './../actionTypes/ProvinceActionTypes';
 
 export const addProvinceApi = province => {
     return (dispatch, getState) => {
-            return provinceApi.add({
-                province,
-                session: getState().LoginReducer.session
-            }).then(res => {
+        return provinceApi.add({
+            province,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
-                dispatch(addProvinceState(province));``
+                dispatch(addProvinceState(province)); ``
                 return true;
             } else {
                 return false;
@@ -28,10 +28,10 @@ export const addProvinceState = province => {
 
 export const updateProvinceApi = province => {
     return (dispatch, getState) => {
-            return  provinceApi.update({
-                province,
-                session: getState().LoginReducer.session
-            }.then(res => {
+        return provinceApi.update({
+            province,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(updateProvinceState(province));
                 return true;
@@ -52,11 +52,11 @@ export const updateProvinceState = province => {
 };
 
 export const deleteProvinceApi = id => {
-    return (dispatch, getState) =>{
-            return provinceApi.delete({
-                id,
-                session: getState().LoginReducer.session
-            }).then(res => {
+    return (dispatch, getState) => {
+        return provinceApi.delete({
+            id,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(deleteProvinceState(id));
                 return true;
@@ -78,10 +78,10 @@ export const deleteProvinceState = id => {
 
 export const loadAllProvinceApi = page => {
     return (dispatch, getState) => {
-            return provinceApi.getAll({
-                page,
-                session: getState().LoginReducer.session
-            }).then(res => {
+        return provinceApi.getAll({
+            page,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(loadAllProvinceState(res.body.data));
                 return true;
@@ -103,22 +103,22 @@ export const loadAllProvinceState = data => {
 
 export const updateStatusApi = (id, status) => {
     return (dispatch, getState) => {
-                return provinceApi.updateStatus({
-                    id,
-                    status: status.id,
-                    session: getState().LoginReducer.session
-                    }).then(res => {
-                if (res.body.code === 200) {
-                    dispatch(updateStatusState(id, status));
-                    return true;
-                } else {
-                    return false;
-                }
-            }).catch(error => {
-                throw (error);
-            });
-        }
-    };
+        return provinceApi.updateStatus({
+            id,
+            status: status.id,
+            session: getState().LoginReducer.session
+        }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateStatusState(id, status));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
+};
 
 export const updateStatusState = (id, status) => {
     return {

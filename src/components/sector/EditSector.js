@@ -62,7 +62,10 @@ class EditSector extends Component {
         await this.loadStatusOption();
         // lấy dữ liệu lên nếu là update
         if (isUpdate) {
-            SectorApi.getOne(props.match.params.id).then(res => {
+            SectorApi.getOne({
+                id: props.match.params.id,
+                session: this.props.session
+            }).then(res => {
                 let sector = res.body.data;
                 if (sector) {
                     // khởi tạo dữ liệu selected ban đầu
@@ -242,4 +245,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(null, mapDispatchToProps,mapStateToProps)(EditSector);
+export default connect(mapStateToProps, mapDispatchToProps)(EditSector);

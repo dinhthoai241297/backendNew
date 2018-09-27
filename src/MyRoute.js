@@ -54,16 +54,22 @@ class MyRoute extends Component {
         });
     }
 
-
     async componentDidMount() {
         let next = true, tmp, list = [], page = 1;
         while (next) {
-            tmp = await StatusApi.getAll(page++);
-            list = list.concat(tmp.body.data.list);
-            next = tmp.body.data.next;
+            next = false;
+            tmp = await StatusApi.getAll({
+                page: page++,
+                session: this.state.session
+            });
+            if (tmp.body.code === 200) {
+                list = list.concat(tmp.body.data.list);
+                next = tmp.body.data.next;
+            }
         }
         this.props.loadStatus({ list, next });
     }
+
 
     validateRole = (roles, role) => {
         for (let i = 0; i < roles.length; i++) {

@@ -84,7 +84,10 @@ class EditSchool extends Component {
         await this.loadProvinceOption();
         await this.loadStatusOption();
         if (isUpdate) {
-            SchoolApi.getOne(props.match.params.id).then(res => {
+            SchoolApi.getOne({
+                id: props.match.params.id,
+                session: this.props.session
+            }).then(res => {
                 let school = res.body.data;
                 if (school) {
                     this.setState({
@@ -315,4 +318,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(null, mapDispatchToProps,mapStateToProps)(EditSchool);
+export default connect(mapStateToProps, mapDispatchToProps)(EditSchool);

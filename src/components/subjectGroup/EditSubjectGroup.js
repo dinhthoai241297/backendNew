@@ -83,7 +83,10 @@ class EditSubjectGroup extends Component {
         await this.loadSubjectOption();
         //
         if (isUpdate) {
-            SubjectGroupApi.getOne(props.match.params.id).then(res => {
+            SubjectGroupApi.getOne({
+                id: props.match.params.id,
+                session: this.props.session
+            }).then(res => {
                 let subjectGroup = res.body.data;
                 if (subjectGroup) {
                     subjectGroup.subjects = JSON.parse(subjectGroup.subjects);
@@ -289,4 +292,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(null, mapDispatchToProps,mapStateToProps)(EditSubjectGroup);
+export default connect(mapStateToProps, mapDispatchToProps)(EditSubjectGroup);

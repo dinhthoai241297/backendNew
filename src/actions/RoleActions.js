@@ -3,11 +3,10 @@ import * as actionTypes from './../actionTypes/RoleActionTypes';
 
 export const addRoleApi = role => {
     return (dispatch, getState) => {
-            return roleApi.add({
-                role,
-                session: getState().LoginReducer.session
-            }).then(res => {
-            console.log(res.body);
+        return roleApi.add({
+            role,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(addRoleState(role));
                 return true;
@@ -29,10 +28,10 @@ export const addRoleState = role => {
 
 export const updateRoleApi = role => {
     return (dispatch, getState) => {
-            return roleApi.update({
-                role,
-                session: getState().LoginReducer.session
-            }.then(res => {
+        return roleApi.update({
+            role,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(updateRoleState(role));
                 return true;
@@ -54,10 +53,10 @@ export const updateRoleState = role => {
 
 export const deleteRoleApi = id => {
     return (dispatch, getState) => {
-            return roleApi.delete({
-                id,
-                session: getState().LoginReducer.session
-            }).then(res => {
+        return roleApi.delete({
+            id,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(deleteRoleState(id));
                 return true;
@@ -78,11 +77,11 @@ export const deleteRoleState = id => {
 };
 
 export const loadAllRoleApi = page => {
-    return (dispatch,getState) => {
-            return roleApi.getAll({
-                page,
-                session: getState().LoginReducer.session
-            }).then(res => {
+    return (dispatch, getState) => {
+        return roleApi.getAll({
+            page,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(loadAllRoleState(res.body.data));
                 return true;
@@ -104,11 +103,11 @@ export const loadAllRoleState = data => {
 
 export const updateStatusApi = (id, status) => {
     return (dispatch, getState) => {
-            return roleApi.updateStatus({ 
-                id,
-                status: status.id,
-                session: getState().LoginReducer.session
-                }).then(res => {
+        return roleApi.updateStatus({
+            id,
+            status: status.id,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(updateStatusState(id, status));
                 return true;

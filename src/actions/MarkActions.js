@@ -2,11 +2,11 @@ import markApi from './../api/MarkApi';
 import * as actionTypes from './../actionTypes/MarkActionTypes';
 
 export const addMarkApi = mark => {
-    return (dispatch, getState) =>{
-            return markApi.add({
-                mark,
-                session: getState().LoginReducer.session
-            }).then(res => {
+    return (dispatch, getState) => {
+        return markApi.add({
+            mark,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(addMarkState(mark));
                 return true;
@@ -16,7 +16,7 @@ export const addMarkApi = mark => {
         }).catch(error => {
             throw (error);
         });
-   }
+    }
 };
 
 export const addMarkState = mark => {
@@ -27,11 +27,11 @@ export const addMarkState = mark => {
 };
 
 export const updateMarkApi = mark => {
-    return (dispatch, getState => {
-            return markApi.update({
-                mark,
-                session: getState().LoginReducer.session
-            }.then(res => {
+    return (dispatch, getState) => {
+        return markApi.update({
+            mark,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(updateMarkState(mark));
                 return true;
@@ -52,21 +52,21 @@ export const updateMarkState = mark => {
 };
 
 export const deleteMarkApi = id => {
-    return (dispatch, getState) =>{
-        return  markApi.delete({
+    return (dispatch, getState) => {
+        return markApi.delete({
             id,
             session: getState().LoginReducer.session
         }).then(res => {
-                if (res.body.code === 200) {
-                    dispatch(deleteMarkState(id));
-                    return true;
-                } else {
-                    return false;
-                }
-            }).catch(error => {
-                throw (error);
-            });
-        }
+            if (res.body.code === 200) {
+                dispatch(deleteMarkState(id));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const deleteMarkState = id => {
@@ -77,11 +77,11 @@ export const deleteMarkState = id => {
 };
 
 export const loadAllMarkApi = page => {
-    return (dispatch,getState) =>{
-            return markApi.getAll({
-                page,
-                session: getState().LoginReducer.session
-            }).then(res => {
+    return (dispatch, getState) => {
+        return markApi.getAll({
+            page,
+            session: getState().LoginReducer.session
+        }).then(res => {
             if (res.body.code === 200) {
                 dispatch(loadAllMarkState(res.body.data));
                 return true;
@@ -102,22 +102,22 @@ export const loadAllMarkState = data => {
 };
 
 export const updateStatusApi = (id, status) => {
-    return (dispatch,getState) =>{
+    return (dispatch, getState) => {
         return markApi.updateStatus({
-             id, 
-             status: status.id,
-             session: getState().LoginReducer.session
-             }).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateStatusState(id, status));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
-}
+            id,
+            status: status.id,
+            session: getState().LoginReducer.session
+        }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateStatusState(id, status));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const updateStatusState = (id, status) => {

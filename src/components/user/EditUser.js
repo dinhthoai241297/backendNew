@@ -50,7 +50,10 @@ class EditUser extends Component {
         // lấy tất cả status trong db
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await StatusApi.getAll(page++);
+            tmp = await StatusApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -63,7 +66,10 @@ class EditUser extends Component {
         // lấy tất cả status trong db
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await RoleApi.getAll(page++);
+            tmp = await RoleApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -78,7 +84,10 @@ class EditUser extends Component {
         await this.loadRoleOption();
         await this.loadStatusOption();
         if (isUpdate) {
-            UserApi.getOne(props.match.params.id).then(res => {
+            UserApi.getOne({
+                id: props.match.params.id,
+                session: this.props.session
+            }).then(res => {
                 let user = res.body.data;
                 if (user) {
                     this.setState({
@@ -302,4 +311,11 @@ const mapDispatchToProps = (dispatch, props) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(EditUser);
+const mapStateToProps = (state) => {
+    return {
+        session: state.LoginReducer.session
+    }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditUser);

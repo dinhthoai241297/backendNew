@@ -81,7 +81,10 @@ class EditMajor extends Component {
         await this.loadStatusOption();
         await this.loadSchoolOption();
         if (isUpdate) {
-            MajorApi.getOne(props.match.params.id).then(res => {
+            MajorApi.getOne({
+                id: props.match.params.id,
+                session: this.props.session
+            }).then(res => {
                 let major = res.body.data;
                 if (major) {
                     this.setState({
