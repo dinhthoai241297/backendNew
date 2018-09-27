@@ -50,7 +50,10 @@ class EditSchool extends Component {
         // lấy lên tất cả Province trong db
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await ProvinceApi.getAll(page++);
+            tmp = await ProvinceApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -63,7 +66,10 @@ class EditSchool extends Component {
         // lấy tất cả status trong db
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await StatusApi.getAll(page++);
+            tmp = await StatusApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -303,4 +309,10 @@ const mapDispatchToProps = (dispatch, props) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(EditSchool);
+const mapStateToProps = (state) => {
+    return {
+        session: state.LoginReducer.session
+    }
+}
+
+export default connect(null, mapDispatchToProps,mapStateToProps)(EditSchool);

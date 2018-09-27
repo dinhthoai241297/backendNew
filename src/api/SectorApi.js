@@ -10,16 +10,16 @@ class SectorApi {
         return request.post(`${HOST}sector/update`).send({ data });
     }
 
-    static delete(id = -1) {
-        return request.post(`${HOST}sector/delete`).send({ id });
+    static delete(data) {
+        return request.post(`${HOST}sector/delete`).send({ data });
     }
 
-    static getAll(page = 1) {
-        return request.post(`${HOST}sector/getall`).send({ page });
+    static getAll(data) {
+        return request.post(`${HOST}sector/getall`).send({ data });
     }
 
-    static getOne(id = -1) {
-        return request.post(`${HOST}sector/getone`).send({ id });
+    static getOne(data) {
+        return request.post(`${HOST}sector/getone`).send({ data });
     }
 
     static updateStatus(data) {

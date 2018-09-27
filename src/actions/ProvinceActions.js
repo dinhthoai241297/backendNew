@@ -2,16 +2,21 @@ import provinceApi from './../api/ProvinceApi';
 import * as actionTypes from './../actionTypes/ProvinceActionTypes';
 
 export const addProvinceApi = province => {
-    return dispatch => provinceApi.add(JSON.stringify(province)).then(res => {
-        if (res.body.code === 200) {
-            dispatch(addProvinceState(province));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return provinceApi.add({
+                province,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(addProvinceState(province));``
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const addProvinceState = province => {
@@ -22,16 +27,21 @@ export const addProvinceState = province => {
 };
 
 export const updateProvinceApi = province => {
-    return dispatch => provinceApi.update(JSON.stringify(province)).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateProvinceState(province));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return  provinceApi.update({
+                province,
+                session: getState().LoginReducer.session
+            }.then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateProvinceState(province));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const updateProvinceState = province => {
@@ -42,16 +52,21 @@ export const updateProvinceState = province => {
 };
 
 export const deleteProvinceApi = id => {
-    return dispatch => provinceApi.delete(id).then(res => {
-        if (res.body.code === 200) {
-            dispatch(deleteProvinceState(id));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) =>{
+            return provinceApi.delete({
+                id,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(deleteProvinceState(id));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const deleteProvinceState = id => {
@@ -62,16 +77,21 @@ export const deleteProvinceState = id => {
 };
 
 export const loadAllProvinceApi = page => {
-    return dispatch => provinceApi.getAll(page).then(res => {
-        if (res.body.code === 200) {
-            dispatch(loadAllProvinceState(res.body.data));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return provinceApi.getAll({
+                page,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(loadAllProvinceState(res.body.data));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const loadAllProvinceState = data => {
@@ -82,17 +102,23 @@ export const loadAllProvinceState = data => {
 };
 
 export const updateStatusApi = (id, status) => {
-    return dispatch => provinceApi.updateStatus({ id, status: status.id }).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateStatusState(id, status));
-            return true;
-        } else {
-            return false;
+    return (dispatch, getState) => {
+                return provinceApi.updateStatus({
+                    id,
+                    status: status.id,
+                    session: getState().LoginReducer.session
+                    }).then(res => {
+                if (res.body.code === 200) {
+                    dispatch(updateStatusState(id, status));
+                    return true;
+                } else {
+                    return false;
+                }
+            }).catch(error => {
+                throw (error);
+            });
         }
-    }).catch(error => {
-        throw (error);
-    });
-}
+    };
 
 export const updateStatusState = (id, status) => {
     return {

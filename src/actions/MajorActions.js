@@ -2,16 +2,21 @@ import majorApi from './../api/MajorApi';
 import * as actionTypes from './../actionTypes/MajorActionTypes';
 
 export const addMajorApi = major => {
-    return dispatch => majorApi.add(JSON.stringify(major)).then(res => {
-        if (res.body.code === 200) {
-            dispatch(addMajorState(major));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+        return majorApi.add({
+            major,
+            session: getState().LoginReducer.session
+        }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(addMajorState(major));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const addMajorState = major => {
@@ -22,16 +27,21 @@ export const addMajorState = major => {
 };
 
 export const updateMajorApi = major => {
-    return dispatch => majorApi.update(JSON.stringify(major)).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateMajorState(major));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch,getState) =>{
+            return majorApi.update({
+                major,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateMajorState(major));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+   }
 };
 
 export const updateMajorState = major => {
@@ -42,16 +52,21 @@ export const updateMajorState = major => {
 };
 
 export const deleteMajorApi = id => {
-    return dispatch => majorApi.delete(id).then(res => {
-        if (res.body.code === 200) {
-            dispatch(deleteMajorState(id));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+        return majorApi.delete({
+            id,
+            session: getState().LoginReducer.session
+        }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(deleteMajorState(id));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const deleteMajorState = id => {
@@ -62,16 +77,21 @@ export const deleteMajorState = id => {
 };
 
 export const loadAllMajorApi = page => {
-    return dispatch => majorApi.getAll(page).then(res => {
-        if (res.body.code === 200) {
-            dispatch(loadAllMajorState(res.body.data));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) =>{
+        return majorApi.getAll({
+            page,
+            session: getState().LoginReducer.session
+        }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(loadAllMajorState(res.body.data));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const loadAllMajorState = data => {
@@ -82,17 +102,23 @@ export const loadAllMajorState = data => {
 };
 
 export const updateStatusApi = (id, status) => {
-    return dispatch => majorApi.updateStatus({ id, status: status.id }).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateStatusState(id, status));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
-}
+    return (dispatch, getState) => {
+            return majorApi.updateStatus({
+                id,
+                status: status.id,
+                session: getState().LoginReducer.session
+                }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateStatusState(id, status));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
+};
 
 export const updateStatusState = (id, status) => {
     return {

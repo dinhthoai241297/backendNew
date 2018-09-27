@@ -10,16 +10,16 @@ class MarkApi {
         return request.post(`${HOST}mark/update`).send({ data });
     }
 
-    static delete(id = -1) {
-        return request.post(`${HOST}mark/delete`).send({ id });
+    static delete(data) {
+        return request.post(`${HOST}mark/delete`).send({ data });
     }
 
-    static getAll(page = 1) {
-        return request.post(`${HOST}mark/getall`).send({ page });
+    static getAll(data) {
+        return request.post(`${HOST}mark/getall`).send({ data });
     }
 
-    static getOne(id = -1) {
-        return request.post(`${HOST}mark/getone`).send({ id });
+    static getOne(data) {
+        return request.post(`${HOST}mark/getone`).send({ data});
     }
 
     static updateStatus(data) {

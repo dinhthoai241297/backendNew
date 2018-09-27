@@ -48,7 +48,10 @@ class EditSubjectGroup extends Component {
         // get all subject in database
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await SubjectApi.getAll(page++);
+            tmp = await SubjectApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -61,7 +64,10 @@ class EditSubjectGroup extends Component {
         // lấy tất cả status trong db
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await StatusApi.getAll(page++);
+            tmp = await StatusApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -277,4 +283,10 @@ const mapDispatchToProps = (dispatch, props) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(EditSubjectGroup);
+const mapStateToProps = (state) => {
+    return {
+        session: state.LoginReducer.session
+    }
+}
+
+export default connect(null, mapDispatchToProps,mapStateToProps)(EditSubjectGroup);

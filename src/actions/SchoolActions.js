@@ -2,16 +2,21 @@ import schoolApi from './../api/SchoolApi';
 import * as actionTypes from './../actionTypes/SchoolActionTypes';
 
 export const addSchoolApi = school => {
-    return dispatch => schoolApi.add(JSON.stringify(school)).then(res => {
-        if (res.body.code === 200) {
-            dispatch(addSchoolState(school));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return schoolApi.add({
+                school,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(addSchoolState(school));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const addSchoolState = school => {
@@ -22,16 +27,21 @@ export const addSchoolState = school => {
 };
 
 export const updateSchoolApi = school => {
-    return dispatch => schoolApi.update(JSON.stringify(school)).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateSchoolState(school));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return schoolApi.update({
+                school,
+                session: getState().LoginReducer.session
+            }.then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateSchoolState(school));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const updateSchoolState = school => {
@@ -42,16 +52,21 @@ export const updateSchoolState = school => {
 };
 
 export const deleteSchoolApi = id => {
-    return dispatch => schoolApi.delete(id).then(res => {
-        if (res.body.code === 200) {
-            dispatch(deleteSchoolState(id));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return schoolApi.delete({
+                id,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(deleteSchoolState(id));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const deleteSchoolState = id => {
@@ -62,16 +77,21 @@ export const deleteSchoolState = id => {
 };
 
 export const loadAllSchoolApi = page => {
-    return dispatch => schoolApi.getAll(page).then(res => {
-        if (res.body.code === 200) {
-            dispatch(loadAllSchoolState(res.body.data));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return schoolApi.getAll({
+                page,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(loadAllSchoolState(res.body.data));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const loadAllSchoolState = data => {
@@ -82,18 +102,22 @@ export const loadAllSchoolState = data => {
 };
 
 export const updateStatusApi = (id, status) => {
-    return dispatch => schoolApi.updateStatus({ id, status: status.id }).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateStatusState(id, status));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
-}
-
+    return (dispatch, getState) => {
+            return schoolApi.updateStatus({ id,
+                status: status.id,
+                session: getState().LoginReducer.session
+                }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateStatusState(id, status));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
+};
 export const updateStatusState = (id, status) => {
     return {
         type: actionTypes.UPDATE_STATUS,

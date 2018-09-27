@@ -10,16 +10,16 @@ class UserApi {
         return request.post(`${HOST}user/update`).send({ data });
     }
 
-    static delete(id = -1) {
-        return request.post(`${HOST}user/delete`).send({ id });
+    static delete(data) {
+        return request.post(`${HOST}user/delete`).send({ data });
     }
 
-    static getAll(page = 1) {
-        return request.post(`${HOST}user/getall`).send({ page });
+    static getAll(data) {
+        return request.post(`${HOST}user/getall`).send({ data });
     }
 
-    static getOne(id = -1) {
-        return request.post(`${HOST}user/getone`).send({ id });
+    static getOne(data) {
+        return request.post(`${HOST}user/getone`).send({ data });
     }
 
     static login(data) {

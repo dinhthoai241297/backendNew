@@ -10,16 +10,16 @@ class SchoolApi {
         return request.post(`${HOST}school/update`).send({ data });
     }
 
-    static delete(id = -1) {
-        return request.post(`${HOST}school/delete`).send({ id });
+    static delete(data) {
+        return request.post(`${HOST}school/delete`).send({ data });
     }
 
-    static getAll(page = 1) {
-        return request.post(`${HOST}school/getall`).send({ page });
+    static getAll(data) {
+        return request.post(`${HOST}school/getall`).send({ data });
     }
 
-    static getOne(id = -1) {
-        return request.post(`${HOST}school/getone`).send({ id });
+    static getOne(data) {
+        return request.post(`${HOST}school/getone`).send({ data });
     }
 
     static updateStatus(data) {

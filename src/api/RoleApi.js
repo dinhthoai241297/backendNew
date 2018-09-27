@@ -10,16 +10,16 @@ class RoleApi {
         return request.post(`${HOST}role/update`).send({ data });
     }
 
-    static delete(id = -1) {
-        return request.post(`${HOST}role/delete`).send({ id });
+    static delete(data) {
+        return request.post(`${HOST}role/delete`).send({ data });
     }
 
-    static getAll(page) {
-        return request.post(`${HOST}role/getall`).send({ page });
+    static getAll(data) {
+        return request.post(`${HOST}role/getall`).send({ data });
     }
 
-    static getOne(id = -1) {
-        return request.post(`${HOST}role/getone`).send({ id });
+    static getOne(data) {
+        return request.post(`${HOST}role/getone`).send({ data });
     }
 
     static updateStatus(data) {

@@ -2,17 +2,22 @@ import roleApi from './../api/RoleApi';
 import * as actionTypes from './../actionTypes/RoleActionTypes';
 
 export const addRoleApi = role => {
-    return dispatch => roleApi.add(JSON.stringify(role)).then(res => {
-        console.log(res.body);
-        if (res.body.code === 200) {
-            dispatch(addRoleState(role));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return roleApi.add({
+                role,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            console.log(res.body);
+            if (res.body.code === 200) {
+                dispatch(addRoleState(role));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const addRoleState = role => {
@@ -23,16 +28,21 @@ export const addRoleState = role => {
 };
 
 export const updateRoleApi = role => {
-    return dispatch => roleApi.update(JSON.stringify(role)).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateRoleState(role));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return roleApi.update({
+                role,
+                session: getState().LoginReducer.session
+            }.then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateRoleState(role));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const updateRoleState = role => {
@@ -43,16 +53,21 @@ export const updateRoleState = role => {
 };
 
 export const deleteRoleApi = id => {
-    return dispatch => roleApi.delete(id).then(res => {
-        if (res.body.code === 200) {
-            dispatch(deleteRoleState(id));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return roleApi.delete({
+                id,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(deleteRoleState(id));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const deleteRoleState = id => {
@@ -63,16 +78,21 @@ export const deleteRoleState = id => {
 };
 
 export const loadAllRoleApi = page => {
-    return dispatch => roleApi.getAll(page).then(res => {
-        if (res.body.code === 200) {
-            dispatch(loadAllRoleState(res.body.data));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });;
+    return (dispatch,getState) => {
+            return roleApi.getAll({
+                page,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(loadAllRoleState(res.body.data));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });;
+    }
 };
 
 export const loadAllRoleState = data => {
@@ -83,17 +103,23 @@ export const loadAllRoleState = data => {
 };
 
 export const updateStatusApi = (id, status) => {
-    return dispatch => roleApi.updateStatus({ id, status: status.id }).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateStatusState(id, status));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
-}
+    return (dispatch, getState) => {
+            return roleApi.updateStatus({ 
+                id,
+                status: status.id,
+                session: getState().LoginReducer.session
+                }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateStatusState(id, status));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
+};
 
 export const updateStatusState = (id, status) => {
     return {

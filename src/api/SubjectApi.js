@@ -10,16 +10,16 @@ class SubjectApi {
         return request.post(`${HOST}subject/update`).send({ data });
     }
 
-    static delete(id = -1) {
-        return request.post(`${HOST}subject/delete`).send({ id });
+    static delete(data) {
+        return request.post(`${HOST}subject/delete`).send({ data });
     }
 
-    static getAll(page = 1) {
-        return request.post(`${HOST}subject/getall`).send({ page });
+    static getAll(data) {
+        return request.post(`${HOST}subject/getall`).send({ data });
     }
 
-    static getOne(id = -1) {
-        return request.post(`${HOST}subject/getone`).send({ id });
+    static getOne(data) {
+        return request.post(`${HOST}subject/getone`).send({ data });
     }
 
     static updateStatus(data) {

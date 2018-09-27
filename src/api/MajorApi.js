@@ -10,20 +10,20 @@ class MajorApi {
         return request.post(`${HOST}major/update`).send({ data });
     }
 
-    static delete(id = -1) {
-        return request.post(`${HOST}major/delete`).send({ id });
+    static delete(data) {
+        return request.post(`${HOST}major/delete`).send({ data });
     }
 
-    static getAll(page = 1) {
-        return request.post(`${HOST}major/getall`).send({ page });
+    static getAll(data) {
+        return request.post(`${HOST}major/getall`).send({ data });
     }
 
-    static getOne(id = -1) {
-        return request.post(`${HOST}major/getone`).send({ id });
+    static getOne(data) {
+        return request.post(`${HOST}major/getone`).send({ data });
     }
 
-    static getAllInSchool(school = '') {
-        return request.post(`${HOST}major/getallinschool`).send({ school });
+    static getAllInSchool(data) {
+        return request.post(`${HOST}major/getallinschool`).send({ data });
     }
 
     static updateStatus(data) {

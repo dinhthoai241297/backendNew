@@ -2,16 +2,21 @@ import sectorApi from './../api/SectorApi';
 import * as actionTypes from './../actionTypes/SectorActionTypes';
 
 export const addSectorApi = sector => {
-    return dispatch => sectorApi.add(JSON.stringify(sector)).then(res => {
-        if (res.body.code === 200) {
-            dispatch(addSectorState(sector));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return sectorApi.add({
+                sector,
+                session: getState().LoginReducer.session
+            }.then(res => {
+            if (res.body.code === 200) {
+                dispatch(addSectorState(sector));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const addSectorState = sector => {
@@ -22,16 +27,21 @@ export const addSectorState = sector => {
 };
 
 export const updateSectorApi = sector => {
-    return dispatch => sectorApi.update(JSON.stringify(sector)).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateSectorState(sector));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return sectorApi.update({
+                sector,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateSectorState(sector));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const updateSectorState = sector => {
@@ -42,16 +52,21 @@ export const updateSectorState = sector => {
 };
 
 export const deleteSectorApi = id => {
-    return dispatch => sectorApi.delete(id).then(res => {
-        if (res.body.code === 200) {
-            dispatch(deleteSectorState(id));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
+    return (dispatch, getState) => {
+            return sectorApi.delete({
+                id,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(deleteSectorState(id));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const deleteSectorState = id => {
@@ -62,16 +77,21 @@ export const deleteSectorState = id => {
 };
 
 export const loadAllSectorApi = page => {
-    return dispatch => sectorApi.getAll(page).then(res => {
-        if (res.body.code === 200) {
-            dispatch(loadAllSectorState(res.body.data));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });;
+    return (dispatch, getState) => {
+            return sectorApi.getAll({
+                page,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(loadAllSectorState(res.body.data));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
 };
 
 export const loadAllSectorState = data => {
@@ -82,17 +102,23 @@ export const loadAllSectorState = data => {
 };
 
 export const updateStatusApi = (id, status) => {
-    return dispatch => sectorApi.updateStatus({ id, status: status.id }).then(res => {
-        if (res.body.code === 200) {
-            dispatch(updateStatusState(id, status));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });
-}
+    return (dispatch, getState) => {
+            return sectorApi.updateStatus({ 
+                id, 
+                status: status.id,
+                session: getState().LoginReducer.session
+            }).then(res => {
+            if (res.body.code === 200) {
+                dispatch(updateStatusState(id, status));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });
+    }
+};
 
 export const updateStatusState = (id, status) => {
     return {

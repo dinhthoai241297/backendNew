@@ -46,7 +46,11 @@ class EditProvince extends Component {
         // lấy tất cả status trong db
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await StatusApi.getAll(page++);
+            tmp = await StatusApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
+            
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -59,7 +63,10 @@ class EditProvince extends Component {
         // get all sector in database
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await SectorApi.getAll(page++);
+            tmp = await SectorApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -269,4 +276,9 @@ const mapDispatchToProps = (dispatch, props) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(EditProvince);
+const mapStateToProps = (state) => {
+    return {
+        session: state.LoginReducer.session
+    }
+}
+export default connect(null, mapDispatchToProps,mapStateToProps)(EditProvince);

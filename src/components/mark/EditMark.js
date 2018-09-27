@@ -55,7 +55,10 @@ class EditMark extends Component {
 
     loadMajorOption = (school, select) => {
         // get all major in school with id = mark.school
-        MajorApi.getAllInSchool(school).then(res => {
+        MajorApi.getAllInSchool({
+            school,
+            session: this.props.session
+        }).then(res => {
             let majorOptions = res.body.data.list.map(el => ({ value: el.id, label: el.name }));
             this.setState({
                 majorOptions,
@@ -70,7 +73,10 @@ class EditMark extends Component {
         // lấy tất cả status trong db
         let next = true, rs = [], tmp, page = 1;
         while (next) {
-            tmp = await StatusApi.getAll(page++);
+            tmp = await StatusApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -83,7 +89,10 @@ class EditMark extends Component {
         // get all school in database
         let next = true, rs = [], tmp = null, page = 1;
         while (next) {
-            tmp = await SchoolApi.getAll(page++);
+            tmp = await SchoolApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -96,7 +105,10 @@ class EditMark extends Component {
         // get all subjectGroup in database
         let next = true, rs = [], tmp = null, page = 1;
         while (next) {
-            tmp = await SubjectGroupApi.getAll(page++);
+            tmp = await SubjectGroupApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
@@ -394,4 +406,10 @@ const mapDispatchToProps = (dispatch, props) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(EditMark);
+const mapStateToProps = (state) => {
+    return {
+        session: state.LoginReducer.session
+    }
+}
+
+export default connect(null, mapDispatchToProps,mapStateToProps)(EditMark);
