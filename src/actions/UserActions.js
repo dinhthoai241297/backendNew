@@ -63,16 +63,19 @@ export const deleteUserState = id => {
 };
 
 export const loadAllUserApi = page => {
-    return dispatch => userApi.getAll(page).then(res => {
-        if (res.body.code === 200) {
-            dispatch(loadAllUserState(res.body.data));
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(error => {
-        throw (error);
-    });;
+    return (dispatch, getState) => {
+        console.log(getState().LoginReducer.session);
+        return userApi.getAll(page).then(res => {
+            if (res.body.code === 200) {
+                dispatch(loadAllUserState(res.body.data));
+                return true;
+            } else {
+                return false;
+            }
+        }).catch(error => {
+            throw (error);
+        });;
+    }
 };
 
 export const loadAllUserState = data => {
@@ -84,6 +87,7 @@ export const loadAllUserState = data => {
 
 export const loginApi = (username, password) => {
     return dispatch => userApi.login({ username, password }).then(res => {
+        console.log(res.body);
         if (res.body.code === 200) {
             localStorage.setItem('data', JSON.stringify(res.body.data));
             dispatch(loginState(res.body.data));

@@ -13,7 +13,10 @@ const loginReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.LOGIN: {
             return {
-                user: action.data.user,
+                user: {
+                    ...action.data.user,
+                    role: JSON.parse(action.data.user.role.roles)
+                },
                 session: action.data.session
             };
         }
