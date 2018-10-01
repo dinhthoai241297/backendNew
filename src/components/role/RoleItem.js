@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import * as roles from './../../contants/roles';
+import * as status from './../../contants/status';
 
 class RoleItem extends Component {
 
@@ -26,14 +27,31 @@ class RoleItem extends Component {
 
     render() {
         let { role } = this.props;
+        let icon = status.renIcon(role.status.status);
         return (
             <tr>
                 <td>{role.name}</td>
                 <td>{JSON.parse(role.roles).map(this.convert).join(' - ')}</td>
-                <td>{role.status.name}</td>
-                <td>
-                    <Link className="btn btn-warning btn-xs" to={'/role/update/' + role.id}>Sửa</Link>
-                    <button className="btn btn-danger btn-xs" onClick={this.props.updateStatus}>Xóa</button>
+                <td className="text-center">
+                    <a
+                        data-toggle="tooltip"
+                        title={role.status.status === status.ACTIVE ? 'lock' : 'active'}
+                        className="h-hand" onClick={this.props.updateStatus}
+                        onClick={() => this.props.updateStatus(role.id, role.status.status === status.ACTIVE ? status.LOCK : status.ACTIVE)}
+                    >
+                        <i className={"w-1 fa fa-1x pd-rl-1 bd-r " + icon}></i>
+                    </a>
+                    <Link
+                        to={'/role/update/' + role.id}
+                    >
+                        <i className="w-1 fa fa-1x fa-edit bd-r pd-rl-1"></i>
+                    </Link>
+                    <a
+                        className="h-hand"
+                        onClick={() => this.props.updateStatus(role.id, status.DELETE)}
+                    >
+                        <i className="w-1 fa fa-1x fa-trash pd-rl-1"></i>
+                    </a>
                 </td>
             </tr>
         );

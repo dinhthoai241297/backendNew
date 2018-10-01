@@ -1,21 +1,39 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import * as status from './../../contants/status';
 
 class SubjectGroupItem extends Component {
     render() {
         let { subjectGroup } = this.props;
+        let icon = status.renIcon(subjectGroup.status.status);
         return (
             <tr>
                 <td>{subjectGroup.code}</td>
                 <td>{subjectGroup.subjects.map((el, index) => <Fragment key={index}>{el.name}<br /></Fragment>)}</td>
                 <td>{subjectGroup.description}</td>
-                <td>{subjectGroup.status.name}</td>
-                <td>
+                <td className="text-center">
                     {this.props.update &&
-                        <Link className="btn btn-warning btn-xs" to={'/subjectGroup/update/' + subjectGroup.id}>Sửa</Link>
+                        <Fragment>
+                            <a
+                                data-toggle="tooltip"
+                                title={subjectGroup.status.status === status.ACTIVE ? 'lock' : 'active'}
+                                className="h-hand" onClick={this.props.updateStatus}
+                                onClick={() => this.props.updateStatus(subjectGroup.id, subjectGroup.status.status === status.ACTIVE ? status.LOCK : status.ACTIVE)}
+                            >
+                                <i className={"w-1 fa fa-1x pd-rl-1 bd-r " + icon}></i>
+                            </a>
+                            <Link to={'/subjectGroup/update/' + subjectGroup.id}>
+                                <i className="w-1 fa fa-1x fa-edit bd-r pd-rl-1"></i>
+                            </Link>
+                        </Fragment>
                     }
                     {this.props.delete &&
-                        <button className="btn btn-danger btn-xs" onClick={this.props.updateStatus}>Xóa</button>
+                        <a
+                            className="h-hand"
+                            onClick={() => this.props.updateStatus(subjectGroup.id, status.DELETE)}
+                        >
+                            <i className="w-1 fa fa-1x fa-trash pd-rl-1"></i>
+                        </a>
                     }
                 </td>
             </tr>

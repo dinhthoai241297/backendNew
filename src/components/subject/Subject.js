@@ -63,7 +63,7 @@ class Subject extends Component {
                     <SubjectItem
                         key={index}
                         subject={subject}
-                        updateStatus={() => this.updateStatus(subject.id)}
+                        updateStatus={this.updateStatus}
                         update={this.state.update}
                         delete={this.state.delete}
                     />
@@ -73,9 +73,9 @@ class Subject extends Component {
         return rs;
     }
 
-    updateStatus = (id) => {
-        if (confirm('Bạn có chắc muốn xóa')) {
-            let st = this.props.status.find(el => el.status === status.DELETE);
+    updateStatus = (id, status) => {
+        let st = this.props.status.find(el => el.status === status);
+        if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
                 this.props.updateStatus(id, st);
             }
@@ -88,8 +88,7 @@ class Subject extends Component {
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
-                        Trang Quản Lý
-                        <small>Môn Thi</small>
+                        Trang Quản Lý Môn Thi
                     </h1>
                     <ol className="breadcrumb">
                         <li><a href="#"><i className="fa fa-dashboard" /> Subject</a></li>
@@ -104,12 +103,7 @@ class Subject extends Component {
                                 <div className="box-header">
                                     <h3 className="box-title">Danh sách môn thi</h3>
                                     <div className="box-tools">
-                                        <div className="input-group input-group-sm" style={{ width: 150 }}>
-                                            <input type="text" name="table_search" className="form-control pull-right" placeholder="Tìm kiếm" />
-                                            <div className="input-group-btn">
-                                                <button type="submit" className="btn btn-default"><i className="fa fa-search"></i></button>
-                                            </div>
-                                        </div>
+                                        filter
                                     </div>
                                 </div>
                                 {/* <!-- /.box-header --> */}
@@ -119,9 +113,8 @@ class Subject extends Component {
                                             <tr>
                                                 <th>Tên Môn</th>
                                                 <th>Mô Tả</th>
-                                                <th>Trạng thái</th>
                                                 {(this.state.update || this.state.delete) &&
-                                                    <th>Chức năng</th>
+                                                    <th className="text-center">Action</th>
                                                 }
                                             </tr>
                                             {this.genListSubject()}

@@ -1,10 +1,52 @@
-table tr td button, table tr td a {
-    margin-right: 3px;
-}
-
 .wrapper {
     width: 100%;
     min-height: 100%;
     height: auto !important;
     position: absolute;
+}
+
+.h-hand:hover {
+    cursor: pointer;
+}
+
+.pd-rl-1 {
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.bd-r {
+    border-right: 2px solid #adadad;
+}
+
+.is-lock::before, .is-pending::before, .is-active::before, .is-delete::before {
+    width: 15px;
+    height: 15px;
+}
+
+.is-lock::before {
+    content: "\F023";
+}
+
+.is-pending::before {
+    content: "\F110";
+}
+
+.is-active::before {
+    content: "\F046";
+}
+
+.is-delete::before {
+    content: "\f05e";
+}
+
+.is-pending:hover::before, .is-lock:hover::before, .is-delete:hover::before {
+    content: "\F046";
+}
+
+.is-active:hover::before {
+    content: "\F023";
+}
+
+.w-1 {
+    width: 26px;
 }

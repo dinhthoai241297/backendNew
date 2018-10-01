@@ -63,7 +63,7 @@ class School extends Component {
                     <SchoolItem
                         key={index}
                         school={school}
-                        updateStatus={() => this.updateStatus(school.id)}
+                        updateStatus={this.updateStatus}
                         delete={this.state.delete}
                         update={this.state.update}
                     />
@@ -73,9 +73,9 @@ class School extends Component {
         return rs;
     }
 
-    updateStatus = (id) => {
-        if (confirm('Bạn có chắc muốn xóa')) {
-            let st = this.props.status.find(el => el.status === status.DELETE);
+    updateStatus = (id, status) => {
+        let st = this.props.status.find(el => el.status === status);
+        if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
                 this.props.updateStatus(id, st);
             }
@@ -88,8 +88,7 @@ class School extends Component {
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
-                        Trang Quản Lý
-                        <small>Trường</small>
+                        Trang Quản Lý Trường
                     </h1>
                     <ol className="breadcrumb">
                         <li><a href="#"><i className="fa fa-dashboard" /> School</a></li>
@@ -104,12 +103,7 @@ class School extends Component {
                                 <div className="box-header">
                                     <h3 className="box-title">Danh sách trường</h3>
                                     <div className="box-tools">
-                                        <div className="input-group input-group-sm" style={{ width: 150 }}>
-                                            <input type="text" name="table_search" className="form-control pull-right" placeholder="Tìm kiếm" />
-                                            <div className="input-group-btn">
-                                                <button type="submit" className="btn btn-default"><i className="fa fa-search"></i></button>
-                                            </div>
-                                        </div>
+                                        filter
                                     </div>
                                 </div>
                                 {/* <!-- /.box-header --> */}
@@ -118,12 +112,12 @@ class School extends Component {
                                         <tbody>
                                             <tr>
                                                 <th>Tên Trường</th>
-                                                <th>Mô tả Trường</th>
+                                                <th>Mã Trường</th>
+                                                <th>Mô tả</th>
                                                 <th>Tỉnh</th>
                                                 <th>Image</th>
-                                                <th>Trạng thái</th>
                                                 {(this.state.delete || this.state.update) &&
-                                                    <th>Chức năng</th>
+                                                    <th width="15%" className="text-center">Action</th>
                                                 }
                                             </tr>
                                             {this.genListSchool()}

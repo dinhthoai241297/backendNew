@@ -52,11 +52,6 @@ class Sidebar extends Component {
                         <li className="header">HEADER</li>
                         {/* Optionally, you can add icons to the links */}
                         <MyLink
-                            to="/"
-                            activeOnlyWhenExact={true}
-                            label={<Fragment><i className="fa fa-dashboard" /> <span>Dashboard</span></Fragment>}
-                        />
-                        <MyLink
                             to="/sector"
                             activeOnlyWhenExact={false}
                             nativeClass="treeview"

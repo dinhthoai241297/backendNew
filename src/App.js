@@ -5,6 +5,12 @@ import Footer from './components/main/Footer';
 import ControlSidebar from './components/main/ControlSidebar';
 
 class App extends Component {
+
+    componentDidMount() {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+
+
     render() {
         let { user } = this.props;
         return (

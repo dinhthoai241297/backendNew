@@ -1,21 +1,39 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import * as status from './../../contants/status';
 
 class ProvinceItem extends Component {
     render() {
         let { province } = this.props;
+        let icon = status.renIcon(province.status.status);
         return (
             <tr>
                 <td>{province.name}</td>
                 <td>{province.description}</td>
                 <td>{province.sector.name}</td>
-                <td>{province.status.name}</td>
-                <td>
+                <td className="text-center">
                     {this.props.update &&
-                        <Link className="btn btn-warning btn-xs" to={'/province/update/' + province.id}>Sửa</Link>
+                        <Fragment>
+                            <a
+                                data-toggle="tooltip"
+                                title={province.status.status === status.ACTIVE ? 'lock' : 'active'}
+                                className="h-hand" onClick={this.props.updateStatus}
+                                onClick={() => this.props.updateStatus(province.id, province.status.status === status.ACTIVE ? status.LOCK : status.ACTIVE)}
+                            >
+                                <i className={"w-1 fa fa-1x pd-rl-1 bd-r " + icon}></i>
+                            </a>
+                            <Link to={'/province/update/' + province.id}>
+                                <i className="w-1 fa fa-1x fa-edit bd-r pd-rl-1"></i>
+                            </Link>
+                        </Fragment>
                     }
                     {this.props.delete &&
-                        <button className="btn btn-danger btn-xs" onClick={this.props.updateStatus}>Xóa</button>
+                        <a
+                            className="h-hand"
+                            onClick={() => this.props.updateStatus(province.id, status.DELETE)}
+                        >
+                            <i className="w-1 fa fa-1x fa-trash pd-rl-1"></i>
+                        </a>
                     }
                 </td>
             </tr>

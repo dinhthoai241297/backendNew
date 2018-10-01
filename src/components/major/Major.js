@@ -63,7 +63,7 @@ class Major extends Component {
                     <MajorItem
                         key={index}
                         major={major}
-                        updateStatus={() => this.updateStatus(major.id)}
+                        updateStatus={this.updateStatus}
                         delete={this.state.delete}
                         update={this.state.update}
                     />
@@ -73,9 +73,9 @@ class Major extends Component {
         return rs;
     }
 
-    updateStatus = (id) => {
-        if (confirm('Bạn có chắc muốn xóa')) {
-            let st = this.props.status.find(el => el.status === status.DELETE);
+    updateStatus = (id, status) => {
+        let st = this.props.status.find(el => el.status === status);
+        if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
                 this.props.updateStatus(id, st);
             }
@@ -88,8 +88,7 @@ class Major extends Component {
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
-                        Trang Quản Lý
-                        <small>Ngành</small>
+                        Trang Quản Lý Ngành
                     </h1>
                     <ol className="breadcrumb">
                         <li><a href="#"><i className="fa fa-dashboard" /> Major</a></li>
@@ -104,12 +103,7 @@ class Major extends Component {
                                 <div className="box-header">
                                     <h3 className="box-title">Danh sách ngành</h3>
                                     <div className="box-tools">
-                                        <div className="input-group input-group-sm" style={{ width: 150 }}>
-                                            <input type="text" name="table_search" className="form-control pull-right" placeholder="Tìm kiếm" />
-                                            <div className="input-group-btn">
-                                                <button type="submit" className="btn btn-default"><i className="fa fa-search"></i></button>
-                                            </div>
-                                        </div>
+                                        filter
                                     </div>
                                 </div>
                                 {/* <!-- /.box-header --> */}
@@ -120,9 +114,8 @@ class Major extends Component {
                                                 <th>Tên Ngành</th>
                                                 <th>Mã Ngành</th>
                                                 <th>Trường</th>
-                                                <th>Trạng thái</th>
                                                 {(this.state.delete || this.state.update) &&
-                                                    <th>Chức năng</th>
+                                                    <th width="15%" className="text-center">Action</th>
                                                 }
                                             </tr>
                                             {this.genListMajor()}

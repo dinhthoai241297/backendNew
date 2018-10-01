@@ -54,7 +54,7 @@ class Users extends Component {
                     <UserItem
                         key={index}
                         user={user}
-                        updateStatus={() => this.updateStatus(user.id)}
+                        updateStatus={this.updateStatus}
                     />
                 );
             });
@@ -62,9 +62,9 @@ class Users extends Component {
         return rs;
     }
 
-    updateStatus = (id) => {
-        if (confirm('Bạn có chắc muốn xóa')) {
-            let st = this.props.status.find(el => el.status === status.DELETE);
+    updateStatus = (id, status) => {
+        let st = this.props.status.find(el => el.status === status);
+        if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
                 this.props.updateStatus(id, st);
             }
@@ -77,8 +77,7 @@ class Users extends Component {
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
-                        Trang Quản Lý
-                        <small>Người dùng</small>
+                        Trang Quản Lý Người dùng
                     </h1>
                     <ol className="breadcrumb">
                         <li><a href="#"><i className="fa fa-dashboard" /> User</a></li>
@@ -93,12 +92,7 @@ class Users extends Component {
                                 <div className="box-header">
                                     <h3 className="box-title">Danh sách người dùng</h3>
                                     <div className="box-tools">
-                                        <div className="input-group input-group-sm" style={{ width: 150 }}>
-                                            <input type="text" name="table_search" className="form-control pull-right" placeholder="Tìm kiếm" />
-                                            <div className="input-group-btn">
-                                                <button type="submit" className="btn btn-default"><i className="fa fa-search"></i></button>
-                                            </div>
-                                        </div>
+                                        filter
                                     </div>
                                 </div>
                                 {/* <!-- /.box-header --> */}
@@ -107,11 +101,9 @@ class Users extends Component {
                                         <tbody>
                                             <tr>
                                                 <th>Tài khoản</th>
-                                                <th>Mật khẩu</th>
                                                 <th>Tên</th>
                                                 <th>Quyền</th>
-                                                <th>Trạng thái</th>
-                                                <th>Chức năng</th>
+                                                <th className="text-center">Action</th>
                                             </tr>
                                             {this.genListUser()}
                                         </tbody>

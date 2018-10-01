@@ -62,7 +62,7 @@ class Mark extends Component {
                     <MarkItem
                         key={index}
                         mark={mark}
-                        updateStatus={() => this.updateStatus(mark.id)}
+                        updateStatus={this.updateStatus}
                         delete={this.state.delete}
                         update={this.state.update}
                     />
@@ -72,9 +72,9 @@ class Mark extends Component {
         return rs;
     }
 
-    updateStatus = (id) => {
-        if (confirm('Bạn có chắc muốn xóa')) {
-            let st = this.props.status.find(el => el.status === status.DELETE);
+    updateStatus = (id, status) => {
+        let st = this.props.status.find(el => el.status === status);
+        if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
                 this.props.updateStatus(id, st);
             }
@@ -87,8 +87,7 @@ class Mark extends Component {
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
-                        Trang Quản Lý
-                        <small>Điểm Chuẩn</small>
+                        Trang Quản Lý Điểm Chuẩn
                     </h1>
                     <ol className="breadcrumb">
                         <li><a href="#"><i className="fa fa-dashboard" /> Mark</a></li>
@@ -103,12 +102,7 @@ class Mark extends Component {
                                 <div className="box-header">
                                     <h3 className="box-title">Danh sách điểm chuẩn</h3>
                                     <div className="box-tools">
-                                        <div className="input-group input-group-sm" style={{ width: 150 }}>
-                                            <input type="text" name="table_search" className="form-control pull-right" placeholder="Tìm kiếm" />
-                                            <div className="input-group-btn">
-                                                <button type="submit" className="btn btn-default"><i className="fa fa-search"></i></button>
-                                            </div>
-                                        </div>
+                                        filter
                                     </div>
                                 </div>
                                 {/* <!-- /.box-header --> */}
@@ -123,9 +117,8 @@ class Mark extends Component {
                                                 <th>Điểm Chuẩn</th>
                                                 <th>Tổ Hợp Môn</th>
                                                 <th>Ghi Chú</th>
-                                                <th>Trạng thái</th>
                                                 {(this.state.delete || this.state.update) &&
-                                                    <th>Chức năng</th>
+                                                    <th width="15%" className="text-center">Action</th>
                                                 }
                                             </tr>
                                             {this.genListMark()}
