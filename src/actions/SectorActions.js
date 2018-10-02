@@ -76,10 +76,11 @@ export const deleteSectorState = id => {
     };
 };
 
-export const loadAllSectorApi = page => {
+export const loadAllSectorApi = (page, status) => {
     return (dispatch, getState) => {
         return sectorApi.getAll({
             page,
+            status,
             session: getState().LoginReducer.session
         }).then(res => {
             if (res.body.code === 200) {

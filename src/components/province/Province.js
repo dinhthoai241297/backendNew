@@ -5,8 +5,10 @@ import * as actions from '../../actions/ProvinceActions';
 import toastr from 'toastr';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
-import { toastrOption } from './../../custom/Custom';
+import { toastrOption, selectStyle } from './../../custom/Custom';
 import * as status from './../../contants/status';
+import Select from 'react-select';
+import SectorApi from './../../api/SectorApi';
 
 class Province extends Component {
 
@@ -17,14 +19,24 @@ class Province extends Component {
             next: true,
             provinces: [],
             update: false,
-            delete: false
+            delete: false,
+            statusSelectedOption: null,
+            statusOptions: [],
+            status: [],
+            sectorSelectedOption: null,
+            sectorOptions: [],
+
+            statusFilter: '',
+            sectorFilter: ''
         }
         toastr.options = toastrOption;
     }
 
     componentDidMount() {
         let { page } = this.state;
-        this.props.loadProvinces(page);
+        this.initStatusFilter(this.props);
+        this.loadSectorOption();
+        this.loadProvinces(page);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -37,6 +49,42 @@ class Province extends Component {
             update,
             delete: del
         });
+        if (this.props.status !== nextProps.status) {
+            this.initStatusFilter(nextProps);
+        }
+    }
+
+    initStatusFilter = (props) => {
+        if (props.status.length !== 0) {
+            let statusOptions = props.status.map(el => ({ value: el.id, label: el.name }));
+            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
+            let statusFilter = statusSelectedOption.value;
+            this.setState({
+                statusOptions,
+                statusSelectedOption,
+                statusFilter
+            });
+        }
+    }
+
+    loadSectorOption = async () => {
+        // get all sector in database
+        let next = true, rs = [], tmp, page = 1;
+        while (next) {
+            tmp = await SectorApi.getAll({
+                page: page++,
+                session: this.props.session
+            });
+            rs = rs.concat(tmp.body.data.list);
+            next = tmp.body.data.next;
+        }
+        let sectorOptions = rs.map(el => ({ value: el.id, label: el.name }))
+        let sectorSelectedOption = (sectorOptions && sectorOptions.length !== 0) ? sectorOptions[0] : '';
+        this.setState({
+            sectorOptions,
+            sectorSelectedOption: sectorSelectedOption,
+            sectorFilter: sectorSelectedOption ? sectorSelectedOption.value : ''
+        });
     }
 
     newPage = (e, num) => {
@@ -46,10 +94,7 @@ class Province extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.setState({
-                page
-            });
-            this.props.loadProvinces(page);
+            this.loadProvinces(page);
         }
     }
 
@@ -81,7 +126,25 @@ class Province extends Component {
         }
     }
 
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
+        this.loadProvinces(1);
+    }
+
+    handleChangeSector = (sectorSelectedOption) => {
+        this.setState({ sectorSelectedOption });
+        this.loadProvinces(1);
+    }
+
+    loadProvinces = (page) => {
+        let { statusFilter, sectorFilter } = this.state;
+        this.props.loadProvinces(page, statusFilter, sectorFilter);
+        this.setState({ page });
+    }
+
     render() {
+
         return (
             <Fragment>
                 {/* Content Header (Page header) */}
@@ -100,9 +163,36 @@ class Province extends Component {
                         <div className="col-xs-12">
                             <div className="box">
                                 <div className="box-header">
-                                    <h3 className="box-title">Danh sách tỉnh thành</h3>
-                                    <div className="box-tools">
-                                        filter
+                                    <div className="row">
+                                        <div className="col-xs-12 col-lg-4 lh-35">
+                                            <h3 className="box-title">Danh sách Tỉnh Thành</h3>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-8">
+                                            <div className="row">
+                                                <div className="col-xs-12 col-lg-offset-4 col-lg-4">
+                                                    <div className="form-group">
+                                                        <Select
+                                                            styles={selectStyle}
+                                                            onChange={this.handleChangeSector}
+                                                            options={this.state.sectorOptions}
+                                                            value={this.state.sectorSelectedOption}
+                                                            placeholder="Khu Vực"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-xs-12 col-lg-4">
+                                                    <div className="form-group">
+                                                        <Select
+                                                            styles={selectStyle}
+                                                            onChange={this.handleChangeStatus}
+                                                            options={this.state.statusOptions}
+                                                            value={this.state.statusSelectedOption}
+                                                            placeholder="Trạng thái"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 {/* <!-- /.box-header --> */}
@@ -150,13 +240,14 @@ const mapStateToProps = (state) => {
     return {
         data: state.ProvinceReducer,
         user: state.LoginReducer.user,
-        status: state.StatusReducer.status
+        status: state.StatusReducer.status,
+        session: state.LoginReducer.session
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        loadProvinces: (page) => dispatch(actions.loadAllProvinceApi(page)),
+        loadProvinces: (page, statusFilter, sectorFilter) => dispatch(actions.loadAllProvinceApi(page, statusFilter, sectorFilter)),
         updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }

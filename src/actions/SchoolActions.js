@@ -76,10 +76,10 @@ export const deleteSchoolState = id => {
     };
 };
 
-export const loadAllSchoolApi = page => {
+export const loadAllSchoolApi = (page, statusFilter, provinceFilter) => {
     return (dispatch, getState) => {
         return schoolApi.getAll({
-            page,
+            page, statusFilter, provinceFilter,
             session: getState().LoginReducer.session
         }).then(res => {
             if (res.body.code === 200) {

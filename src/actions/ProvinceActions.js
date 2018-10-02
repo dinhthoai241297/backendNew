@@ -76,10 +76,10 @@ export const deleteProvinceState = id => {
     };
 };
 
-export const loadAllProvinceApi = page => {
+export const loadAllProvinceApi = (page, status, sector) => {
     return (dispatch, getState) => {
         return provinceApi.getAll({
-            page,
+            page, status, sector,
             session: getState().LoginReducer.session
         }).then(res => {
             if (res.body.code === 200) {

@@ -3,10 +3,11 @@ import SectorItem from './SectorItem';
 import { connect } from 'react-redux';
 import * as actions from './../../actions/SectorActions';
 import toastr from 'toastr';
-import { toastrOption } from './../../custom/Custom';
+import { toastrOption, selectStyle } from './../../custom/Custom';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
 import * as status from './../../contants/status';
+import Select from 'react-select';
 
 class Sectors extends Component {
 
@@ -17,14 +18,18 @@ class Sectors extends Component {
             next: true,
             sectors: [],
             update: false,
-            delete: false
+            delete: false,
+            statusSelectedOption: null,
+            statusOptions: [],
+            statusFilter: ''
         }
         toastr.options = toastrOption;
     }
 
     componentDidMount() {
         let { page } = this.state;
-        this.props.loadSectors(page);
+        this.initStatusFilter(this.props);
+        this.props.loadSectors(page, this.state.statusFilter);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -37,6 +42,22 @@ class Sectors extends Component {
             update,
             delete: del
         });
+        if (this.props.status !== nextProps.status) {
+            this.initStatusFilter(nextProps);
+        }
+    }
+
+    initStatusFilter = (props) => {
+        if (props.status.length !== 0) {
+            let statusOptions = props.status.map(el => ({ value: el.id, label: el.name }));
+            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
+            let statusFilter = statusSelectedOption.value;
+            this.setState({
+                statusOptions,
+                statusSelectedOption,
+                statusFilter
+            });
+        }
     }
 
     newPage = (e, num) => {
@@ -49,7 +70,7 @@ class Sectors extends Component {
             this.setState({
                 page
             });
-            this.props.loadSectors(page);
+            this.props.loadSectors(page, this.state.statusFilter);
         }
     }
 
@@ -80,6 +101,12 @@ class Sectors extends Component {
         }
     }
 
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value });
+        this.props.loadSectors(1, this.state.statusFilter);
+    }
+
     render() {
         return (
             <Fragment>
@@ -99,9 +126,25 @@ class Sectors extends Component {
                         <div className="col-xs-12">
                             <div className="box">
                                 <div className="box-header">
-                                    <h3 className="box-title">Danh sách khu vực</h3>
-                                    <div className="box-tools">
-                                        filter
+                                    <div className="row">
+                                        <div className="col-xs-12 col-lg-4 lh-35">
+                                            <h3 className="box-title">Danh sách khu vực</h3>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-8">
+                                            <div className="row">
+                                                <div className="col-xs-12 col-lg-offset-8 col-lg-4">
+                                                    <div className="form-group">
+                                                        <Select
+                                                            styles={selectStyle}
+                                                            onChange={this.handleChangeStatus}
+                                                            options={this.state.statusOptions}
+                                                            value={this.state.statusSelectedOption}
+                                                            placeholder="Trạng thái"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 {/* <!-- /.box-header --> */}
@@ -154,7 +197,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        loadSectors: (page) => dispatch(actions.loadAllSectorApi(page)),
+        loadSectors: (page, statusFilter) => dispatch(actions.loadAllSectorApi(page, statusFilter)),
         updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }
