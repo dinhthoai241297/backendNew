@@ -21,7 +21,7 @@ class Sectors extends Component {
             delete: false,
             statusSelectedOption: null,
             statusOptions: [],
-            statusFilter: ''
+            statusFilter: undefined
         }
         toastr.options = toastrOption;
     }
@@ -103,7 +103,7 @@ class Sectors extends Component {
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value });
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value, page: 1 });
         this.props.loadSectors(1, this.state.statusFilter);
     }
 
@@ -135,6 +135,7 @@ class Sectors extends Component {
                                                 <div className="col-xs-12 col-lg-offset-8 col-lg-4">
                                                     <div className="form-group">
                                                         <Select
+                                                            isSearchable={false}
                                                             styles={selectStyle}
                                                             onChange={this.handleChangeStatus}
                                                             options={this.state.statusOptions}

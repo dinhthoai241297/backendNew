@@ -3,10 +3,11 @@ import SubjectItem from './SubjectItem';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/SubjectActions';
 import toastr from 'toastr';
-import { toastrOption } from './../../custom/Custom';
+import { toastrOption, selectStyle } from './../../custom/Custom';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
 import * as status from './../../contants/status';
+import Select from 'react-select';
 
 class Subject extends Component {
 
@@ -17,7 +18,10 @@ class Subject extends Component {
             next: true,
             subjects: [],
             update: false,
-            delete: false
+            delete: false,
+            statusSelectedOption: null,
+            statusOptions: [],
+            statusFilter: undefined
         }
 
         toastr.options = toastrOption;
@@ -25,7 +29,8 @@ class Subject extends Component {
 
     componentDidMount() {
         let { page } = this.state;
-        this.props.loadSubjects(page);
+        this.initStatusFilter(this.props);
+        this.props.loadSubjects(page, this.state.statusFilter);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -38,6 +43,22 @@ class Subject extends Component {
             update,
             delete: del
         });
+        if (this.props.status !== nextProps.status) {
+            this.initStatusFilter(nextProps);
+        }
+    }
+
+    initStatusFilter = (props) => {
+        if (props.status.length !== 0) {
+            let statusOptions = props.status.map(el => ({ value: el.id, label: el.name }));
+            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
+            let statusFilter = statusSelectedOption.value;
+            this.setState({
+                statusOptions,
+                statusSelectedOption,
+                statusFilter
+            });
+        }
     }
 
     newPage = (e, num) => {
@@ -50,7 +71,7 @@ class Subject extends Component {
             this.setState({
                 page
             });
-            this.props.loadSubjects(page);
+            this.props.loadSubjects(page, this.state.statusFilter);
         }
     }
 
@@ -82,6 +103,12 @@ class Subject extends Component {
         }
     }
 
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value, page: 1 });
+        this.props.loadSubjects(1, this.state.statusFilter);
+    }
+
     render() {
         return (
             <Fragment>
@@ -101,9 +128,26 @@ class Subject extends Component {
                         <div className="col-xs-12">
                             <div className="box">
                                 <div className="box-header">
-                                    <h3 className="box-title">Danh sách môn thi</h3>
-                                    <div className="box-tools">
-                                        filter
+                                <div className="row">
+                                        <div className="col-xs-12 col-lg-4 lh-35">
+                                            <h3 className="box-title">Danh sách môn thi</h3>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-8">
+                                            <div className="row">
+                                                <div className="col-xs-12 col-lg-offset-8 col-lg-4">
+                                                    <div className="form-group">
+                                                        <Select
+                                                            isSearchable={false}
+                                                            styles={selectStyle}
+                                                            onChange={this.handleChangeStatus}
+                                                            options={this.state.statusOptions}
+                                                            value={this.state.statusSelectedOption}
+                                                            placeholder="Trạng thái"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 {/* <!-- /.box-header --> */}
@@ -156,7 +200,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        loadSubjects: (page) => dispatch(actions.loadAllSubjectApi(page)),
+        loadSubjects: (page, status) => dispatch(actions.loadAllSubjectApi(page, status)),
         updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }

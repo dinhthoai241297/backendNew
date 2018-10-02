@@ -77,10 +77,10 @@ export const deleteUserState = id => {
     };
 };
 
-export const loadAllUserApi = page => {
+export const loadAllUserApi = (page, status, role, date) => {
     return (dispatch, getState) => {
         return userApi.getAll({
-            page,
+            page, status, role, date,
             session: getState().LoginReducer.session
         }).then(res => {
             if (res.body.code === 200) {

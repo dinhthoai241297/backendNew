@@ -76,10 +76,10 @@ export const deleteRoleState = id => {
     };
 };
 
-export const loadAllRoleApi = page => {
+export const loadAllRoleApi = (page, status) => {
     return (dispatch, getState) => {
         return roleApi.getAll({
-            page,
+            page, status,
             session: getState().LoginReducer.session
         }).then(res => {
             if (res.body.code === 200) {

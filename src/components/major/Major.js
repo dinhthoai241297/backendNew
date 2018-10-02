@@ -238,8 +238,6 @@ class Major extends Component {
                                             <div className="col-xs-12 col-lg-offset-4 col-lg-4">
                                                 <div className="form-group">
                                                     <div
-                                                        // data-toggle="modal"
-                                                        // data-target="#modal-school"
                                                         className="h-hand"
                                                         onClick={this.toggleSchool}
                                                     >

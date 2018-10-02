@@ -76,10 +76,10 @@ export const deleteSubjectState = id => {
     };
 };
 
-export const loadAllSubjectApi = page => {
+export const loadAllSubjectApi = (page, status) => {
     return (dispatch, getState) => {
         return subjectApi.getAll({
-            page,
+            page, status,
             session: getState().LoginReducer.session
         }).then(res => {
             if (res.body.code === 200) {

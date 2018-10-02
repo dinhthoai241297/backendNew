@@ -5,8 +5,11 @@ import * as actions from '../../actions/MarkActions';
 import toastr from 'toastr';
 import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
-import { toastrOption } from './../../custom/Custom';
+import { toastrOption, selectStyle } from './../../custom/Custom';
 import * as status from './../../contants/status';
+import Select from 'react-select';
+import SchoolApi from './../../api/SchoolApi';
+import MajorApi from '../../api/MajorApi';
 
 class Mark extends Component {
 
@@ -17,14 +20,48 @@ class Mark extends Component {
             next: true,
             marks: [],
             update: false,
-            delete: false
+            delete: false,
+
+            statusSelectedOption: null,
+            statusOptions: [],
+            statusFilter: undefined,
+
+            schoolSelectedOption: null,
+            schoolOptions: [],
+            schoolFilter: undefined,
+            pageSchool: 1,
+            nextSchool: false,
+            school: [],
+
+            majorSelectedOption: null,
+            majorOptions: [],
+            majorFilter: undefined,
+            pageMajor: 1,
+            nextMajor: false,
+            major: [],
+
+            yearSelectedOption: null,
+            yearOptions: [],
+            yearFilter: undefined,
         }
         toastr.options = toastrOption;
     }
 
     componentDidMount() {
         let { page } = this.state;
-        this.props.loadMarks(page);
+        this.initStatusFilter(this.props);
+        this.loadMarks(page);
+        let yearOptions = [];
+        for (let year = (new Date).getFullYear(); year > 2009; year--) {
+            yearOptions.push({
+                value: year,
+                label: year
+            });
+        }
+        this.setState({
+            yearOptions,
+            yearSelectedOption: yearOptions[0]
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -36,6 +73,49 @@ class Mark extends Component {
             next,
             update,
             delete: del
+        });
+        if (this.props.status !== nextProps.status) {
+            this.initStatusFilter(nextProps);
+        }
+    }
+
+    initStatusFilter = (props) => {
+        if (props.status.length !== 0) {
+            let statusOptions = props.status.map(el => ({ value: el.id, label: el.name }));
+            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
+            let statusFilter = statusSelectedOption.value;
+            this.setState({
+                statusOptions,
+                statusSelectedOption,
+                statusFilter
+            });
+        }
+    }
+
+    loadSchools = async page => {
+        let rs = await SchoolApi.getAll({
+            page,
+            session: this.props.session
+        });
+
+        this.setState({
+            school: rs.body.data.list,
+            nextSchool: rs.body.data.next,
+            pageSchool: page
+        });
+    }
+
+    loadMajors = async page => {
+        let rs = await MajorApi.getAll({
+            page,
+            session: this.props.session,
+            school: this.state.schoolFilter
+        });
+
+        this.setState({
+            major: rs.body.data.list,
+            nextMajor: rs.body.data.next,
+            pageMajor: page
         });
     }
 
@@ -49,7 +129,29 @@ class Mark extends Component {
             this.setState({
                 page
             });
-            this.props.loadMarks(page);
+            this.loadMarks(page);
+        }
+    }
+
+    newPageSchool = (e, num) => {
+        e.preventDefault();
+        let { pageSchool, nextSchool } = this.state;
+        pageSchool += num;
+        if (pageSchool === 0 || (!nextSchool && num > 0)) {
+            return;
+        } else {
+            this.loadSchools(pageSchool);
+        }
+    }
+
+    newPageMajor = (e, num) => {
+        e.preventDefault();
+        let { pageMajor, nextMajor } = this.state;
+        pageMajor += num;
+        if (pageMajor === 0 || (!nextMajor && num > 0)) {
+            return;
+        } else {
+            this.loadMajors(pageMajor);
         }
     }
 
@@ -72,6 +174,38 @@ class Mark extends Component {
         return rs;
     }
 
+    genListSchool = () => {
+        let { school } = this.state;
+        let rs = null;
+        rs = school.map((s, i) => (
+            <a
+                key={i}
+                className={"list-group-item h-hand " + (s.id === this.state.schoolFilter ? 'active' : '')}
+                onClick={() => this.handleChangeSchool(s)}
+            >{s.name}</a>
+        ));
+        return rs;
+    }
+
+    genListMajor = () => {
+        let { major } = this.state;
+        let rs = null;
+        rs = major.map((s, i) => (
+            <a
+                key={i}
+                className={"list-group-item h-hand " + (s.id === this.state.majorFilter ? 'active' : '')}
+                onClick={() => this.handleChangeMajor(s)}
+            >{s.name}</a>
+        ));
+        return rs;
+    }
+
+    loadMarks = page => {
+        let { statusFilter, schoolFilter, majorFilter } = this.state;
+        this.props.loadMarks(page, statusFilter, schoolFilter, majorFilter);
+        this.setState({ page });
+    }
+
     updateStatus = (id, status) => {
         let st = this.props.status.find(el => el.status === status);
         if (confirm('Bạn có chắc muốn ' + st.name)) {
@@ -80,10 +214,128 @@ class Mark extends Component {
             }
         }
     }
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption });
+        this.loadMarks(1);
+    }
+
+    handleChangeYear = (yearSelectedOption) => {
+        this.setState({ yearSelectedOption });
+        this.loadMarks(1);
+    }
+
+    handleChangeSchool = (s) => {
+        $('#modal-school').modal('hide');
+        this.setState({
+            schoolFilter: s.id,
+            schoolSelectedOption: {
+                value: s.id,
+                label: s.name
+            },
+            major: []
+        });
+        // filter
+        this.loadMarks(1);
+    }
+
+    handleChangeMajor = (s) => {
+        $('#modal-major').modal('hide');
+        this.setState({
+            majorFilter: s.id,
+            majorSelectedOption: {
+                value: s.id,
+                label: s.name
+            }
+        });
+        // filter
+        this.loadMarks(1);
+    }
+
+    toggleSchool = () => {
+        if (this.state.school.length === 0) {
+            this.loadSchools(this.state.pageSchool);
+        }
+        $('#modal-school').modal('toggle');
+    }
+
+    toggleMajor = () => {
+        if (this.state.major.length === 0) {
+            this.loadMajors(this.state.pageSchool);
+        }
+        $('#modal-major').modal('toggle');
+    }
 
     render() {
         return (
             <Fragment>
+
+                {/* Modal school -> select school */}
+                <div className="modal fade" id="modal-school">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal">
+                                    <span aria-hidden="true">×</span></button>
+                                <h4 className="modal-title">Trường</h4>
+                            </div>
+                            <div className="modal-body">
+                                <div className="list-group">
+                                    {this.genListSchool()}
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <ul className="pagination pagination-md no-margin pull-right">
+                                    <li className={this.state.pageSchool === 1 ? 'disabled' : ''}>
+                                        <a href="#" onClick={(e) => this.newPageSchool(e, -1)}>Pre</a>
+                                    </li>
+                                    <li className="active">
+                                        <a>{this.state.pageSchool}</a>
+                                    </li>
+                                    <li className={this.state.nextSchool ? '' : 'disabled'}>
+                                        <a href="#" onClick={(e) => this.newPageSchool(e, 1)} >Next</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {/* /.modal-content */}
+                    </div>
+                    {/* /.modal-dialog */}
+                </div>
+
+                {/* Modal Major -> select major */}
+                <div className="modal fade" id="modal-major">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal">
+                                    <span aria-hidden="true">×</span></button>
+                                <h4 className="modal-title">Ngành</h4>
+                            </div>
+                            <div className="modal-body">
+                                <div className="list-group">
+                                    {this.genListMajor()}
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <ul className="pagination pagination-md no-margin pull-right">
+                                    <li className={this.state.pageMajor === 1 ? 'disabled' : ''}>
+                                        <a href="#" onClick={(e) => this.newPageMajor(e, -1)}>Pre</a>
+                                    </li>
+                                    <li className="active">
+                                        <a>{this.state.pageMajor}</a>
+                                    </li>
+                                    <li className={this.state.nextMajor ? '' : 'disabled'}>
+                                        <a href="#" onClick={(e) => this.newPageMajor(e, 1)} >Next</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {/* /.modal-content */}
+                    </div>
+                    {/* /.modal-dialog */}
+                </div>
+
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
@@ -100,9 +352,66 @@ class Mark extends Component {
                         <div className="col-xs-12">
                             <div className="box">
                                 <div className="box-header">
-                                    <h3 className="box-title">Danh sách điểm chuẩn</h3>
-                                    <div className="box-tools">
-                                        filter
+                                    <div className="col-xs-12 col-lg-4 lh-35">
+                                        <h3 className="box-title">Danh sách điểm chuẩn</h3>
+                                    </div>
+                                    <div className="col-xs-12 col-lg-8">
+                                        <div className="row">
+                                            <div className="col-xs-12 col-lg-3">
+                                                <div className="form-group">
+                                                    <Select
+                                                        styles={selectStyle}
+                                                        isSearchable={false}
+                                                        onChange={this.handleChangeYear}
+                                                        options={this.state.yearOptions}
+                                                        value={this.state.yearSelectedOption}
+                                                        placeholder="Năm"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-xs-12 col-lg-3">
+                                                <div className="form-group">
+                                                    <div
+                                                        className="h-hand"
+                                                        onClick={this.toggleSchool}
+                                                    >
+                                                        <Select
+                                                            isSearchable={false}
+                                                            styles={{ ...selectStyle, menu: () => ({ display: 'none' }) }}
+                                                            value={this.state.schoolSelectedOption}
+                                                            placeholder="Trường"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-xs-12 col-lg-3">
+                                                <div className="form-group">
+                                                    <div
+                                                        className="h-hand"
+                                                        onClick={this.toggleMajor}
+                                                    >
+                                                        <Select
+                                                            isSearchable={false}
+                                                            styles={{ ...selectStyle, menu: () => ({ display: 'none' }) }}
+                                                            value={this.state.majorSelectedOption}
+                                                            placeholder="Ngành"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-xs-12 col-lg-3">
+                                                <div className="form-group">
+                                                    <Select
+                                                        styles={selectStyle}
+                                                        isSearchable={false}
+                                                        onChange={this.handleChangeStatus}
+                                                        options={this.state.statusOptions}
+                                                        value={this.state.statusSelectedOption}
+                                                        placeholder="Trạng thái"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 {/* <!-- /.box-header --> */}
@@ -154,13 +463,14 @@ const mapStateToProps = (state) => {
     return {
         data: state.MarkReducer,
         user: state.LoginReducer.user,
-        status: state.StatusReducer.status
+        status: state.StatusReducer.status,
+        session: state.LoginReducer.session
     }
 }
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        loadMarks: (page) => dispatch(actions.loadAllMarkApi(page)),
+        loadMarks: (page, statusFilter, schoolFilter, majorFilter, yearFilter) => dispatch(actions.loadAllMarkApi(page, statusFilter, schoolFilter, majorFilter, yearFilter)),
         updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }

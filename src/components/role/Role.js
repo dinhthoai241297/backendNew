@@ -3,8 +3,9 @@ import RoleItem from './RoleItem';
 import { connect } from 'react-redux';
 import * as actions from './../../actions/RoleActions';
 import toastr from 'toastr';
-import { toastrOption } from './../../custom/Custom';
+import { toastrOption, selectStyle } from './../../custom/Custom';
 import * as status from './../../contants/status';
+import Select from 'react-select';
 
 class Roles extends Component {
 
@@ -13,14 +14,18 @@ class Roles extends Component {
         this.state = {
             page: 1,
             next: true,
-            roles: []
+            roles: [],
+            statusSelectedOption: null,
+            statusOptions: [],
+            statusFilter: undefined
         }
         toastr.options = toastrOption;
     }
 
     componentDidMount() {
         let { page } = this.state;
-        this.props.loadRoles(page);
+        this.initStatusFilter(this.props);
+        this.props.loadRoles(page, this.state.statusFilter);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -29,6 +34,22 @@ class Roles extends Component {
             roles,
             next
         });
+        if (this.props.status !== nextProps.status) {
+            this.initStatusFilter(nextProps);
+        }
+    }
+
+    initStatusFilter = (props) => {
+        if (props.status.length !== 0) {
+            let statusOptions = props.status.map(el => ({ value: el.id, label: el.name }));
+            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
+            let statusFilter = statusSelectedOption.value;
+            this.setState({
+                statusOptions,
+                statusSelectedOption,
+                statusFilter
+            });
+        }
     }
 
     newPage = (e, num) => {
@@ -41,7 +62,7 @@ class Roles extends Component {
             this.setState({
                 page
             });
-            this.props.loadRoles(page);
+            this.props.loadRoles(page, this.state.statusFilter);
         }
     }
 
@@ -71,6 +92,12 @@ class Roles extends Component {
         }
     }
 
+    // sự kiện select status
+    handleChangeStatus = (statusSelectedOption) => {
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value, page: 1 });
+        this.props.loadRoles(1, this.state.statusFilter);
+    }
+
     render() {
         return (
             <Fragment>
@@ -90,9 +117,26 @@ class Roles extends Component {
                         <div className="col-xs-12">
                             <div className="box">
                                 <div className="box-header">
-                                    <h3 className="box-title">Danh sách phân quyền</h3>
-                                    <div className="box-tools">
-                                        filter
+                                    <div className="row">
+                                        <div className="col-xs-12 col-lg-4 lh-35">
+                                            <h3 className="box-title">Danh sách quyền</h3>
+                                        </div>
+                                        <div className="col-xs-12 col-lg-8">
+                                            <div className="row">
+                                                <div className="col-xs-12 col-lg-offset-8 col-lg-4">
+                                                    <div className="form-group">
+                                                        <Select
+                                                            isSearchable={false}
+                                                            styles={selectStyle}
+                                                            onChange={this.handleChangeStatus}
+                                                            options={this.state.statusOptions}
+                                                            value={this.state.statusSelectedOption}
+                                                            placeholder="Trạng thái"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 {/* <!-- /.box-header --> */}
@@ -142,7 +186,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch, props) => {
     return {
-        loadRoles: (page) => dispatch(actions.loadAllRoleApi(page)),
+        loadRoles: (page, status) => dispatch(actions.loadAllRoleApi(page, status)),
         updateStatus: (id, status) => dispatch(actions.updateStatusApi(id, status))
     }
 }

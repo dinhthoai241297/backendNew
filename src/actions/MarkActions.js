@@ -76,10 +76,10 @@ export const deleteMarkState = id => {
     };
 };
 
-export const loadAllMarkApi = page => {
+export const loadAllMarkApi = (page, status, school, major, year) => {
     return (dispatch, getState) => {
         return markApi.getAll({
-            page,
+            page, status, school, major, year,
             session: getState().LoginReducer.session
         }).then(res => {
             if (res.body.code === 200) {
