@@ -7,6 +7,28 @@ import { toastrOption, selectStyle } from './../../custom/Custom';
 import * as status from './../../contants/status';
 import Select from 'react-select';
 import RoleApi from './../../api/RoleApi';
+import DateRangePicker from 'react-bootstrap-daterangepicker';
+
+const locale = {
+    applyLabel: 'Đồng ý',
+    cancelLabel: 'Hủy',
+    format: 'DD/MM/YYYY',
+    daysOfWeek: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+    monthNames: [
+        'Tháng 1,',
+        'Tháng 2,',
+        'Tháng 3,',
+        'Tháng 4,',
+        'Tháng 5,',
+        'Tháng 6,',
+        'Tháng 7,',
+        'Tháng 8,',
+        'Tháng 9,',
+        'Tháng 10,',
+        'Tháng 11,',
+        'Tháng 12,'
+    ]
+}
 
 class Users extends Component {
 
@@ -16,12 +38,15 @@ class Users extends Component {
             page: 1,
             next: false,
             users: [],
-            statusSelectedOption: null,
+            statusSelectedOption: undefined,
             statusOptions: [],
             statusFilter: undefined,
-            roleSelectedOption: null,
+            roleSelectedOption: undefined,
             roleOptions: [],
-            roleFilter: undefined
+            roleFilter: undefined,
+
+            dateFilter: undefined,
+            dateSelectedOption: undefined
         }
         toastr.options = toastrOption;
     }
@@ -119,22 +144,43 @@ class Users extends Component {
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value, page: 1 });
-        this.loadUsers(1);
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value }, () => {
+            this.loadUsers(1);
+        });
     }
 
     handleChangeRole = (roleSelectedOption) => {
-        this.setState({ roleSelectedOption });
-        this.loadUsers(1);
+        this.setState({ roleSelectedOption, roleFilter: roleSelectedOption.value }, () => {
+            this.loadUsers(1);
+        });
     }
 
     loadUsers = (page) => {
-        let { statusFilter, roleFilter } = this.state;
-        this.props.loadUsers(page, statusFilter, roleFilter);
+        var { statusFilter, roleFilter, dateFilter } = this.state;
+        this.props.loadUsers(page, statusFilter, roleFilter, dateFilter);
         this.setState({ page });
     }
 
+    handleDatePick = (event, picker) => {
+        let start = picker.startDate._d;
+        let end = picker.endDate._d;
+        this.setState({
+            dateFilter: {
+                start: start.getTime(),
+                end: end.getTime()
+            },
+            dateSelectedOption: {
+                label: this.convert(start) + ' - ' + this.convert(end)
+            }
+        }, () => this.loadUsers(1));
+    }
+
+    convert = (date) => {
+        return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    }
+
     render() {
+
         return (
             <Fragment>
                 {/* Content Header (Page header) */}
@@ -158,7 +204,24 @@ class Users extends Component {
                                     </div>
                                     <div className="col-xs-12 col-lg-8">
                                         <div className="row">
-                                            <div className="col-xs-12 col-lg-offset-4 col-lg-4">
+                                            <div className="col-xs-12 col-lg-6">
+                                                <div className="form-group">
+                                                    <DateRangePicker
+                                                        locale={locale}
+                                                        onApply={this.handleDatePick}
+                                                        containerStyles={{ display: 'block' }}
+                                                        autoUpdateInput
+                                                    >
+                                                        <Select
+                                                            styles={{ ...selectStyle, menu: () => ({ display: 'none' }) }}
+                                                            isSearchable={false}
+                                                            placeholder="Ngày"
+                                                            value={this.state.dateSelectedOption}
+                                                        />
+                                                    </DateRangePicker>
+                                                </div>
+                                            </div>
+                                            <div className="col-xs-12 col-lg-3">
                                                 <div className="form-group">
                                                     <Select
                                                         styles={selectStyle}
@@ -170,7 +233,7 @@ class Users extends Component {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="col-xs-12 col-lg-4">
+                                            <div className="col-xs-12 col-lg-3">
                                                 <div className="form-group">
                                                     <Select
                                                         isSearchable={false}

@@ -126,9 +126,6 @@ class Mark extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.setState({
-                page
-            });
             this.loadMarks(page);
         }
     }
@@ -216,13 +213,11 @@ class Mark extends Component {
     }
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption });
-        this.loadMarks(1);
+        this.setState({ statusSelectedOption }, () => this.loadMarks(1));
     }
 
     handleChangeYear = (yearSelectedOption) => {
-        this.setState({ yearSelectedOption });
-        this.loadMarks(1);
+        this.setState({ yearSelectedOption }, () => this.loadMarks(1));
     }
 
     handleChangeSchool = (s) => {
@@ -234,9 +229,7 @@ class Mark extends Component {
                 label: s.name
             },
             major: []
-        });
-        // filter
-        this.loadMarks(1);
+        }, () => this.loadMarks(1));
     }
 
     handleChangeMajor = (s) => {
@@ -247,9 +240,7 @@ class Mark extends Component {
                 value: s.id,
                 label: s.name
             }
-        });
-        // filter
-        this.loadMarks(1);
+        }, () => this.loadMarks(1));
     }
 
     toggleSchool = () => {
@@ -421,8 +412,8 @@ class Mark extends Component {
                                             <tr>
                                                 <th>Trường</th>
                                                 <th>Ngành</th>
-                                                <th>Năm</th>
-                                                <th>Nguyện vọng</th>
+                                                <th className="text-center">Năm</th>
+                                                <th className="text-center">Nguyện vọng</th>
                                                 <th>Điểm Chuẩn</th>
                                                 <th>Tổ Hợp Môn</th>
                                                 <th>Ghi Chú</th>

@@ -94,8 +94,9 @@ class Roles extends Component {
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value, page: 1 });
-        this.props.loadRoles(1, this.state.statusFilter);
+        let statusFilter = statusSelectedOption.value;
+        this.setState({ statusSelectedOption, statusFilter, page: 1 });
+        this.props.loadRoles(1, statusFilter);
     }
 
     render() {

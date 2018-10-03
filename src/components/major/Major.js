@@ -153,8 +153,7 @@ class Major extends Component {
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption });
-        this.loadMajors(1);
+        this.setState({ statusSelectedOption }, () => this.loadMajors(1));
     }
 
     handleChangeSchool = (s) => {
@@ -166,9 +165,7 @@ class Major extends Component {
                 value: s.id,
                 label: s.name
             }
-        });
-        // filter
-        this.loadMajors(1);
+        }, () => this.loadMajors(1));
     }
 
     toggleSchool = () => {
@@ -253,6 +250,7 @@ class Major extends Component {
                                             <div className="col-xs-12 col-lg-4">
                                                 <div className="form-group">
                                                     <Select
+                                                        isSearchable={false}
                                                         styles={selectStyle}
                                                         onChange={this.handleChangeStatus}
                                                         options={this.state.statusOptions}

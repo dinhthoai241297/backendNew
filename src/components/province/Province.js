@@ -128,13 +128,11 @@ class Province extends Component {
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption });
-        this.loadProvinces(1);
+        this.setState({ statusSelectedOption }, () => this.loadProvinces(1));
     }
 
     handleChangeSector = (sectorSelectedOption) => {
-        this.setState({ sectorSelectedOption });
-        this.loadProvinces(1);
+        this.setState({ sectorSelectedOption }, () => this.loadProvinces(1));
     }
 
     loadProvinces = (page) => {
@@ -172,6 +170,7 @@ class Province extends Component {
                                                 <div className="col-xs-12 col-lg-offset-4 col-lg-4">
                                                     <div className="form-group">
                                                         <Select
+                                                            isSearchable={false}
                                                             styles={selectStyle}
                                                             onChange={this.handleChangeSector}
                                                             options={this.state.sectorOptions}
@@ -183,6 +182,7 @@ class Province extends Component {
                                                 <div className="col-xs-12 col-lg-4">
                                                     <div className="form-group">
                                                         <Select
+                                                            isSearchable={false}
                                                             styles={selectStyle}
                                                             onChange={this.handleChangeStatus}
                                                             options={this.state.statusOptions}

@@ -154,8 +154,7 @@ class School extends Component {
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption });
-        this.loadSchools(1);
+        this.setState({ statusSelectedOption }, () =>  this.loadSchools(1));
     }
 
     handleChangeProvince = (s) => {
@@ -166,9 +165,7 @@ class School extends Component {
                 value: s.id,
                 label: s.name
             }
-        });
-        // filter
-        this.loadSchools(1);
+        }, () =>  this.loadSchools(1));
     }
 
     toggleProvince = () => {
@@ -254,6 +251,7 @@ class School extends Component {
                                             <div className="col-xs-12 col-lg-4">
                                                 <div className="form-group">
                                                     <Select
+                                                        isSearchable={false}
                                                         styles={selectStyle}
                                                         onChange={this.handleChangeStatus}
                                                         options={this.state.statusOptions}
@@ -270,11 +268,11 @@ class School extends Component {
                                     <table className="table table-hover">
                                         <tbody>
                                             <tr>
+                                                <th>Logo</th>
                                                 <th>Tên Trường</th>
                                                 <th>Mã Trường</th>
                                                 <th>Mô tả</th>
                                                 <th>Tỉnh</th>
-                                                <th>Image</th>
                                                 {(this.state.delete || this.state.update) &&
                                                     <th width="15%" className="text-center">Action</th>
                                                 }

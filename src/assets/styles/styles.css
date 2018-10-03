@@ -25,26 +25,32 @@
 
 .is-lock::before {
     content: "\F023";
+    color: black;
 }
 
 .is-pending::before {
     content: "\F110";
+    color: orange;
 }
 
 .is-active::before {
     content: "\F046";
+    color: green;
 }
 
 .is-delete::before {
     content: "\f05e";
+    color: red;
 }
 
 .is-pending:hover::before, .is-lock:hover::before, .is-delete:hover::before {
     content: "\F046";
+    color: green;
 }
 
 .is-active:hover::before {
     content: "\F023";
+    color: black;
 }
 
 .w-1 {
@@ -53,4 +59,32 @@
 
 .lh-35 {
     line-height: 35px;
+}
+
+.datepick {
+    border: 1px solid #d4d4d4;
+    position: absolute;
+    z-index: 10;
+    left: -50%;
+    top: 80%;
+}
+
+.wc-100 > div {
+    width: 100%;
+}
+
+.c-red {
+    color: red;
+}
+
+.fa-trash {
+    color: red;
+}
+
+.fa-edit {
+    color: blue;
+}
+
+table td, table th {
+    vertical-align: middle !important;
 }

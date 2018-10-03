@@ -25,6 +25,13 @@ class RoleItem extends Component {
         }
     }
 
+    constructor(props) {
+        super(props);
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    }
+
     render() {
         let { role } = this.props;
         let icon = status.renIcon(role.status.status);
@@ -35,7 +42,7 @@ class RoleItem extends Component {
                 <td className="text-center">
                     <a
                         data-toggle="tooltip"
-                        title={role.status.status === status.ACTIVE ? 'lock' : 'active'}
+                        data-original-title={role.status.status === status.ACTIVE ? 'lock' : 'active'}
                         className="h-hand" onClick={this.props.updateStatus}
                         onClick={() => this.props.updateStatus(role.id, role.status.status === status.ACTIVE ? status.LOCK : status.ACTIVE)}
                     >
@@ -43,11 +50,15 @@ class RoleItem extends Component {
                     </a>
                     <Link
                         to={'/role/update/' + role.id}
+                        data-original-title="Edit"
+                        data-toggle="tooltip"
                     >
                         <i className="w-1 fa fa-1x fa-edit bd-r pd-rl-1"></i>
                     </Link>
                     <a
                         className="h-hand"
+                        data-original-title="Delete"
+                        data-toggle="tooltip"
                         onClick={() => this.props.updateStatus(role.id, status.DELETE)}
                     >
                         <i className="w-1 fa fa-1x fa-trash pd-rl-1"></i>

@@ -105,8 +105,9 @@ class Subject extends Component {
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value, page: 1 });
-        this.props.loadSubjects(1, this.state.statusFilter);
+        let statusFilter = statusSelectedOption.value;
+        this.setState({ statusSelectedOption, statusFilter, page: 1 });
+        this.props.loadSubjects(1, statusFilter);
     }
 
     render() {
@@ -128,7 +129,7 @@ class Subject extends Component {
                         <div className="col-xs-12">
                             <div className="box">
                                 <div className="box-header">
-                                <div className="row">
+                                    <div className="row">
                                         <div className="col-xs-12 col-lg-4 lh-35">
                                             <h3 className="box-title">Danh sách môn thi</h3>
                                         </div>

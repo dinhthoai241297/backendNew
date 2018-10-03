@@ -3,6 +3,14 @@ import { Link } from 'react-router-dom';
 import * as status from './../../contants/status';
 
 class SubjectItem extends Component {
+
+    constructor(props) {
+        super(props);
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    }
+
     render() {
         let { subject } = this.props;
         let icon = status.renIcon(subject.status.status);
@@ -15,13 +23,17 @@ class SubjectItem extends Component {
                         <Fragment>
                             <a
                                 data-toggle="tooltip"
-                                title={subject.status.status === status.ACTIVE ? 'lock' : 'active'}
+                                data-original-title={subject.status.status === status.ACTIVE ? 'lock' : 'active'}
                                 className="h-hand" onClick={this.props.updateStatus}
                                 onClick={() => this.props.updateStatus(subject.id, subject.status.status === status.ACTIVE ? status.LOCK : status.ACTIVE)}
                             >
                                 <i className={"w-1 fa fa-1x pd-rl-1 bd-r " + icon}></i>
                             </a>
-                            <Link to={'/subject/update/' + subject.id}>
+                            <Link
+                                to={'/subject/update/' + subject.id}
+                                data-original-title="Edit"
+                                data-toggle="tooltip"
+                            >
                                 <i className="w-1 fa fa-1x fa-edit bd-r pd-rl-1"></i>
                             </Link>
                         </Fragment>
@@ -29,6 +41,8 @@ class SubjectItem extends Component {
                     {this.props.delete &&
                         <a
                             className="h-hand"
+                            data-original-title="Delete"
+                            data-toggle="tooltip"
                             onClick={() => this.props.updateStatus(subject.id, status.DELETE)}
                         >
                             <i className="w-1 fa fa-1x fa-trash pd-rl-1"></i>

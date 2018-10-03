@@ -10,10 +10,10 @@ import configureStore from './store/configureStore.dev';
 import 'admin-lte/bower_components/bootstrap/dist/css/bootstrap.min.css';
 import 'admin-lte/bower_components/font-awesome/css/font-awesome.min.css'
 import 'admin-lte/bower_components/Ionicons/css/ionicons.min.css'
+import 'bootstrap-daterangepicker/daterangepicker.css'
 import 'admin-lte/dist/css/AdminLTE.min.css';
 import 'admin-lte/dist/css/skins/skin-blue.min.css';
 import 'toastr/build/toastr.min.css'
-
 import './assets/styles/styles.css';
 
 import 'admin-lte/bower_components/jquery/dist/jquery.min.js';

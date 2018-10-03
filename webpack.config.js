@@ -24,7 +24,7 @@ module.exports = {
                 test: /\.css$/
             },
             {
-                use : [
+                use: [
                     {
                         loader: 'file-loader',
                         options: {
@@ -36,7 +36,7 @@ module.exports = {
                 test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/
             },
             {
-                use : [
+                use: [
                     {
                         loader: 'file-loader',
                         options: {
@@ -45,7 +45,7 @@ module.exports = {
                         }
                     }
                 ],
-                test : /\.(png|jpg|gif)$/
+                test: /\.(png|jpg|gif)$/
             }
         ]
     },
@@ -54,6 +54,7 @@ module.exports = {
         new webpack.ProvidePlugin({
             $: 'admin-lte/bower_components/jquery/dist/jquery.min.js',
             jQuery: 'admin-lte/bower_components/jquery/dist/jquery.min.js'
-        })
+        }),
+        new webpack.ContextReplacementPlugin(/\.\/locale$/, 'empty-module', false, /js$/)
     ]
 };
