@@ -26,16 +26,16 @@ class Province extends Component {
             sectorSelectedOption: null,
             sectorOptions: [],
 
-            statusFilter: '',
-            sectorFilter: ''
+            statusFilter: undefined,
+            sectorFilter: undefined
         }
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         let { page } = this.state;
         this.initStatusFilter(this.props);
-        this.loadSectorOption();
+        await this.loadSectorOption();
         this.loadProvinces(page);
     }
 
@@ -56,9 +56,15 @@ class Province extends Component {
 
     initStatusFilter = (props) => {
         if (props.status.length !== 0) {
-            let statusOptions = props.status.map(el => ({ value: el.id, label: el.name }));
+            let statusOptions = [
+                {
+                    value: undefined,
+                    label: 'Tất cả'
+                }
+            ];
+            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
             let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption.value;
+            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
             this.setState({
                 statusOptions,
                 statusSelectedOption,
@@ -78,12 +84,19 @@ class Province extends Component {
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
-        let sectorOptions = rs.map(el => ({ value: el.id, label: el.name }))
-        let sectorSelectedOption = (sectorOptions && sectorOptions.length !== 0) ? sectorOptions[0] : '';
-        this.setState({
+        let sectorOptions = [
+            {
+                value: undefined,
+                label: 'Tất cả'
+            }
+        ];
+        sectorOptions.push(...rs.map(el => ({ value: el.id, label: el.name })));
+        let sectorSelectedOption = sectorOptions[0];
+        console.log(sectorSelectedOption ? sectorSelectedOption.value : undefined);
+        await this.setState({
             sectorOptions,
             sectorSelectedOption: sectorSelectedOption,
-            sectorFilter: sectorSelectedOption ? sectorSelectedOption.value : ''
+            sectorFilter: sectorSelectedOption ? sectorSelectedOption.value : undefined
         });
     }
 
@@ -128,11 +141,11 @@ class Province extends Component {
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption }, () => this.loadProvinces(1));
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value }, () => this.loadProvinces(1));
     }
 
     handleChangeSector = (sectorSelectedOption) => {
-        this.setState({ sectorSelectedOption }, () => this.loadProvinces(1));
+        this.setState({ sectorSelectedOption, sectorFilter: sectorSelectedOption.value }, () => this.loadProvinces(1));
     }
 
     loadProvinces = (page) => {

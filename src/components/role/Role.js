@@ -41,9 +41,15 @@ class Roles extends Component {
 
     initStatusFilter = (props) => {
         if (props.status.length !== 0) {
-            let statusOptions = props.status.map(el => ({ value: el.id, label: el.name }));
+            let statusOptions = [
+                {
+                    value: undefined,
+                    label: 'Tất cả'
+                }
+            ];
+            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
             let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption.value;
+            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
             this.setState({
                 statusOptions,
                 statusSelectedOption,

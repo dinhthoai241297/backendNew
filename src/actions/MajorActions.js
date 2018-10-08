@@ -76,10 +76,10 @@ export const deleteMajorState = id => {
     };
 };
 
-export const loadAllMajorApi = (page, statusFilter, schoolFilter) => {
+export const loadAllMajorApi = (page, status, school) => {
     return (dispatch, getState) => {
         return majorApi.getAll({
-            page, statusFilter, schoolFilter,
+            page, status, school,
             session: getState().LoginReducer.session
         }).then(res => {
             if (res.body.code === 200) {

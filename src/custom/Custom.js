@@ -7,6 +7,10 @@ export const selectStyle = {
     dropdownIndicator: (base) => ({
         ...base,
         padding: "0 8px"
+    }),
+    menu: (base) => ({
+        ...base,
+        zIndex: 10
     })
 }
 

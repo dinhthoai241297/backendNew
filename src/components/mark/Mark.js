@@ -52,6 +52,10 @@ class Mark extends Component {
         this.initStatusFilter(this.props);
         this.loadMarks(page);
         let yearOptions = [];
+        yearOptions.push({
+            value: undefined,
+            label: 'Tất cả'
+        });
         for (let year = (new Date).getFullYear(); year > 2009; year--) {
             yearOptions.push({
                 value: year,
@@ -81,9 +85,15 @@ class Mark extends Component {
 
     initStatusFilter = (props) => {
         if (props.status.length !== 0) {
-            let statusOptions = props.status.map(el => ({ value: el.id, label: el.name }));
+            let statusOptions = [
+                {
+                    value: undefined,
+                    label: 'Tất cả'
+                }
+            ];
+            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
             let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption.value;
+            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
             this.setState({
                 statusOptions,
                 statusSelectedOption,
@@ -99,7 +109,7 @@ class Mark extends Component {
         });
 
         this.setState({
-            school: rs.body.data.list,
+            school: [{id: undefined, name: 'Tất cả'},...rs.body.data.list],
             nextSchool: rs.body.data.next,
             pageSchool: page
         });
@@ -113,7 +123,7 @@ class Mark extends Component {
         });
 
         this.setState({
-            major: rs.body.data.list,
+            major: [{id: undefined, name: 'Tất cả'}, ...rs.body.data.list],
             nextMajor: rs.body.data.next,
             pageMajor: page
         });
@@ -198,8 +208,8 @@ class Mark extends Component {
     }
 
     loadMarks = page => {
-        let { statusFilter, schoolFilter, majorFilter } = this.state;
-        this.props.loadMarks(page, statusFilter, schoolFilter, majorFilter);
+        let { statusFilter, schoolFilter, majorFilter, yearFilter } = this.state;
+        this.props.loadMarks(page, statusFilter, schoolFilter, majorFilter, yearFilter);
         this.setState({ page });
     }
 
@@ -213,11 +223,11 @@ class Mark extends Component {
     }
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption }, () => this.loadMarks(1));
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value }, () => this.loadMarks(1));
     }
 
     handleChangeYear = (yearSelectedOption) => {
-        this.setState({ yearSelectedOption }, () => this.loadMarks(1));
+        this.setState({ yearSelectedOption, yearFilter: yearSelectedOption.value }, () => this.loadMarks(1));
     }
 
     handleChangeSchool = (s) => {

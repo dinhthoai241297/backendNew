@@ -71,9 +71,15 @@ class Users extends Component {
 
     initStatusFilter = (props) => {
         if (props.status.length !== 0) {
-            let statusOptions = props.status.map(el => ({ value: el.id, label: el.name }));
+            let statusOptions = [
+                {
+                    value: undefined,
+                    label: 'Tất cả'
+                }
+            ];
+            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
             let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption.value;
+            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
             this.setState({
                 statusOptions,
                 statusSelectedOption,
@@ -93,12 +99,11 @@ class Users extends Component {
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
-        let roleOptions = rs.map(el => ({ value: el.id, label: el.name }))
-        let roleSelectedOption = (roleOptions && roleOptions.length !== 0) ? roleOptions[0] : '';
+        let roleOptions = [{ value: undefined, label: 'Tất cả' }, ...rs.map(el => ({ value: el.id, label: el.name }))];
+        let roleSelectedOption = roleOptions[0];
         this.setState({
             roleOptions,
-            roleSelectedOption: roleSelectedOption,
-            roleFilter: roleSelectedOption ? roleSelectedOption.value : ''
+            roleSelectedOption
         });
     }
 
@@ -186,7 +191,7 @@ class Users extends Component {
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
-                        Trang Quản Lý Người dùng
+                        Trang Quản Lý Người Dùng
                     </h1>
                     <ol className="breadcrumb">
                         <li><a href="#"><i className="fa fa-dashboard" /> User</a></li>

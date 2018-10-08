@@ -57,9 +57,15 @@ class School extends Component {
 
     initStatusFilter = (props) => {
         if (props.status.length !== 0) {
-            let statusOptions = props.status.map(el => ({ value: el.id, label: el.name }));
+            let statusOptions = [
+                {
+                    value: undefined,
+                    label: 'Tất cả'
+                }
+            ];
+            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
             let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption.value;
+            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
             this.setState({
                 statusOptions,
                 statusSelectedOption,
@@ -69,15 +75,13 @@ class School extends Component {
     }
 
     loadProvinces = async page => {
-        console.log(page, this.props.session);
         let rs = await ProvinceApi.getAll({
             page,
             session: this.props.session
         });
 
-
         this.setState({
-            province: rs.body.data.list,
+            province: [{ id: undefined, name: 'Tất cả' }, ...rs.body.data.list],
             nextProvince: rs.body.data.next,
             pageProvince: page
         });
@@ -148,13 +152,14 @@ class School extends Component {
 
     loadSchools = page => {
         let { statusFilter, provinceFilter } = this.state;
+        console.log(statusFilter, provinceFilter);
         this.props.loadSchools(page, statusFilter, provinceFilter);
         this.setState({ page });
     }
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption }, () =>  this.loadSchools(1));
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value }, () => this.loadSchools(1));
     }
 
     handleChangeProvince = (s) => {
@@ -165,7 +170,7 @@ class School extends Component {
                 value: s.id,
                 label: s.name
             }
-        }, () =>  this.loadSchools(1));
+        }, () => this.loadSchools(1));
     }
 
     toggleProvince = () => {
