@@ -132,28 +132,28 @@ class EditRole extends Component {
         });
         let { role } = this.state;
         if (role.id) {
-            this.props.updateRole(role).then(res => {
-                if (res) {
+            this.props.updateRole(role).then(code => {
+                if (code === 200) {
                     toastr.success('Updated!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addRole(role).then(res => {
-                if (res) {
+            this.props.addRole(role).then(code => {
+                if (code === 200) {
                     toastr.success('Added!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
+                this.renewForm();
             });
-            this.renewForm();
         }
     }
 

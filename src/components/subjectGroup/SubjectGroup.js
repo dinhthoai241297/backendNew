@@ -19,18 +19,17 @@ class SubjectGroup extends Component {
             subjectGroups: [],
             update: false,
             delete: false,
-            statusSelectedOption: null,
+            statusSelectedOption: undefined,
             statusOptions: [],
             statusFilter: undefined
         }
-
         toastr.options = toastrOption;
     }
 
     componentDidMount() {
         let { page } = this.state;
         this.initStatusFilter(this.props);
-        this.props.loadSubjectGroups(page, this.state.statusFilter);
+        this.loadSubjectGroups(page);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -74,10 +73,7 @@ class SubjectGroup extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.setState({
-                page
-            });
-            this.props.loadSubjectGroups(page, this.state.statusFilter);
+            this.loadSubjectGroups(page);
         }
     }
 
@@ -104,7 +100,11 @@ class SubjectGroup extends Component {
         let st = this.props.status.find(el => el.status === status);
         if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
-                this.props.updateStatus(id, st);
+                this.props.updateStatus(id, st).then(code => {
+                    if (code === 200) {
+                        this.loadSubjectGroups(this.state.page);
+                    }
+                });
             }
         }
     }
@@ -112,8 +112,14 @@ class SubjectGroup extends Component {
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
         let statusFilter = statusSelectedOption.value;
-        this.setState({ statusSelectedOption, statusFilter, page: 1 });
-        this.props.loadSubjectGroups(1, statusFilter);
+        this.setState({ statusSelectedOption, statusFilter }, () => this.loadSubjectGroups(1));
+
+    }
+
+    loadSubjectGroups = page => {
+        let { statusFilter } = this.state;
+        this.props.loadSubjectGroups(page, statusFilter);
+        this.setState({ page });
     }
 
     render() {

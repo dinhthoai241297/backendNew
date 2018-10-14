@@ -126,28 +126,28 @@ class EditSchool extends Component {
         e.preventDefault();
         let { school } = this.state;
         if (school.id) {
-            this.props.updateSchool(school).then(res => {
-                if (res) {
+            this.props.updateSchool(school).then(code => {
+                if (code === 200) {
                     toastr.success('Updated!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error!  + code');
                 }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSchool(school).then(res => {
-                if (res) {
+            this.props.addSchool(school).then(code => {
+                if (code === 200) {
                     toastr.success('Added!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
+                this.renewForm();
             });
-            this.renewForm();
         }
     }
 

@@ -88,3 +88,7 @@
 table td, table th {
     vertical-align: middle !important;
 }
+
+.box-body table tr:nth-child(even) {
+    background-color: #ececec;
+}

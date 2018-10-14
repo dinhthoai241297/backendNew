@@ -173,28 +173,28 @@ class EditMark extends Component {
         });
         let { mark } = this.state;
         if (mark.id) {
-            this.props.updateMark(mark).then(res => {
-                if (res) {
+            this.props.updateMark(mark).then(code => {
+                if (code === 200) {
                     toastr.success('Updated!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addMark(mark).then(res => {
-                if (res) {
+            this.props.addMark(mark).then(code => {
+                if (code === 200) {
                     toastr.success('Added!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
+                this.renewForm();
             });
-            this.renewForm();
         }
     }
 

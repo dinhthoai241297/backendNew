@@ -2,21 +2,17 @@ import markApi from './../api/MarkApi';
 import * as actionTypes from './../actionTypes/MarkActionTypes';
 
 export const addMarkApi = mark => {
-    return (dispatch, getState) => {
-        return markApi.add({
-            mark,
-            session: getState().LoginReducer.session
-        }).then(res => {
-            if (res.body.code === 200) {
-                dispatch(addMarkState(mark));
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });
-    }
+    return (dispatch, getState) => markApi.add({
+        mark,
+        session: getState().LoginReducer.session
+    }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(addMarkState(mark));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
 };
 
 export const addMarkState = mark => {
@@ -27,21 +23,18 @@ export const addMarkState = mark => {
 };
 
 export const updateMarkApi = mark => {
-    return (dispatch, getState) => {
-        return markApi.update({
-            mark,
-            session: getState().LoginReducer.session
-        }).then(res => {
-            if (res.body.code === 200) {
-                dispatch(updateMarkState(mark));
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });
-    }
+    return (dispatch, getState) => markApi.update({
+        mark,
+        session: getState().LoginReducer.session
+    }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(updateMarkState(mark));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
+
 };
 
 export const updateMarkState = mark => {
@@ -52,21 +45,17 @@ export const updateMarkState = mark => {
 };
 
 export const deleteMarkApi = id => {
-    return (dispatch, getState) => {
-        return markApi.delete({
-            id,
-            session: getState().LoginReducer.session
-        }).then(res => {
-            if (res.body.code === 200) {
-                dispatch(deleteMarkState(id));
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });
-    }
+    return (dispatch, getState) => markApi.delete({
+        id,
+        session: getState().LoginReducer.session
+    }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(deleteMarkState(id));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
 };
 
 export const deleteMarkState = id => {
@@ -77,21 +66,17 @@ export const deleteMarkState = id => {
 };
 
 export const loadAllMarkApi = (page, status, school, major, year) => {
-    return (dispatch, getState) => {
-        return markApi.getAll({
-            page, status, school, major, year,
-            session: getState().LoginReducer.session
-        }).then(res => {
-            if (res.body.code === 200) {
-                dispatch(loadAllMarkState(res.body.data));
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });
-    }
+    return (dispatch, getState) => markApi.getAll({
+        page, status, school, major, year,
+        session: getState().LoginReducer.session
+    }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(loadAllMarkState(res.body.data));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
 };
 
 export const loadAllMarkState = data => {
@@ -102,22 +87,18 @@ export const loadAllMarkState = data => {
 };
 
 export const updateStatusApi = (id, status) => {
-    return (dispatch, getState) => {
-        return markApi.updateStatus({
-            id,
-            status: status.id,
-            session: getState().LoginReducer.session
-        }).then(res => {
-            if (res.body.code === 200) {
-                dispatch(updateStatusState(id, status));
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });
-    }
+    return (dispatch, getState) => markApi.updateStatus({
+        id,
+        status: status.id,
+        session: getState().LoginReducer.session
+    }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(updateStatusState(id, status));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
 };
 
 export const updateStatusState = (id, status) => {

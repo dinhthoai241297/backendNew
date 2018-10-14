@@ -146,7 +146,11 @@ class Major extends Component {
         let st = this.props.status.find(el => el.status === status);
         if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
-                this.props.updateStatus(id, st);
+                this.props.updateStatus(id, st).then(code => {
+                    if (code === 200) {
+                        this.loadMajors(this.state.page);
+                    }
+                });
             }
         }
     }

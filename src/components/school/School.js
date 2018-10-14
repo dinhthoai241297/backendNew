@@ -145,14 +145,17 @@ class School extends Component {
         let st = this.props.status.find(el => el.status === status);
         if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
-                this.props.updateStatus(id, st);
+                this.props.updateStatus(id, st).then(code => {
+                    if (code === 200) {
+                        this.loadSchools(this.state.page);
+                    }
+                });
             }
         }
     }
 
     loadSchools = page => {
         let { statusFilter, provinceFilter } = this.state;
-        console.log(statusFilter, provinceFilter);
         this.props.loadSchools(page, statusFilter, provinceFilter);
         this.setState({ page });
     }

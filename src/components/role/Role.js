@@ -22,10 +22,10 @@ class Roles extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         let { page } = this.state;
-        this.initStatusFilter(this.props);
-        this.props.loadRoles(page, this.state.statusFilter);
+        await this.initStatusFilter(this.props);
+        this.loadRoles(page);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -65,10 +65,7 @@ class Roles extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.setState({
-                page
-            });
-            this.props.loadRoles(page, this.state.statusFilter);
+            this.loadRoles(page);
         }
     }
 
@@ -93,7 +90,11 @@ class Roles extends Component {
         let st = this.props.status.find(el => el.status === status);
         if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
-                this.props.updateStatus(id, st);
+                this.props.updateStatus(id, st).then(code => {
+                    if (code === 200) {
+                        this.loadRoles(this.state.page);
+                    }
+                });
             }
         }
     }
@@ -101,8 +102,13 @@ class Roles extends Component {
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
         let statusFilter = statusSelectedOption.value;
-        this.setState({ statusSelectedOption, statusFilter, page: 1 });
-        this.props.loadRoles(1, statusFilter);
+        this.setState({ statusSelectedOption, statusFilter }, () => this.loadRoles(1));
+    }
+
+    loadRoles = page => {
+        let { statusFilter } = this.state;
+        this.props.loadRoles(page, statusFilter);
+        this.setState({ page });
     }
 
     render() {

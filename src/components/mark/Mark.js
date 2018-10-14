@@ -217,7 +217,11 @@ class Mark extends Component {
         let st = this.props.status.find(el => el.status === status);
         if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
-                this.props.updateStatus(id, st);
+                this.props.updateStatus(id, st).then(code => {
+                    if (code === 200) {
+                        this.loadMarks(this.state.page);
+                    }
+                });
             }
         }
     }
@@ -238,7 +242,8 @@ class Mark extends Component {
                 value: s.id,
                 label: s.name
             },
-            major: []
+            major: [],
+            pageMajor: 1
         }, () => this.loadMarks(1));
     }
 
@@ -262,7 +267,7 @@ class Mark extends Component {
 
     toggleMajor = () => {
         if (this.state.major.length === 0) {
-            this.loadMajors(this.state.pageSchool);
+            this.loadMajors(this.state.pageMajor);
         }
         $('#modal-major').modal('toggle');
     }
@@ -425,7 +430,7 @@ class Mark extends Component {
                                                 <th className="text-center">Năm</th>
                                                 <th className="text-center">Nguyện vọng</th>
                                                 <th>Điểm Chuẩn</th>
-                                                <th>Tổ Hợp Môn</th>
+                                                <th className="text-center">Tổ Hợp Môn</th>
                                                 <th>Ghi Chú</th>
                                                 {(this.state.delete || this.state.update) &&
                                                     <th width="15%" className="text-center">Action</th>

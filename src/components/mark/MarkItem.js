@@ -21,7 +21,7 @@ class MarkItem extends Component {
                 <td className="text-center">{mark.year}</td>
                 <td className="text-center">{mark.aspiration}</td>
                 <td>{mark.mark}</td>
-                <td>{mark.subjectGroups.map((sg, index) => (<Fragment key={index}>{sg !== null ? sg.code : ''}<br /></Fragment>))}</td>
+                <td className="text-center">{mark.subjectGroups.length === 0 ? '-' : mark.subjectGroups.map((sg, index) => (<Fragment key={index}>{sg.code}<br /></Fragment>))}</td>
                 <td>{mark.note}</td>
                 <td className="text-center">
                     {this.props.update &&

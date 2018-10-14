@@ -45,15 +45,20 @@ class Users extends Component {
             roleOptions: [],
             roleFilter: undefined,
 
-            dateFilter: undefined,
-            dateSelectedOption: undefined
+            dateFilter: {
+                start: new Date(1001, 1, 1),
+                end: new Date()
+            },
+            dateSelectedOption: {
+                label: this.convert(new Date(1001, 1, 1)) + ' - ' + this.convert(new Date())
+            }
         }
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         let { page } = this.state;
-        this.initStatusFilter(this.props);
+        await this.initStatusFilter(this.props);
         this.loadRoleOption();
         this.loadUsers(page);
     }
@@ -142,7 +147,11 @@ class Users extends Component {
         let st = this.props.status.find(el => el.status === status);
         if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
-                this.props.updateStatus(id, st);
+                this.props.updateStatus(id, st).then(code => {
+                    if (code === 200) {
+                        this.loadUsers(this.state.page);
+                    }
+                });
             }
         }
     }
@@ -162,6 +171,7 @@ class Users extends Component {
 
     loadUsers = (page) => {
         var { statusFilter, roleFilter, dateFilter } = this.state;
+        console.log(dateFilter);
         this.props.loadUsers(page, statusFilter, roleFilter, dateFilter);
         this.setState({ page });
     }
@@ -169,11 +179,11 @@ class Users extends Component {
     handleDatePick = (event, picker) => {
         let start = picker.startDate._d;
         let end = picker.endDate._d;
+        // let start = new Date(picker.startDate._d.getFullYear(), picker.startDate._d.getMonth(), picker.startDate._d.getDate());
+        // let end = new Date(picker.endDate._d.getFullYear(), picker.endDate._d.getMonth(), picker.endDate._d.getDate());
+        // console.log(start.toISOString());
         this.setState({
-            dateFilter: {
-                start: start.getTime(),
-                end: end.getTime()
-            },
+            dateFilter: { start, end },
             dateSelectedOption: {
                 label: this.convert(start) + ' - ' + this.convert(end)
             }

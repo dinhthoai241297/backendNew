@@ -123,28 +123,28 @@ class EditMajor extends Component {
         e.preventDefault();
         let { major } = this.state;
         if (major.id) {
-            this.props.updateMajor(major).then(res => {
-                if (res) {
+            this.props.updateMajor(major).then(code => {
+                if (code === 200) {
                     toastr.success('Updated!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addMajor(major).then(res => {
-                if (res) {
+            this.props.addMajor(major).then(code => {
+                if (code === 200) {
                     toastr.success('Added!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
+                this.renewForm();
             });
-            this.renewForm();
         }
     }
 

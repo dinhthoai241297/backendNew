@@ -2,21 +2,17 @@ import userApi from './../api/UserApi';
 import * as actionTypes from './../actionTypes/UserActionTypes';
 
 export const addUserApi = user => {
-    return (dispatch, getState) => {
-        return userApi.add({
-            user,
-            session: getState().LoginReducer.session
-        }).then(res => {
-            if (res.body.code === 200) {
-                dispatch(addUserState(user));
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });
-    }
+    return (dispatch, getState) => userApi.add({
+        user,
+        session: getState().LoginReducer.session
+    }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(addUserState(user));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
 };
 
 export const addUserState = user => {
@@ -27,22 +23,18 @@ export const addUserState = user => {
 };
 
 export const updateUserApi = user => {
-    return (dispatch, getState) => {
-        return userApi.update({
-            user,
-            session: getState().LoginReducer.session
-        }).then(res => {
+    return (dispatch, getState) => userApi.update({
+        user,
+        session: getState().LoginReducer.session
+    }).then(res => {
 
-            if (res.body.code === 200) {
-                dispatch(updateUserState(user));
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });
-    }
+        if (res.body.code === 200) {
+            dispatch(updateUserState(user));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
 };
 
 export const updateUserState = user => {
@@ -53,21 +45,17 @@ export const updateUserState = user => {
 };
 
 export const deleteUserApi = id => {
-    return (dispatch, getState) => {
-        return userApi.delete({
-            id,
-            session: getState().LoginReducer.session
-        }).then(res => {
-            if (res.body.code === 200) {
-                dispatch(deleteUserState(id));
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });
-    }
+    return (dispatch, getState) => userApi.delete({
+        id,
+        session: getState().LoginReducer.session
+    }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(deleteUserState(id));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
 };
 
 export const deleteUserState = id => {
@@ -78,21 +66,17 @@ export const deleteUserState = id => {
 };
 
 export const loadAllUserApi = (page, status, role, date) => {
-    return (dispatch, getState) => {
-        return userApi.getAll({
-            page, status, role, date,
-            session: getState().LoginReducer.session
-        }).then(res => {
-            if (res.body.code === 200) {
-                dispatch(loadAllUserState(res.body.data));
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });;
-    }
+    return (dispatch, getState) => userApi.getAll({
+        page, status, role, date,
+        session: getState().LoginReducer.session
+    }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(loadAllUserState(res.body.data));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });;
 };
 
 export const loadAllUserState = data => {
@@ -103,20 +87,18 @@ export const loadAllUserState = data => {
 };
 
 export const loginApi = (username, password) => {
-    return dispatch => {
-        return userApi.login({
-            username,
-            password
-        }).then(res => {
-            if (res.body.code === 200) {
-                localStorage.setItem('data', JSON.stringify(res.body.data));
-                dispatch(loginState(res.body.data));
-            }
-            return res.body;
-        }).catch(error => {
-            throw (error);
-        });
-    }
+    return dispatch => userApi.login({
+        username,
+        password
+    }).then(res => {
+        if (res.body.code === 200) {
+            localStorage.setItem('data', JSON.stringify(res.body.data));
+            dispatch(loginState(res.body.data));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
 };
 
 export const loginState = data => {
@@ -127,21 +109,16 @@ export const loginState = data => {
 }
 
 export const logoutApi = () => {
-    return (dispatch, getState) => {
-        return userApi.logout({
-            session: getState().LoginReducer.session
-        }).then(res => {
-            console.log(res);
-            if (res.body.code === 200) {
-                dispatch(logoutState());
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });
-    }
+    return (dispatch, getState) => userApi.logout({
+        session: getState().LoginReducer.session
+    }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(logoutState());
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
 };
 
 export const logoutState = () => {
@@ -152,22 +129,18 @@ export const logoutState = () => {
 }
 
 export const updateStatusApi = (id, status) => {
-    return (dispatch, getState) => {
-        return userApi.updateStatus({
-            id,
-            status: status.id,
-            session: getState().LoginReducer.session
-        }).then(res => {
-            if (res.body.code === 200) {
-                dispatch(updateStatusState(id, status));
-                return true;
-            } else {
-                return false;
-            }
-        }).catch(error => {
-            throw (error);
-        });
-    }
+    return (dispatch, getState) => userApi.updateStatus({
+        id,
+        status: status.id,
+        session: getState().LoginReducer.session
+    }).then(res => {
+        if (res.body.code === 200) {
+            dispatch(updateStatusState(id, status));
+        }
+        return res.body.code;
+    }).catch(error => {
+        throw (error);
+    });
 };
 
 export const updateStatusState = (id, status) => {

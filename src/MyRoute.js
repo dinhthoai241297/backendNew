@@ -84,7 +84,7 @@ class MyRoute extends Component {
         let { user } = this.state;
         let logged = (user && user.username !== '' && user.password !== '') ? true : false;
         return (
-            <Router>
+            <Router history={history}>
                 <Switch>
                     <Route path="/login" exact render={() => (logged ? (<Redirect to="/sector/list" />) : (<Login />))} />
                     <Route render={(props) => (!logged ? (<Redirect to="/login" />) : (
@@ -92,7 +92,7 @@ class MyRoute extends Component {
                             <Switch>
                                 <Route path="/" exact render={() => (<Redirect to="/sector/list" />)} />
 
-                                <Route path="/sector/list" render={() => (this.validateRole(user.role, roles.VIEW) ? <Sector /> : <Permission />)} />
+                                <Route path="/sector/list" render={props => (this.validateRole(user.role, roles.VIEW) ? <Sector {...props} /> : <Permission />)} />
                                 <Route path="/sector/update/:id" exact render={(props) => (this.validateRole(user.role, roles.UPDATE) ? <EditSector {...props} do='update' /> : <Permission />)} />
                                 <Route path="/sector/add" exact render={(props) => (this.validateRole(user.role, roles.ADD) ? <EditSector {...props} do='add' /> : <Permission />)} />
 

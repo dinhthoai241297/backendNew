@@ -106,28 +106,28 @@ class EditSector extends Component {
         });
         let { sector } = this.state;
         if (sector.id) {
-            this.props.updateSector(sector).then(res => {
-                if (res) {
+            this.props.updateSector(sector).then(code => {
+                if (code === 200) {
                     toastr.success('Updated!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSector(sector).then(res => {
-                if (res) {
+            this.props.addSector(sector).then(code => {
+                if (code === 200) {
                     toastr.success('Added!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
+                this.renewForm();
             });
-            this.renewForm();
         }
     }
 

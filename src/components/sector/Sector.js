@@ -19,17 +19,18 @@ class Sectors extends Component {
             sectors: [],
             update: false,
             delete: false,
-            statusSelectedOption: null,
+            statusSelectedOption: undefined,
             statusOptions: [],
             statusFilter: undefined
         }
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        console.log(this.props);
         let { page } = this.state;
-        this.initStatusFilter(this.props);
-        this.props.loadSectors(page, this.state.statusFilter);
+        await this.initStatusFilter(this.props);
+        this.loadSectors(page);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -73,9 +74,6 @@ class Sectors extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.setState({
-                page
-            });
             this.props.loadSectors(page, this.state.statusFilter);
         }
     }
@@ -102,16 +100,25 @@ class Sectors extends Component {
         let st = this.props.status.find(el => el.status === status);
         if (confirm('Bạn có chắc muốn ' + st.name)) {
             if (st) {
-                this.props.updateStatus(id, st);
+                this.props.updateStatus(id, st).then(code => {
+                    if (code === 200) {
+                        this.loadSectors(this.state.page);
+                    }
+                });
             }
         }
+    }
+
+    loadSectors = page => {
+        let { statusFilter } = this.state;
+        this.props.loadSectors(page, statusFilter);
+        this.setState({ page });
     }
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
         let statusFilter = statusSelectedOption.value;
-        this.setState({ statusSelectedOption, statusFilter, page: 1 });
-        this.props.loadSectors(1, statusFilter);
+        this.setState({ statusSelectedOption, statusFilter }, () => this.loadSectors(1));
     }
 
     render() {

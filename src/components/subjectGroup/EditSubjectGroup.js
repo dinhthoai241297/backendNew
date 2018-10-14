@@ -130,28 +130,28 @@ class EditSubjectGroup extends Component {
         e.preventDefault();
         let { subjectGroup } = this.state;
         if (subjectGroup.id) {
-            this.props.updateSubjectGroup(subjectGroup).then(res => {
-                if (res) {
+            this.props.updateSubjectGroup(subjectGroup).then(code => {
+                if (code === 200) {
                     toastr.success('Updated!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addSubjectGroup(subjectGroup).then(res => {
-                if (res) {
+            this.props.addSubjectGroup(subjectGroup).then(code => {
+                if (code === 200) {
                     toastr.success('Added!');
                 } else {
-                    toastr.error('Error!');
+                    toastr.error('Error! ' + code);
                 }
                 this.setState({
                     isProcess: false
                 });
+                this.renewForm();
             });
-            this.renewForm();
         }
     }
 

@@ -23,14 +23,14 @@ class Login extends Component {
     login = (e) => {
         e.preventDefault();
         let { username, password } = this.state;
-        this.props.login(username, password).then(res => {
+        this.props.login(username, password).then(code => {
             let mes = '';
-            if (res.code === 804) {
+            if (code === 804) {
                 mes = 'Tài khoản chưa kích hoạt!';
-            } else if (res.code === 803) {
+            } else if (code === 803) {
                 mes = 'Tài khoản hoặc mật khẩu không hợp lệ!';
             } else {
-                mes = 'Error: ' + res.code;
+                mes = 'Error: ' + code;
             }
             this.setState({ mes });
         });
