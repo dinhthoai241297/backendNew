@@ -51,7 +51,9 @@ class Users extends Component {
             },
             dateSelectedOption: {
                 label: this.convert(new Date(1001, 1, 1)) + ' - ' + this.convert(new Date())
-            }
+            },
+
+            loading: false
         }
         toastr.options = toastrOption;
     }
@@ -170,10 +172,11 @@ class Users extends Component {
     }
 
     loadUsers = (page) => {
+        this.setState({ loading: true });
         var { statusFilter, roleFilter, dateFilter } = this.state;
-        console.log(dateFilter);
-        this.props.loadUsers(page, statusFilter, roleFilter, dateFilter);
-        this.setState({ page });
+        this.props.loadUsers(page, statusFilter, roleFilter, dateFilter).then(res => {
+            this.setState({ page, loading: false });
+        });
     }
 
     handleDatePick = (event, picker) => {
@@ -273,6 +276,9 @@ class Users extends Component {
                                                 <th>Quyền</th>
                                                 <th className="text-center">Action</th>
                                             </tr>
+                                            {this.state.loading && (<div id="my-loading">
+                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                                            </div>)}
                                             {this.genListUser()}
                                         </tbody>
                                     </table>

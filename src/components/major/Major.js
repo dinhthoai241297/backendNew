@@ -29,7 +29,9 @@ class Major extends Component {
             schoolFilter: undefined,
             pageSchool: 1,
             nextSchool: false,
-            school: []
+            school: [],
+
+            loading: false
         }
 
         toastr.options = toastrOption;
@@ -156,9 +158,11 @@ class Major extends Component {
     }
 
     loadMajors = page => {
+        this.setState({ loading: true });
         let { statusFilter, schoolFilter } = this.state;
-        this.props.loadMajors(page, statusFilter, schoolFilter);
-        this.setState({ page });
+        this.props.loadMajors(page, statusFilter, schoolFilter).then(res => {
+            this.setState({ page, loading: false });
+        });
     }
 
     // sự kiện select status
@@ -283,6 +287,9 @@ class Major extends Component {
                                                     <th width="15%" className="text-center">Action</th>
                                                 }
                                             </tr>
+                                            {this.state.loading && (<div id="my-loading">
+                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                                            </div>)}
                                             {this.genListMajor()}
                                         </tbody>
                                     </table>

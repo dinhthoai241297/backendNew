@@ -9,6 +9,7 @@ import configureStore from './store/configureStore.dev';
 // css
 import 'admin-lte/bower_components/bootstrap/dist/css/bootstrap.min.css';
 import 'admin-lte/bower_components/font-awesome/css/font-awesome.min.css'
+import 'font-awesome-animation/dist/font-awesome-animation.min.css';
 import 'admin-lte/bower_components/Ionicons/css/ionicons.min.css'
 import 'bootstrap-daterangepicker/daterangepicker.css'
 import 'admin-lte/dist/css/AdminLTE.min.css';
@@ -26,5 +27,5 @@ render(
     <Provider store={store}>
         <MyRoute />
     </Provider>,
-    document.getElementsByClassName('wrapper')[0]
+    document.getElementById('app')
 );

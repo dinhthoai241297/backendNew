@@ -27,7 +27,9 @@ class Province extends Component {
             sectorOptions: [],
 
             statusFilter: undefined,
-            sectorFilter: undefined
+            sectorFilter: undefined,
+
+            loading: false
         }
         toastr.options = toastrOption;
     }
@@ -153,9 +155,11 @@ class Province extends Component {
     }
 
     loadProvinces = (page) => {
+        this.setState({ loading: true });
         let { statusFilter, sectorFilter } = this.state;
-        this.props.loadProvinces(page, statusFilter, sectorFilter);
-        this.setState({ page });
+        this.props.loadProvinces(page, statusFilter, sectorFilter).then(res => {
+            this.setState({ page, loading: false });
+        });
     }
 
     render() {
@@ -224,6 +228,9 @@ class Province extends Component {
                                                     <th className="text-center">Action</th>
                                                 }
                                             </tr>
+                                            {this.state.loading && (<div id="my-loading">
+                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                                            </div>)}
                                             {this.genListProvince()}
                                         </tbody>
                                     </table>

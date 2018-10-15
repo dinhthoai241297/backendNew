@@ -84,7 +84,7 @@ class MyRoute extends Component {
         let { user } = this.state;
         let logged = (user && user.username !== '' && user.password !== '') ? true : false;
         return (
-            <Router history={history}>
+            <Router>
                 <Switch>
                     <Route path="/login" exact render={() => (logged ? (<Redirect to="/sector/list" />) : (<Login />))} />
                     <Route render={(props) => (!logged ? (<Redirect to="/login" />) : (

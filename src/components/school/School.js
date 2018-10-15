@@ -28,7 +28,9 @@ class School extends Component {
             provinceFilter: undefined,
             pageProvince: 1,
             nextSchool: false,
-            province: []
+            province: [],
+
+            loading: false
         }
 
         toastr.options = toastrOption;
@@ -155,9 +157,11 @@ class School extends Component {
     }
 
     loadSchools = page => {
+        this.setState({ loading: true });
         let { statusFilter, provinceFilter } = this.state;
-        this.props.loadSchools(page, statusFilter, provinceFilter);
-        this.setState({ page });
+        this.props.loadSchools(page, statusFilter, provinceFilter).then(res => {
+            this.setState({ page, loading: false });
+        });
     }
 
     // sự kiện select status
@@ -285,6 +289,9 @@ class School extends Component {
                                                     <th width="15%" className="text-center">Action</th>
                                                 }
                                             </tr>
+                                            {this.state.loading && (<div id="my-loading">
+                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                                            </div>)}
                                             {this.genListSchool()}
                                         </tbody>
                                     </table>

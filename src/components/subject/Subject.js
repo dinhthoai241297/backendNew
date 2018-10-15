@@ -21,7 +21,9 @@ class Subject extends Component {
             delete: false,
             statusSelectedOption: null,
             statusOptions: [],
-            statusFilter: undefined
+            statusFilter: undefined,
+
+            loading: false
         }
         toastr.options = toastrOption;
     }
@@ -116,9 +118,11 @@ class Subject extends Component {
     }
 
     loadSubjects = page => {
+        this.setState({ loading: true });
         let { statusFilter } = this.state;
-        this.props.loadSubjects(page, statusFilter);
-        this.setState({ page });
+        this.props.loadSubjects(page, statusFilter).then(res => {
+            this.setState({ page, loading: false });
+        });
     }
 
     render() {
@@ -165,7 +169,7 @@ class Subject extends Component {
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body table-responsive no-padding">
                                     <table className="table table-hover">
-                                        <tbody>
+                                        <thead>
                                             <tr>
                                                 <th>Tên Môn</th>
                                                 <th>Mô Tả</th>
@@ -173,6 +177,11 @@ class Subject extends Component {
                                                     <th className="text-center">Action</th>
                                                 }
                                             </tr>
+                                        </thead>
+                                        <tbody>
+                                            {this.state.loading && (<div id="my-loading">
+                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                                            </div>)}
                                             {this.genListSubject()}
                                         </tbody>
                                     </table>

@@ -1,6 +1,6 @@
 .wrapper {
     width: 100%;
-    min-height: 100%;
+    min-height: 100vh;
     height: auto !important;
     position: absolute;
 }
@@ -91,4 +91,20 @@ table td, table th {
 
 .box-body table tr:nth-child(even) {
     background-color: #ececec;
+}
+
+#my-loading {
+    width: 100vw;
+    height: 100vh;
+    background-color: #00000085;
+    z-index: 100000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    color: white;
+    text-align: center;
+}
+
+#my-loading > i {
+    margin-top: 40vh;
 }

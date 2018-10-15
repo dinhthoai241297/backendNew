@@ -10,11 +10,10 @@ class App extends Component {
         $('[data-toggle="tooltip"]').tooltip();
     }
 
-
     render() {
         let { user } = this.props;
         return (
-            <Fragment>
+            <div className="wrapper" >
                 {/* Main Header */}
                 <Header user={user} />
                 {/* Left side column. contains the logo and sidebar */}
@@ -31,7 +30,7 @@ class App extends Component {
                 {/* /.control-sidebar */}
                 {/* Add the sidebar's background. This div must be placed immediately after the control sidebar */}
                 <div className="control-sidebar-bg" />
-            </Fragment>
+            </div>
         );
     }
 }

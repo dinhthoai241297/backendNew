@@ -21,16 +21,16 @@ class Sectors extends Component {
             delete: false,
             statusSelectedOption: undefined,
             statusOptions: [],
-            statusFilter: undefined
+            statusFilter: undefined,
+            loading: false
         }
         toastr.options = toastrOption;
     }
 
     async componentDidMount() {
-        console.log(this.props);
         let { page } = this.state;
         await this.initStatusFilter(this.props);
-        this.loadSectors(page);
+        await this.loadSectors(page);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -110,9 +110,11 @@ class Sectors extends Component {
     }
 
     loadSectors = page => {
+        this.setState({ loading: true });
         let { statusFilter } = this.state;
-        this.props.loadSectors(page, statusFilter);
-        this.setState({ page });
+        this.props.loadSectors(page, statusFilter).then(res => {
+            this.setState({ page, loading: false });
+        });
     }
 
     // sự kiện select status
@@ -173,6 +175,9 @@ class Sectors extends Component {
                                                     <th className="text-center">Action</th>
                                                 }
                                             </tr>
+                                            {this.state.loading && (<div id="my-loading">
+                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                                            </div>)}
                                             {this.genListSector()}
                                         </tbody>
                                     </table>

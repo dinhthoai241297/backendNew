@@ -17,7 +17,9 @@ class Roles extends Component {
             roles: [],
             statusSelectedOption: null,
             statusOptions: [],
-            statusFilter: undefined
+            statusFilter: undefined,
+
+            loading: false
         }
         toastr.options = toastrOption;
     }
@@ -106,9 +108,11 @@ class Roles extends Component {
     }
 
     loadRoles = page => {
+        this.setState({ loading: true });
         let { statusFilter } = this.state;
-        this.props.loadRoles(page, statusFilter);
-        this.setState({ page });
+        this.props.loadRoles(page, statusFilter).then(res => {
+            this.setState({ page, loading: false });
+        });
     }
 
     render() {
@@ -161,6 +165,9 @@ class Roles extends Component {
                                                 <th>Quyền</th>
                                                 <th className="text-center">Action</th>
                                             </tr>
+                                            {this.state.loading && (<div id="my-loading">
+                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                                            </div>)}
                                             {this.genListRole()}
                                         </tbody>
                                     </table>

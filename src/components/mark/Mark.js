@@ -43,6 +43,8 @@ class Mark extends Component {
             yearSelectedOption: null,
             yearOptions: [],
             yearFilter: undefined,
+
+            loading: false
         }
         toastr.options = toastrOption;
     }
@@ -109,7 +111,7 @@ class Mark extends Component {
         });
 
         this.setState({
-            school: [{id: undefined, name: 'Tất cả'},...rs.body.data.list],
+            school: [{ id: undefined, name: 'Tất cả' }, ...rs.body.data.list],
             nextSchool: rs.body.data.next,
             pageSchool: page
         });
@@ -123,7 +125,7 @@ class Mark extends Component {
         });
 
         this.setState({
-            major: [{id: undefined, name: 'Tất cả'}, ...rs.body.data.list],
+            major: [{ id: undefined, name: 'Tất cả' }, ...rs.body.data.list],
             nextMajor: rs.body.data.next,
             pageMajor: page
         });
@@ -208,9 +210,11 @@ class Mark extends Component {
     }
 
     loadMarks = page => {
+        this.setState({ loading: true });
         let { statusFilter, schoolFilter, majorFilter, yearFilter } = this.state;
-        this.props.loadMarks(page, statusFilter, schoolFilter, majorFilter, yearFilter);
-        this.setState({ page });
+        this.props.loadMarks(page, statusFilter, schoolFilter, majorFilter, yearFilter).then(res => {
+            this.setState({ page, loading: false });
+        });
     }
 
     updateStatus = (id, status) => {
@@ -436,6 +440,9 @@ class Mark extends Component {
                                                     <th width="15%" className="text-center">Action</th>
                                                 }
                                             </tr>
+                                            {this.state.loading && (<div id="my-loading">
+                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                                            </div>)}
                                             {this.genListMark()}
                                         </tbody>
                                     </table>
