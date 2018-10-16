@@ -8,6 +8,7 @@ import * as status from './../../contants/status';
 import Select from 'react-select';
 import RoleApi from './../../api/RoleApi';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
+import * as qs from 'query-string';
 
 const locale = {
     applyLabel: 'Đồng ý',
@@ -45,13 +46,8 @@ class Users extends Component {
             roleOptions: [],
             roleFilter: undefined,
 
-            dateFilter: {
-                start: new Date(1001, 1, 1),
-                end: new Date()
-            },
-            dateSelectedOption: {
-                label: this.convert(new Date(1001, 1, 1)) + ' - ' + this.convert(new Date())
-            },
+            dateFilter: undefined,
+            dateSelectedOption: undefined,
 
             loading: false
         }
@@ -59,43 +55,63 @@ class Users extends Component {
     }
 
     async componentDidMount() {
-        let { page } = this.state;
-        await this.initStatusFilter(this.props);
-        this.loadRoleOption();
-        this.loadUsers(page);
+        await this.initStatusOptions(this.props);
+        await this.initRoleOptions();
+        await this.initFilter(qs.parse(this.props.location.search));
+        this.loadUsers();
     }
 
-    componentWillReceiveProps(nextProps) {
-        let { users, next } = nextProps.data;
-        this.setState({
-            users,
-            next
-        });
-        if (this.props.status !== nextProps.status) {
-            this.initStatusFilter(nextProps);
+    async componentWillReceiveProps(nextProps) {
+        if (nextProps.location !== this.props.location) {
+            await this.initFilter(qs.parse(nextProps.location.search));
+            this.loadUsers();
         }
+        if (this.props.status !== nextProps.status) {
+            await this.initStatusOptions(nextProps);
+            this.initSelectedOption();
+        }
+        let { users, next } = nextProps.data;
+        this.setState({ users, next });
     }
 
-    initStatusFilter = (props) => {
-        if (props.status.length !== 0) {
-            let statusOptions = [
-                {
-                    value: undefined,
-                    label: 'Tất cả'
-                }
-            ];
-            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
-            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
+    initFilter = (filter) => {
+        let { page, statusFilter, roleFilter, start, end } = filter;
+        page = Number(page) || 1;
+        // valid start, end
+        start = Number(start) ? new Date(Number(start)) : new Date(1001, 1, 1);
+        end = Number(end) ? new Date(Number(end)) : new Date();
+        this.setState({ page, statusFilter, roleFilter, dateFilter: { start, end } }, this.initSelectedOption);
+    }
+
+    initSelectedOption = () => {
+        let { statusFilter, roleFilter, statusOptions, roleOptions, dateFilter } = this.state;
+        let statusSelectedOption = statusOptions ? statusOptions.find(el => el.value === statusFilter) : undefined;
+        let roleSelectedOption = roleOptions ? roleOptions.find(el => el.value === roleFilter) : undefined;
+        let dateSelectedOption = dateFilter ? { label: this.convert(dateFilter.start) + ' - ' + this.convert(dateFilter.end) } : undefined;
+        this.setState({ statusSelectedOption, roleSelectedOption, dateSelectedOption });
+    }
+
+    pushUrl = () => {
+        let { page, statusFilter, roleFilter, dateFilter } = this.state;
+        let query = '?';
+        query += page ? ('page=' + page) : '';
+        query += statusFilter ? ('&statusFilter=' + statusFilter) : '';
+        query += roleFilter ? ('&roleFilter=' + roleFilter) : '';
+        query += dateFilter ? ('&start=' + dateFilter.start.getTime()) : '';
+        query += dateFilter ? ('&end=' + dateFilter.end.getTime()) : '';
+        this.props.history.push(this.props.location.pathname + query);
+    }
+
+    initStatusOptions = props => {
+        if (props.status && props.status.length !== 0) {
+            let statusOptions = [{ value: undefined, label: 'Tất cả' }, ...props.status.map(el => ({ value: el.id, label: el.name }))];
             this.setState({
-                statusOptions,
-                statusSelectedOption,
-                statusFilter
+                statusOptions
             });
         }
     }
 
-    loadRoleOption = async () => {
+    initRoleOptions = async () => {
         // get all sector in database
         let next = true, rs = [], tmp, page = 1;
         while (next) {
@@ -107,11 +123,7 @@ class Users extends Component {
             next = tmp.body.data.next;
         }
         let roleOptions = [{ value: undefined, label: 'Tất cả' }, ...rs.map(el => ({ value: el.id, label: el.name }))];
-        let roleSelectedOption = roleOptions[0];
-        this.setState({
-            roleOptions,
-            roleSelectedOption
-        });
+        this.setState({ roleOptions });
     }
 
     newPage = (e, num) => {
@@ -121,10 +133,7 @@ class Users extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.setState({
-                page
-            });
-            this.props.loadUsers(page, this.state.statusFilter);
+            this.setState({ page }, this.pushUrl);
         }
     }
 
@@ -151,7 +160,7 @@ class Users extends Component {
             if (st) {
                 this.props.updateStatus(id, st).then(code => {
                     if (code === 200) {
-                        this.loadUsers(this.state.page);
+                        this.loadUsers();
                     }
                 });
             }
@@ -160,22 +169,18 @@ class Users extends Component {
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value }, () => {
-            this.loadUsers(1);
-        });
+        this.setState({ statusFilter: statusSelectedOption.value, page: 1 }, this.pushUrl);
     }
 
     handleChangeRole = (roleSelectedOption) => {
-        this.setState({ roleSelectedOption, roleFilter: roleSelectedOption.value }, () => {
-            this.loadUsers(1);
-        });
+        this.setState({ roleFilter: roleSelectedOption.value, page: 1 }, this.pushUrl);
     }
 
-    loadUsers = (page) => {
+    loadUsers = () => {
         this.setState({ loading: true });
-        var { statusFilter, roleFilter, dateFilter } = this.state;
+        var { page, statusFilter, roleFilter, dateFilter } = this.state;
         this.props.loadUsers(page, statusFilter, roleFilter, dateFilter).then(res => {
-            this.setState({ page, loading: false });
+            this.setState({ loading: false });
         });
     }
 
@@ -187,10 +192,8 @@ class Users extends Component {
         // console.log(start.toISOString());
         this.setState({
             dateFilter: { start, end },
-            dateSelectedOption: {
-                label: this.convert(start) + ' - ' + this.convert(end)
-            }
-        }, () => this.loadUsers(1));
+            page: 1
+        }, this.pushUrl);
     }
 
     convert = (date) => {
@@ -201,6 +204,9 @@ class Users extends Component {
 
         return (
             <Fragment>
+                {this.state.loading && (<div id="my-loading">
+                    <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                </div>)}
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
@@ -276,9 +282,6 @@ class Users extends Component {
                                                 <th>Quyền</th>
                                                 <th className="text-center">Action</th>
                                             </tr>
-                                            {this.state.loading && (<div id="my-loading">
-                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
-                                            </div>)}
                                             {this.genListUser()}
                                         </tbody>
                                     </table>

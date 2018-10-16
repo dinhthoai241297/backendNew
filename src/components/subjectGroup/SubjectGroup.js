@@ -8,6 +8,7 @@ import { findRole } from './../../custom/CusFunction';
 import * as roles from './../../contants/roles';
 import * as status from './../../contants/status';
 import Select from 'react-select';
+import * as qs from 'query-string';
 
 class SubjectGroup extends Component {
 
@@ -28,44 +29,54 @@ class SubjectGroup extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        let { page } = this.state;
-        this.initStatusFilter(this.props);
-        this.loadSubjectGroups(page);
+    async componentDidMount() {
+        await this.initStatusOptions(this.props);
+        await this.initFilter(qs.parse(this.props.location.search));
+        this.loadSubjectGroups();
     }
 
-    componentWillReceiveProps(nextProps) {
+    async componentWillReceiveProps(nextProps) {
+        if (nextProps.location !== this.props.location) {
+            await this.initFilter(qs.parse(nextProps.location.search));
+            this.loadSubjectGroups();
+        }
+        if (this.props.status !== nextProps.status) {
+            await this.initStatusOptions(nextProps);
+            this.initSelectedOption();
+        }
         let { subjectGroups, next } = nextProps.data;
         let { user } = nextProps;
         let update = findRole(user.role, roles.UPDATE) !== -1, del = findRole(user.role, roles.DELETE) !== -1;
-        this.setState({
-            subjectGroups,
-            next,
-            update,
-            delete: del
-        });
-        if (this.props.status !== nextProps.status) {
-            this.initStatusFilter(nextProps);
+        this.setState({ subjectGroups, next, update, delete: del });
+    }
+
+    initFilter = filter => {
+        let { statusFilter, page } = filter;
+        page = Number(page) || 1;
+        this.setState({ statusFilter, page }, this.initSelectedOption);
+    }
+
+    initStatusOptions = props => {
+        if (props.status && props.status.length !== 0) {
+            let statusOptions = [{ value: undefined, label: 'Tất cả' }, ...props.status.map(el => ({ value: el.id, label: el.name }))];
+            this.setState({
+                statusOptions
+            });
         }
     }
 
-    initStatusFilter = (props) => {
-        if (props.status.length !== 0) {
-            let statusOptions = [
-                {
-                    value: undefined,
-                    label: 'Tất cả'
-                }
-            ];
-            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
-            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
-            this.setState({
-                statusOptions,
-                statusSelectedOption,
-                statusFilter
-            });
-        }
+    initSelectedOption = () => {
+        let { statusFilter, statusOptions } = this.state;
+        let statusSelectedOption = statusOptions ? statusOptions.find(el => el.value === statusFilter) : undefined;
+        this.setState({ statusSelectedOption });
+    }
+
+    pushUrl = () => {
+        let { page, statusFilter } = this.state;
+        let query = '?';
+        query += page ? ('page=' + page) : '';
+        query += statusFilter ? ('&statusFilter=' + statusFilter) : '';
+        this.props.history.push(this.props.location.pathname + query);
     }
 
     newPage = (e, num) => {
@@ -75,7 +86,7 @@ class SubjectGroup extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.loadSubjectGroups(page);
+            this.setState({ page }, this.pushUrl);
         }
     }
 
@@ -104,7 +115,7 @@ class SubjectGroup extends Component {
             if (st) {
                 this.props.updateStatus(id, st).then(code => {
                     if (code === 200) {
-                        this.loadSubjectGroups(this.state.page);
+                        this.loadSubjectGroups();
                     }
                 });
             }
@@ -114,21 +125,23 @@ class SubjectGroup extends Component {
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
         let statusFilter = statusSelectedOption.value;
-        this.setState({ statusSelectedOption, statusFilter }, () => this.loadSubjectGroups(1));
-
+        this.setState({ statusFilter, page: 1 }, this.pushUrl);
     }
 
-    loadSubjectGroups = page => {
+    loadSubjectGroups = () => {
         this.setState({ loading: true });
-        let { statusFilter } = this.state;
+        let { page, statusFilter } = this.state;
         this.props.loadSubjectGroups(page, statusFilter).then(res => {
-            this.setState({ page, loading: false });
+            this.setState({ loading: false });
         });
     }
 
     render() {
         return (
             <Fragment>
+                {this.state.loading && (<div id="my-loading">
+                    <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                </div>)}
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
@@ -179,9 +192,6 @@ class SubjectGroup extends Component {
                                                     <th className="text-center">Action</th>
                                                 }
                                             </tr>
-                                            {this.state.loading && (<div id="my-loading">
-                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
-                                            </div>)}
                                             {this.genListSubjectGroup()}
                                         </tbody>
                                     </table>

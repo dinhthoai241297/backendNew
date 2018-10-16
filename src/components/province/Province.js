@@ -9,6 +9,7 @@ import { toastrOption, selectStyle } from './../../custom/Custom';
 import * as status from './../../contants/status';
 import Select from 'react-select';
 import SectorApi from './../../api/SectorApi';
+import * as qs from 'query-string';
 
 class Province extends Component {
 
@@ -35,47 +36,59 @@ class Province extends Component {
     }
 
     async componentDidMount() {
-        let { page } = this.state;
-        this.initStatusFilter(this.props);
-        await this.loadSectorOption();
-        this.loadProvinces(page);
+        await this.initStatusOptions(this.props);
+        await this.initSectorOptions();
+        await this.initFilter(qs.parse(this.props.location.search));
+        this.loadProvinces();
     }
 
-    componentWillReceiveProps(nextProps) {
+    async componentWillReceiveProps(nextProps) {
+        if (nextProps.location !== this.props.location) {
+            await this.initFilter(qs.parse(nextProps.location.search));
+            this.loadProvinces();
+        }
+        if (this.props.status !== nextProps.status) {
+            await this.initStatusOptions(nextProps);
+            this.initSelectedOption();
+        }
         let { provinces, next } = nextProps.data;
         let { user } = nextProps;
         let update = findRole(user.role, roles.UPDATE) !== -1, del = findRole(user.role, roles.DELETE) !== -1;
-        this.setState({
-            provinces,
-            next,
-            update,
-            delete: del
-        });
-        if (this.props.status !== nextProps.status) {
-            this.initStatusFilter(nextProps);
-        }
+        this.setState({ provinces, next, update, delete: del });
     }
 
-    initStatusFilter = (props) => {
-        if (props.status.length !== 0) {
-            let statusOptions = [
-                {
-                    value: undefined,
-                    label: 'Tất cả'
-                }
-            ];
-            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
-            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
+    initFilter = (filter) => {
+        let { page, statusFilter, sectorFilter } = filter;
+        page = Number(page) || 1;
+        this.setState({ page, statusFilter, sectorFilter }, this.initSelectedOption);
+    }
+
+    initSelectedOption = () => {
+        let { statusFilter, sectorFilter, statusOptions, sectorOptions } = this.state;
+        let statusSelectedOption = statusOptions ? statusOptions.find(el => el.value === statusFilter) : undefined;
+        let sectorSelectedOption = sectorOptions ? sectorOptions.find(el => el.value === sectorFilter) : undefined;
+        this.setState({ statusSelectedOption, sectorSelectedOption });
+    }
+
+    pushUrl = () => {
+        let { page, statusFilter, sectorFilter } = this.state;
+        let query = '?';
+        query += page ? ('page=' + page) : '';
+        query += statusFilter ? ('&statusFilter=' + statusFilter) : '';
+        query += sectorFilter ? ('&sectorFilter=' + sectorFilter) : '';
+        this.props.history.push(this.props.location.pathname + query);
+    }
+
+    initStatusOptions = props => {
+        if (props.status && props.status.length !== 0) {
+            let statusOptions = [{ value: undefined, label: 'Tất cả' }, ...props.status.map(el => ({ value: el.id, label: el.name }))];
             this.setState({
-                statusOptions,
-                statusSelectedOption,
-                statusFilter
+                statusOptions
             });
         }
     }
 
-    loadSectorOption = async () => {
+    initSectorOptions = async () => {
         // get all sector in database
         let next = true, rs = [], tmp, page = 1;
         while (next) {
@@ -86,20 +99,8 @@ class Province extends Component {
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
-        let sectorOptions = [
-            {
-                value: undefined,
-                label: 'Tất cả'
-            }
-        ];
-        sectorOptions.push(...rs.map(el => ({ value: el.id, label: el.name })));
-        let sectorSelectedOption = sectorOptions[0];
-        console.log(sectorSelectedOption ? sectorSelectedOption.value : undefined);
-        await this.setState({
-            sectorOptions,
-            sectorSelectedOption: sectorSelectedOption,
-            sectorFilter: sectorSelectedOption ? sectorSelectedOption.value : undefined
-        });
+        let sectorOptions = [{ value: undefined, label: 'Tất cả' }, ...rs.map(el => ({ value: el.id, label: el.name }))];
+        this.setState({ sectorOptions });
     }
 
     newPage = (e, num) => {
@@ -109,7 +110,7 @@ class Province extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.loadProvinces(page);
+            this.setState({ page }, this.pushUrl);
         }
     }
 
@@ -138,7 +139,7 @@ class Province extends Component {
             if (st) {
                 this.props.updateStatus(id, st).then(code => {
                     if (code === 200) {
-                        this.loadProvinces(this.state.page);
+                        this.loadProvinces();
                     }
                 });
             }
@@ -147,18 +148,18 @@ class Province extends Component {
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value }, () => this.loadProvinces(1));
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value, page: 1 }, this.pushUrl);
     }
 
     handleChangeSector = (sectorSelectedOption) => {
-        this.setState({ sectorSelectedOption, sectorFilter: sectorSelectedOption.value }, () => this.loadProvinces(1));
+        this.setState({ sectorSelectedOption, sectorFilter: sectorSelectedOption.value, page: 1 }, this.pushUrl);
     }
 
-    loadProvinces = (page) => {
+    loadProvinces = () => {
         this.setState({ loading: true });
-        let { statusFilter, sectorFilter } = this.state;
+        let { statusFilter, sectorFilter, page } = this.state;
         this.props.loadProvinces(page, statusFilter, sectorFilter).then(res => {
-            this.setState({ page, loading: false });
+            this.setState({ loading: false });
         });
     }
 
@@ -166,6 +167,9 @@ class Province extends Component {
 
         return (
             <Fragment>
+                {this.state.loading && (<div id="my-loading">
+                    <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                </div>)}
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
@@ -228,9 +232,6 @@ class Province extends Component {
                                                     <th className="text-center">Action</th>
                                                 }
                                             </tr>
-                                            {this.state.loading && (<div id="my-loading">
-                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
-                                            </div>)}
                                             {this.genListProvince()}
                                         </tbody>
                                     </table>

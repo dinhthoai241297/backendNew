@@ -38,6 +38,7 @@
         "font-awesome-animation": "^0.2.1",
         "moment": "^2.22.2",
         "prop-types": "^15.6.2",
+        "query-string": "^6.2.0",
         "react": "^16.5.1",
         "react-bootstrap-daterangepicker": "^4.1.0",
         "react-dom": "^16.5.1",

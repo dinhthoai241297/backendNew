@@ -9,6 +9,7 @@ import { toastrOption, selectStyle } from './../../custom/Custom';
 import * as status from './../../contants/status';
 import Select from 'react-select';
 import SchoolApi from './../../api/SchoolApi';
+import * as qs from 'query-string';
 
 class Major extends Component {
 
@@ -37,42 +38,61 @@ class Major extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        let { page } = this.state;
-        this.initStatusFilter(this.props);
-        this.loadMajors(page);
+    async componentDidMount() {
+        await this.initStatusOptions(this.props);
+        await this.initFilter(qs.parse(this.props.location.search));
+        this.loadMajors();
     }
 
-    componentWillReceiveProps(nextProps) {
+    async componentWillReceiveProps(nextProps) {
+        if (nextProps.location !== this.props.location) {
+            await this.initFilter(qs.parse(nextProps.location.search));
+            this.loadMajors();
+        }
+        if (this.props.status !== nextProps.status) {
+            await this.initStatusOptions(nextProps);
+            this.initSelectedOption();
+        }
         let { majors, next } = nextProps.data;
         let { user } = nextProps;
         let update = findRole(user.role, roles.UPDATE) !== -1, del = findRole(user.role, roles.DELETE) !== -1;
-        this.setState({
-            majors,
-            next,
-            update,
-            delete: del
-        });
-        if (this.props.status !== nextProps.status) {
-            this.initStatusFilter(nextProps);
-        }
+        this.setState({ majors, next, update, delete: del });
     }
 
-    initStatusFilter = (props) => {
-        if (props.status.length !== 0) {
-            let statusOptions = [
-                {
-                    value: undefined,
-                    label: 'Tất cả'
-                }
-            ];
-            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
-            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
+    initFilter = filter => {
+        let { page, statusFilter, schoolFilter } = filter;
+        // valid page
+        page = Number(page) || 1;
+        this.setState({ page, statusFilter, schoolFilter }, this.initSelectedOption);
+    }
+
+    initSelectedOption = async () => {
+        let { statusFilter, statusOptions, schoolFilter } = this.state;
+        let statusSelectedOption = statusOptions ? statusOptions.find(el => el.value === statusFilter) : undefined;
+        // load school selected
+        let { session } = this.props;
+        let schoolSelectedOption;
+        if (schoolFilter) {
+            let s = await SchoolApi.getOne({ session, id: schoolFilter });
+            schoolSelectedOption = s.body.code === 200 ? { label: s.body.data.name } : undefined;
+        }
+        this.setState({ statusSelectedOption, schoolSelectedOption });
+    }
+
+    pushUrl = () => {
+        let { page, statusFilter, schoolFilter } = this.state;
+        let query = '?';
+        query += page ? ('page=' + page) : '';
+        query += statusFilter ? ('&statusFilter=' + statusFilter) : '';
+        query += schoolFilter ? ('&schoolFilter=' + schoolFilter) : '';
+        this.props.history.push(this.props.location.pathname + query);
+    }
+
+    initStatusOptions = props => {
+        if (props.status && props.status.length !== 0) {
+            let statusOptions = [{ value: undefined, label: 'Tất cả' }, ...props.status.map(el => ({ value: el.id, label: el.name }))];
             this.setState({
-                statusOptions,
-                statusSelectedOption,
-                statusFilter
+                statusOptions
             });
         }
     }
@@ -97,7 +117,7 @@ class Major extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.loadMajors(page);
+            this.setState({ page }, this.pushUrl);
         }
     }
 
@@ -157,28 +177,25 @@ class Major extends Component {
         }
     }
 
-    loadMajors = page => {
+    loadMajors = () => {
         this.setState({ loading: true });
-        let { statusFilter, schoolFilter } = this.state;
+        let { page, statusFilter, schoolFilter } = this.state;
         this.props.loadMajors(page, statusFilter, schoolFilter).then(res => {
-            this.setState({ page, loading: false });
+            this.setState({ loading: false });
         });
     }
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value }, () => this.loadMajors(1));
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value, page: 1 }, this.pushUrl);
     }
 
     handleChangeSchool = (s) => {
         $('#modal-school').modal('hide');
         this.setState({
             schoolFilter: s.id,
-            schoolSelectedOption: {
-                value: s.id,
-                label: s.name
-            }
-        }, () => this.loadMajors(1));
+            page: 1
+        }, this.pushUrl);
     }
 
     toggleSchool = () => {
@@ -192,6 +209,9 @@ class Major extends Component {
 
         return (
             <Fragment>
+                {this.state.loading && (<div id="my-loading">
+                    <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                </div>)}
                 <div className="modal fade" id="modal-school">
                     <div className="modal-dialog">
                         <div className="modal-content">
@@ -287,9 +307,6 @@ class Major extends Component {
                                                     <th width="15%" className="text-center">Action</th>
                                                 }
                                             </tr>
-                                            {this.state.loading && (<div id="my-loading">
-                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
-                                            </div>)}
                                             {this.genListMajor()}
                                         </tbody>
                                     </table>

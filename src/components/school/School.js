@@ -9,6 +9,7 @@ import { toastrOption, selectStyle } from './../../custom/Custom';
 import * as status from './../../contants/status';
 import ProvinceApi from './../../api/ProvinceApi';
 import Select from 'react-select';
+import * as qs from 'query-string';
 
 class School extends Component {
 
@@ -36,13 +37,21 @@ class School extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        let { page } = this.state;
-        this.initStatusFilter(this.props);
-        this.loadSchools(page);
+    async componentDidMount() {
+        await this.initStatusOptions(this.props);
+        await this.initFilter(qs.parse(this.props.location.search));
+        this.loadSchools();
     }
 
-    componentWillReceiveProps(nextProps) {
+    async componentWillReceiveProps(nextProps) {
+        if (nextProps.location !== this.props.location) {
+            await this.initFilter(qs.parse(nextProps.location.search));
+            this.loadSchools();
+        }
+        if (this.props.status !== nextProps.status) {
+            await this.initStatusOptions(nextProps);
+            this.initSelectedOption();
+        }
         let { schools, next } = nextProps.data;
         let { user } = nextProps;
         let update = findRole(user.role, roles.UPDATE) !== -1, del = findRole(user.role, roles.DELETE) !== -1;
@@ -52,26 +61,42 @@ class School extends Component {
             update,
             delete: del
         });
-        if (this.props.status !== nextProps.status) {
-            this.initStatusFilter(nextProps);
-        }
     }
 
-    initStatusFilter = (props) => {
-        if (props.status.length !== 0) {
-            let statusOptions = [
-                {
-                    value: undefined,
-                    label: 'Tất cả'
-                }
-            ];
-            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
-            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
+    initFilter = (filter) => {
+        let { page, statusFilter, provinceFilter } = filter;
+        page = Number(page) || 1;
+        this.setState({ page, statusFilter, provinceFilter }, this.initSelectedOption);
+    }
+
+    initSelectedOption = async () => {
+        let { statusFilter, provinceFilter, statusOptions } = this.state;
+        let statusSelectedOption = statusOptions ? statusOptions.find(el => el.value === statusFilter) : undefined;
+        let provinceSelectedOption;
+        if (provinceFilter) {
+            let { session } = this.props;
+            let pro = await ProvinceApi.getOne({
+                session, id: provinceFilter
+            });
+            provinceSelectedOption = pro.body.code === 200 ? { value: pro.body.data.value, label: pro.body.data.name } : undefined;
+        }
+        this.setState({ statusSelectedOption, provinceSelectedOption });
+    }
+
+    pushUrl = () => {
+        let { page, statusFilter, provinceFilter } = this.state;
+        let query = '?';
+        query += page ? ('page=' + page) : '';
+        query += statusFilter ? ('&statusFilter=' + statusFilter) : '';
+        query += provinceFilter ? ('&provinceFilter=' + provinceFilter) : '';
+        this.props.history.push(this.props.location.pathname + query);
+    }
+
+    initStatusOptions = props => {
+        if (props.status && props.status.length !== 0) {
+            let statusOptions = [{ value: undefined, label: 'Tất cả' }, ...props.status.map(el => ({ value: el.id, label: el.name }))];
             this.setState({
-                statusOptions,
-                statusSelectedOption,
-                statusFilter
+                statusOptions
             });
         }
     }
@@ -96,7 +121,7 @@ class School extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.loadSchools(page);
+            this.setState({ page }, this.pushUrl);
         }
     }
 
@@ -149,35 +174,32 @@ class School extends Component {
             if (st) {
                 this.props.updateStatus(id, st).then(code => {
                     if (code === 200) {
-                        this.loadSchools(this.state.page);
+                        this.loadSchools();
                     }
                 });
             }
         }
     }
 
-    loadSchools = page => {
+    loadSchools = () => {
         this.setState({ loading: true });
-        let { statusFilter, provinceFilter } = this.state;
+        let { page, statusFilter, provinceFilter } = this.state;
         this.props.loadSchools(page, statusFilter, provinceFilter).then(res => {
-            this.setState({ page, loading: false });
+            this.setState({ loading: false });
         });
     }
 
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value }, () => this.loadSchools(1));
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value, page: 1 }, this.pushUrl);
     }
 
     handleChangeProvince = (s) => {
         $('#modal-province').modal('hide');
         this.setState({
             provinceFilter: s.id,
-            provinceSelectedOption: {
-                value: s.id,
-                label: s.name
-            }
-        }, () => this.loadSchools(1));
+            page: 1
+        }, this.pushUrl);
     }
 
     toggleProvince = () => {
@@ -190,6 +212,9 @@ class School extends Component {
     render() {
         return (
             <Fragment>
+                {this.state.loading && (<div id="my-loading">
+                    <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                </div>)}
                 <div className="modal fade" id="modal-province">
                     <div className="modal-dialog">
                         <div className="modal-content">
@@ -289,9 +314,6 @@ class School extends Component {
                                                     <th width="15%" className="text-center">Action</th>
                                                 }
                                             </tr>
-                                            {this.state.loading && (<div id="my-loading">
-                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
-                                            </div>)}
                                             {this.genListSchool()}
                                         </tbody>
                                     </table>

@@ -10,6 +10,7 @@ import * as status from './../../contants/status';
 import Select from 'react-select';
 import SchoolApi from './../../api/SchoolApi';
 import MajorApi from '../../api/MajorApi';
+import * as qs from 'query-string';
 
 class Mark extends Component {
 
@@ -49,57 +50,81 @@ class Mark extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        let { page } = this.state;
-        this.initStatusFilter(this.props);
-        this.loadMarks(page);
-        let yearOptions = [];
-        yearOptions.push({
+    async componentDidMount() {
+        let yearOptions = [{
             value: undefined,
             label: 'Tất cả'
-        });
-        for (let year = (new Date).getFullYear(); year > 2009; year--) {
+        }];
+        for (let year = (new Date).getFullYear(); year >= 2014; year--) {
             yearOptions.push({
                 value: year,
                 label: year
             });
         }
-        this.setState({
-            yearOptions,
-            yearSelectedOption: yearOptions[0]
-        });
+
+        await this.setState({ yearOptions });
+        await this.initStatusOptions(this.props);
+        await this.initFilter(qs.parse(this.props.location.search));
+        this.loadMarks();
     }
 
-    componentWillReceiveProps(nextProps) {
+    async componentWillReceiveProps(nextProps) {
+        if (nextProps.location !== this.props.location) {
+            await this.initFilter(qs.parse(nextProps.location.search));
+            this.loadMarks();
+        }
+        if (this.props.status !== nextProps.status) {
+            await this.initStatusOptions(nextProps);
+            this.initSelectedOption();
+        }
         let { marks, next } = nextProps.data;
         let { user } = nextProps;
         let update = findRole(user.role, roles.UPDATE) !== -1, del = findRole(user.role, roles.DELETE) !== -1;
-        this.setState({
-            marks,
-            next,
-            update,
-            delete: del
-        });
-        if (this.props.status !== nextProps.status) {
-            this.initStatusFilter(nextProps);
-        }
+        this.setState({ marks, next, update, delete: del });
     }
 
-    initStatusFilter = (props) => {
-        if (props.status.length !== 0) {
-            let statusOptions = [
-                {
-                    value: undefined,
-                    label: 'Tất cả'
-                }
-            ];
-            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
-            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
+    initFilter = filter => {
+        let { page, statusFilter, yearFilter, schoolFilter, majorFilter } = filter;
+        // valid page, year
+        page = Number(page) || 1;
+        yearFilter = Number(yearFilter) || undefined;
+        this.setState({ page, statusFilter, yearFilter, schoolFilter, majorFilter }, this.initSelectedOption);
+    }
+
+    initSelectedOption = async () => {
+        let { statusFilter, statusOptions, yearFilter, yearOptions, schoolFilter, majorFilter } = this.state;
+        let statusSelectedOption = statusOptions ? statusOptions.find(el => el.value === statusFilter) : undefined;
+        let yearSelectedOption = yearOptions ? yearOptions.find(el => el.value === yearFilter) : undefined;
+        // load school selected
+        let { session } = this.props;
+        let schoolSelectedOption, majorSelectedOption;
+        if (schoolFilter) {
+            let s = await SchoolApi.getOne({ session, id: schoolFilter });
+            schoolSelectedOption = s.body.code === 200 ? { label: s.body.data.name } : undefined;
+        }
+        if (majorFilter) {
+            let m = await MajorApi.getOne({ session, id: majorFilter });
+            majorSelectedOption = m.body.code === 200 ? { label: m.body.data.name } : undefined;
+        }
+        this.setState({ statusSelectedOption, yearSelectedOption, schoolSelectedOption, majorSelectedOption });
+    }
+
+    pushUrl = () => {
+        let { page, statusFilter, schoolFilter, majorFilter, yearFilter } = this.state;
+        let query = '?';
+        query += page ? ('page=' + page) : '';
+        query += statusFilter ? ('&statusFilter=' + statusFilter) : '';
+        query += schoolFilter ? ('&schoolFilter=' + schoolFilter) : '';
+        query += majorFilter ? ('&majorFilter=' + majorFilter) : '';
+        query += yearFilter ? ('&yearFilter=' + yearFilter) : '';
+        this.props.history.push(this.props.location.pathname + query);
+    }
+
+    initStatusOptions = props => {
+        if (props.status && props.status.length !== 0) {
+            let statusOptions = [{ value: undefined, label: 'Tất cả' }, ...props.status.map(el => ({ value: el.id, label: el.name }))];
             this.setState({
-                statusOptions,
-                statusSelectedOption,
-                statusFilter
+                statusOptions
             });
         }
     }
@@ -138,7 +163,7 @@ class Mark extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.loadMarks(page);
+            this.setState({ page }, this.pushUrl);
         }
     }
 
@@ -209,11 +234,11 @@ class Mark extends Component {
         return rs;
     }
 
-    loadMarks = page => {
+    loadMarks = () => {
         this.setState({ loading: true });
-        let { statusFilter, schoolFilter, majorFilter, yearFilter } = this.state;
+        let { page, statusFilter, schoolFilter, majorFilter, yearFilter } = this.state;
         this.props.loadMarks(page, statusFilter, schoolFilter, majorFilter, yearFilter).then(res => {
-            this.setState({ page, loading: false });
+            this.setState({ loading: false });
         });
     }
 
@@ -223,7 +248,7 @@ class Mark extends Component {
             if (st) {
                 this.props.updateStatus(id, st).then(code => {
                     if (code === 200) {
-                        this.loadMarks(this.state.page);
+                        this.loadMarks();
                     }
                 });
             }
@@ -231,35 +256,29 @@ class Mark extends Component {
     }
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
-        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value }, () => this.loadMarks(1));
+        this.setState({ statusSelectedOption, statusFilter: statusSelectedOption.value, page: 1 }, this.pushUrl);
     }
 
     handleChangeYear = (yearSelectedOption) => {
-        this.setState({ yearSelectedOption, yearFilter: yearSelectedOption.value }, () => this.loadMarks(1));
+        this.setState({ yearSelectedOption, yearFilter: yearSelectedOption.value, page: 1 }, this.pushUrl);
     }
 
     handleChangeSchool = (s) => {
         $('#modal-school').modal('hide');
         this.setState({
             schoolFilter: s.id,
-            schoolSelectedOption: {
-                value: s.id,
-                label: s.name
-            },
             major: [],
-            pageMajor: 1
-        }, () => this.loadMarks(1));
+            pageMajor: 1,
+            page: 1
+        }, this.pushUrl);
     }
 
     handleChangeMajor = (s) => {
         $('#modal-major').modal('hide');
         this.setState({
             majorFilter: s.id,
-            majorSelectedOption: {
-                value: s.id,
-                label: s.name
-            }
-        }, () => this.loadMarks(1));
+            page: 1
+        }, this.pushUrl);
     }
 
     toggleSchool = () => {
@@ -279,7 +298,9 @@ class Mark extends Component {
     render() {
         return (
             <Fragment>
-
+                {this.state.loading && (<div id="my-loading">
+                    <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                </div>)}
                 {/* Modal school -> select school */}
                 <div className="modal fade" id="modal-school">
                     <div className="modal-dialog">
@@ -440,9 +461,6 @@ class Mark extends Component {
                                                     <th width="15%" className="text-center">Action</th>
                                                 }
                                             </tr>
-                                            {this.state.loading && (<div id="my-loading">
-                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
-                                            </div>)}
                                             {this.genListMark()}
                                         </tbody>
                                     </table>

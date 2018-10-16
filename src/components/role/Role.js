@@ -6,6 +6,7 @@ import toastr from 'toastr';
 import { toastrOption, selectStyle } from './../../custom/Custom';
 import * as status from './../../contants/status';
 import Select from 'react-select';
+import * as qs from 'query-string';
 
 class Roles extends Component {
 
@@ -25,39 +26,51 @@ class Roles extends Component {
     }
 
     async componentDidMount() {
-        let { page } = this.state;
-        await this.initStatusFilter(this.props);
-        this.loadRoles(page);
+        await this.initStatusOptions(this.props);
+        await this.initFilter(qs.parse(this.props.location.search));
+        this.loadRoles();
     }
 
-    componentWillReceiveProps(nextProps) {
-        let { roles, next } = nextProps.data;
-        this.setState({
-            roles,
-            next
-        });
-        if (this.props.status !== nextProps.status) {
-            this.initStatusFilter(nextProps);
+    async componentWillReceiveProps(nextProps) {
+        if (nextProps.location !== this.props.location) {
+            await this.initFilter(qs.parse(nextProps.location.search));
+            this.loadRoles();
         }
+        if (this.props.status !== nextProps.status) {
+            await this.initStatusOptions(nextProps);
+            this.initSelectedOption();
+        }
+        let { roles, next } = nextProps.data;
+        this.setState({ roles, next });
     }
 
-    initStatusFilter = (props) => {
-        if (props.status.length !== 0) {
-            let statusOptions = [
-                {
-                    value: undefined,
-                    label: 'Tất cả'
-                }
-            ];
-            statusOptions.push(...props.status.map(el => ({ value: el.id, label: el.name })));
-            let statusSelectedOption = statusOptions.find(el => (el.value === props.status.find(ell => ell.status === status.ACTIVE).id));
-            let statusFilter = statusSelectedOption ? statusSelectedOption.value : undefined;
+    initFilter = filter => {
+        let { statusFilter, page } = filter;
+        page = Number(page) || 1;
+        this.setState({ statusFilter, page }, this.initSelectedOption);
+    }
+
+    initStatusOptions = props => {
+        if (props.status && props.status.length !== 0) {
+            let statusOptions = [{ value: undefined, label: 'Tất cả' }, ...props.status.map(el => ({ value: el.id, label: el.name }))];
             this.setState({
-                statusOptions,
-                statusSelectedOption,
-                statusFilter
+                statusOptions
             });
         }
+    }
+
+    initSelectedOption = () => {
+        let { statusFilter, statusOptions } = this.state;
+        let statusSelectedOption = statusOptions ? statusOptions.find(el => el.value === statusFilter) : undefined;
+        this.setState({ statusSelectedOption });
+    }
+
+    pushUrl = () => {
+        let { page, statusFilter } = this.state;
+        let query = '?';
+        query += page ? ('page=' + page) : '';
+        query += statusFilter ? ('&statusFilter=' + statusFilter) : '';
+        this.props.history.push(this.props.location.pathname + query);
     }
 
     newPage = (e, num) => {
@@ -67,7 +80,7 @@ class Roles extends Component {
         if (page === 0 || (!next && num > 0)) {
             return;
         } else {
-            this.loadRoles(page);
+            this.setState({ page }, this.pushUrl);
         }
     }
 
@@ -94,7 +107,7 @@ class Roles extends Component {
             if (st) {
                 this.props.updateStatus(id, st).then(code => {
                     if (code === 200) {
-                        this.loadRoles(this.state.page);
+                        this.loadRoles();
                     }
                 });
             }
@@ -104,20 +117,23 @@ class Roles extends Component {
     // sự kiện select status
     handleChangeStatus = (statusSelectedOption) => {
         let statusFilter = statusSelectedOption.value;
-        this.setState({ statusSelectedOption, statusFilter }, () => this.loadRoles(1));
+        this.setState({ statusFilter, page: 1 }, this.pushUrl);
     }
 
-    loadRoles = page => {
+    loadRoles = () => {
         this.setState({ loading: true });
-        let { statusFilter } = this.state;
+        let { page, statusFilter } = this.state;
         this.props.loadRoles(page, statusFilter).then(res => {
-            this.setState({ page, loading: false });
+            this.setState({ loading: false });
         });
     }
 
     render() {
         return (
             <Fragment>
+                {this.state.loading && (<div id="my-loading">
+                    <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
+                </div>)}
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
@@ -165,9 +181,6 @@ class Roles extends Component {
                                                 <th>Quyền</th>
                                                 <th className="text-center">Action</th>
                                             </tr>
-                                            {this.state.loading && (<div id="my-loading">
-                                                <i className="fa fa-fw fa-5x fa-spinner faa-spin animated"></i>
-                                            </div>)}
                                             {this.genListRole()}
                                         </tbody>
                                     </table>
