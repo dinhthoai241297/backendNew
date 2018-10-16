@@ -28,8 +28,8 @@ class School extends Component {
             statusFilter: undefined,
             provinceFilter: undefined,
             pageProvince: 1,
-            nextSchool: false,
             province: [],
+            nextProvince: false,
 
             loading: false
         }
@@ -271,8 +271,6 @@ class School extends Component {
                                             <div className="col-xs-12 col-lg-offset-4 col-lg-4">
                                                 <div className="form-group">
                                                     <div
-                                                        // data-toggle="modal"
-                                                        // data-target="#modal-school"
                                                         className="h-hand"
                                                         onClick={this.toggleProvince}
                                                     >

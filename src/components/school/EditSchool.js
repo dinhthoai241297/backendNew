@@ -25,14 +25,16 @@ class EditSchool extends Component {
             },
             provinceSelectedOption: null,
             statusSelectedOption: null,
-            isProcess: false
+            isProcess: false,
         }
 
         this.state = {
             isUpdate: false,
-            provinceOptions: [],
             statusOptions: [],
-            ...this.init
+            ...this.init,
+            province: [],
+            pageProvince: 1,
+            nextProvince: false
         }
 
         toastr.options = toastrOption;
@@ -44,22 +46,6 @@ class EditSchool extends Component {
 
     componentWillReceiveProps(nextProps) {
         this.updateAction(nextProps);
-    }
-
-    loadProvinceOption = async () => {
-        // lấy lên tất cả Province trong db
-        let next = true, rs = [], tmp, page = 1;
-        while (next) {
-            tmp = await ProvinceApi.getAll({
-                page: page++,
-                session: this.props.session
-            });
-            rs = rs.concat(tmp.body.data.list);
-            next = tmp.body.data.next;
-        }
-        this.setState({
-            provinceOptions: rs.map(el => ({ value: el.id, label: el.name }))
-        });
     }
 
     loadStatusOption = async () => {
@@ -81,7 +67,6 @@ class EditSchool extends Component {
     updateAction = async (props) => {
         let isUpdate = props.do === 'update' ? true : false;
         this.setState({ isUpdate });
-        await this.loadProvinceOption();
         await this.loadStatusOption();
         if (isUpdate) {
             SchoolApi.getOne({
@@ -89,9 +74,11 @@ class EditSchool extends Component {
                 session: this.props.session
             }).then(res => {
                 let school = res.body.data;
+                let pro = school.province;
+                school.province = school.province.id;
                 if (school) {
                     this.setState({
-                        provinceSelectedOption: this.state.provinceOptions.filter(el => el.value === school.province),
+                        provinceSelectedOption: { label: pro.name },
                         statusSelectedOption: this.state.statusOptions.filter(el => el.value === school.status),
                         school
                     });
@@ -151,15 +138,6 @@ class EditSchool extends Component {
         }
     }
 
-    handleChangeProvince = (provinceSelectedOption) => {
-        this.setState({ provinceSelectedOption });
-        let { school } = this.state;
-        school.province = provinceSelectedOption.value
-        this.setState({
-            school
-        });
-    }
-
     handleChangeStatus = (statusSelectedOption) => {
         this.setState({ statusSelectedOption });
         let { school } = this.state;
@@ -169,10 +147,98 @@ class EditSchool extends Component {
         });
     }
 
+    loadProvinces = async page => {
+        let rs = await ProvinceApi.getAll({
+            page,
+            session: this.props.session
+        });
+
+        this.setState({
+            province: rs.body.data.list,
+            nextProvince: rs.body.data.next,
+            pageProvince: page
+        });
+    }
+
+    newPageProvince = (e, num) => {
+        e.preventDefault();
+        let { pageProvince, nextProvince } = this.state;
+        pageProvince += num;
+        if (pageProvince === 0 || (!nextProvince && num > 0)) {
+            return;
+        } else {
+            this.loadProvinces(pageProvince);
+        }
+    }
+
+    genListProvince = () => {
+        let { province } = this.state;
+        let rs = null;
+        rs = province.map((p, i) => (
+            <a
+                key={i}
+                className={"list-group-item h-hand " + (p.id === this.state.school.province ? 'active' : '')}
+                onClick={() => this.handleChangeProvince(p)}
+            >{p.name}</a>
+        ));
+        return rs;
+    }
+
+    handleChangeProvince = (s) => {
+        $('#modal-province').modal('hide');
+        let { school } = this.state;
+        school.province = s.id;
+        this.setState({
+            school,
+            provinceSelectedOption: {
+                label: s.name
+            }
+        });
+    }
+
+    toggleProvince = () => {
+        if (this.state.province.length === 0) {
+            this.loadProvinces(this.state.pageProvince);
+        }
+        $('#modal-province').modal('toggle');
+    }
+
     render() {
         let { school } = this.state;
         return (
             <Fragment>
+                {/* modal */}
+                <div className="modal fade" id="modal-province">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal">
+                                    <span aria-hidden="true">×</span></button>
+                                <h4 className="modal-title">Tỉnh</h4>
+                            </div>
+                            <div className="modal-body">
+                                <div className="list-group">
+                                    {this.genListProvince()}
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <ul className="pagination pagination-md no-margin pull-right">
+                                    <li className={this.state.pageProvince === 1 ? 'disabled' : ''}>
+                                        <a href="#" onClick={(e) => this.newPageProvince(e, -1)}>Pre</a>
+                                    </li>
+                                    <li className="active">
+                                        <a>{this.state.pageProvince}</a>
+                                    </li>
+                                    <li className={this.state.nextProvince ? '' : 'disabled'}>
+                                        <a href="#" onClick={(e) => this.newPageProvince(e, 1)} >Next</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {/* /.modal-content */}
+                    </div>
+                    {/* /.modal-dialog */}
+                </div>
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
@@ -258,14 +324,17 @@ class EditSchool extends Component {
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
                                                 <label htmlFor="province">Tỉnh Thành</label>
-                                                <Select
-                                                    styles={selectStyle}
-                                                    onChange={this.handleChangeProvince}
-                                                    options={this.state.provinceOptions}
-                                                    value={this.state.provinceSelectedOption}
-                                                    placeholder="Tỉnh Thành"
-                                                    id="province"
-                                                />
+                                                <div
+                                                    className="h-hand"
+                                                    onClick={this.toggleProvince}
+                                                >
+                                                    <Select
+                                                        isSearchable={false}
+                                                        styles={{ ...selectStyle, menu: () => ({ display: 'none' }) }}
+                                                        value={this.state.provinceSelectedOption}
+                                                        placeholder="Tỉnh thành"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">

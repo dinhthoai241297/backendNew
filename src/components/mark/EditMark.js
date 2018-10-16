@@ -36,11 +36,18 @@ class EditMark extends Component {
 
         this.state = {
             isUpdate: false,
-            schoolOptions: [],
             majorOptions: [],
             sGOptions: [],
             statusOptions: [],
-            ...this.init
+            ...this.init,
+
+            school: [],
+            pageSchool: 1,
+            nextSchool: false,
+
+            major: [],
+            pageMajor: 1,
+            nextMajor: false
         }
         toastr.options = toastrOption;
     }
@@ -51,22 +58,6 @@ class EditMark extends Component {
 
     componentWillReceiveProps(nextProps) {
         this.updateAction(nextProps);
-    }
-
-    loadMajorOption = (school, select) => {
-        // get all major in school with id = mark.school
-        MajorApi.getAllInSchool({
-            school,
-            session: this.props.session
-        }).then(res => {
-            let majorOptions = res.body.data.list.map(el => ({ value: el.id, label: el.name }));
-            this.setState({
-                majorOptions,
-                majorSelectedOption: select !== '' ? majorOptions.filter(el => el.value === select) : ''
-            });
-        }).catch(error => {
-            throw (error);
-        });
     }
 
     loadStatusOption = async () => {
@@ -85,22 +76,6 @@ class EditMark extends Component {
         });
     }
 
-    loadSchoolOption = async () => {
-        // get all school in database
-        let next = true, rs = [], tmp = null, page = 1;
-        while (next) {
-            tmp = await SchoolApi.getAll({
-                page: page++,
-                session: this.props.session
-            });
-            rs = rs.concat(tmp.body.data.list);
-            next = tmp.body.data.next;
-        }
-        this.setState({
-            schoolOptions: rs.map(el => ({ value: el.id, label: el.name }))
-        });
-    }
-
     loadSGOption = async () => {
         // get all subjectGroup in database
         let next = true, rs = [], tmp = null, page = 1;
@@ -112,17 +87,21 @@ class EditMark extends Component {
             rs = rs.concat(tmp.body.data.list);
             next = tmp.body.data.next;
         }
-        this.setState({
-            sGOptions: rs.map(el => ({ value: el.id, label: el.code }))
-        });
+        let sGOptions = rs.map(el => ({ value: el.id, label: el.code }))
+        let sGSelectedOption = [];
+        let { mark } = this.state;
+        for (let i = 0; i < mark.subjectGroups.length; i++) {
+            sGSelectedOption = sGSelectedOption.concat(sGOptions.filter(el => el.value === mark.subjectGroups[i]));
+        }
+        this.setState({ sGOptions, sGSelectedOption });
+        console.log(mark);
     }
 
     updateAction = async (props) => {
         let isUpdate = props.do === 'update' ? true : false;
         this.setState({ isUpdate });
         await this.loadStatusOption();
-        await this.loadSGOption();
-        await this.loadSchoolOption();
+        this.loadSGOption();
         if (isUpdate) {
             MarkApi.getOne({
                 id: props.match.params.id,
@@ -135,12 +114,15 @@ class EditMark extends Component {
                     for (let i = 0; i < mark.subjectGroups.length; i++) {
                         sGSelectedOption = sGSelectedOption.concat(this.state.sGOptions.filter(el => el.value === mark.subjectGroups[i]));
                     }
-                    this.loadMajorOption(mark.school, mark.major);
+                    let sch = mark.school;
+                    let ma = mark.major;
+                    mark.school = sch.id;
+                    mark.major = ma.id;
                     this.setState({
                         mark,
-                        schoolSelectedOption: this.state.schoolOptions.filter(el => el.value === mark.school),
                         statusSelectedOption: this.state.statusOptions.filter(el => el.value === mark.status),
-                        sGSelectedOption
+                        schoolSelectedOption: { label: sch.name },
+                        majorSelectedOption: { label: ma.name }
                     });
                 }
             }).catch(error => {
@@ -167,6 +149,8 @@ class EditMark extends Component {
     }
 
     handleSave = (e) => {
+        console.log(this.state.mark);
+        return;
         e.preventDefault();
         this.setState({
             isProcess: true
@@ -196,19 +180,6 @@ class EditMark extends Component {
                 this.renewForm();
             });
         }
-    }
-
-    handleChangeSchool = (selectedOption) => {
-        this.setState({
-            schoolSelectedOption: selectedOption
-        });
-        let { mark } = this.state;
-        mark.school = selectedOption.value;
-        mark.major = '';
-        this.setState({
-            mark
-        });
-        this.loadMajorOption(selectedOption.value, '');
     }
 
     handleChangeMajor = (selectedOption) => {
@@ -243,10 +214,193 @@ class EditMark extends Component {
         });
     }
 
+    toggleSchool = () => {
+        if (this.state.school.length === 0) {
+            this.loadSchools(this.state.pageSchool);
+        }
+        $('#modal-school').modal('toggle');
+    }
+
+    handleChangeSchool = (s) => {
+        $('#modal-school').modal('hide');
+        let { mark } = this.state;
+        mark.school = s.id;
+        this.setState({
+            major: [],
+            pageMajor: 1,
+            page: 1,
+            schoolSelectedOption: {
+                label: s.name
+            },
+            majorSelectedOption: undefined,
+            mark
+        });
+    }
+
+    genListSchool = () => {
+        let { school } = this.state;
+        let rs = null;
+        rs = school.map((s, i) => (
+            <a
+                key={i}
+                className={"list-group-item h-hand " + (s.id === this.state.mark.school ? 'active' : '')}
+                onClick={() => this.handleChangeSchool(s)}
+            >{s.name}</a>
+        ));
+        return rs;
+    }
+
+    newPageSchool = (e, num) => {
+        e.preventDefault();
+        let { pageSchool, nextSchool } = this.state;
+        pageSchool += num;
+        if (pageSchool === 0 || (!nextSchool && num > 0)) {
+            return;
+        } else {
+            this.loadSchools(pageSchool);
+        }
+    }
+
+    loadSchools = async page => {
+        let rs = await SchoolApi.getAll({
+            page,
+            session: this.props.session
+        });
+
+        this.setState({
+            school: rs.body.data.list,
+            nextSchool: rs.body.data.next,
+            pageSchool: page
+        });
+    }
+
+    toggleMajor = () => {
+        if (this.state.major.length === 0) {
+            this.loadMajors(this.state.pageMajor);
+        }
+        $('#modal-major').modal('toggle');
+    }
+
+    handleChangeMajor = (s) => {
+        $('#modal-major').modal('hide');
+        let { mark } = this.state;
+        mark.major = s.id;
+        this.setState({
+            page: 1,
+            mark,
+            majorSelectedOption: { label: s.name }
+        }, this.pushUrl);
+    }
+
+    genListMajor = () => {
+        let { major } = this.state;
+        let rs = null;
+        rs = major.map((s, i) => (
+            <a
+                key={i}
+                className={"list-group-item h-hand " + (s.id === this.state.mark.major ? 'active' : '')}
+                onClick={() => this.handleChangeMajor(s)}
+            >{s.name}</a>
+        ));
+        return rs;
+    }
+
+    newPageMajor = (e, num) => {
+        e.preventDefault();
+        let { pageMajor, nextMajor } = this.state;
+        pageMajor += num;
+        if (pageMajor === 0 || (!nextMajor && num > 0)) {
+            return;
+        } else {
+            this.loadMajors(pageMajor);
+        }
+    }
+
+    loadMajors = async page => {
+        let rs = await MajorApi.getAll({
+            page,
+            session: this.props.session,
+            school: this.state.mark.school
+        });
+
+        this.setState({
+            major: rs.body.data.list,
+            nextMajor: rs.body.data.next,
+            pageMajor: page
+        });
+    }
+
     render() {
         let { mark } = this.state;
         return (
             <Fragment>
+
+                {/* Modal school -> select school */}
+                <div className="modal fade" id="modal-school">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal">
+                                    <span aria-hidden="true">×</span></button>
+                                <h4 className="modal-title">Trường</h4>
+                            </div>
+                            <div className="modal-body">
+                                <div className="list-group">
+                                    {this.genListSchool()}
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <ul className="pagination pagination-md no-margin pull-right">
+                                    <li className={this.state.pageSchool === 1 ? 'disabled' : ''}>
+                                        <a href="#" onClick={(e) => this.newPageSchool(e, -1)}>Pre</a>
+                                    </li>
+                                    <li className="active">
+                                        <a>{this.state.pageSchool}</a>
+                                    </li>
+                                    <li className={this.state.nextSchool ? '' : 'disabled'}>
+                                        <a href="#" onClick={(e) => this.newPageSchool(e, 1)} >Next</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {/* /.modal-content */}
+                    </div>
+                    {/* /.modal-dialog */}
+                </div>
+
+                {/* Modal Major -> select major */}
+                <div className="modal fade" id="modal-major">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal">
+                                    <span aria-hidden="true">×</span></button>
+                                <h4 className="modal-title">Ngành</h4>
+                            </div>
+                            <div className="modal-body">
+                                <div className="list-group">
+                                    {this.genListMajor()}
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <ul className="pagination pagination-md no-margin pull-right">
+                                    <li className={this.state.pageMajor === 1 ? 'disabled' : ''}>
+                                        <a href="#" onClick={(e) => this.newPageMajor(e, -1)}>Pre</a>
+                                    </li>
+                                    <li className="active">
+                                        <a>{this.state.pageMajor}</a>
+                                    </li>
+                                    <li className={this.state.nextMajor ? '' : 'disabled'}>
+                                        <a href="#" onClick={(e) => this.newPageMajor(e, 1)} >Next</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {/* /.modal-content */}
+                    </div>
+                    {/* /.modal-dialog */}
+                </div>
+
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
@@ -272,25 +426,33 @@ class EditMark extends Component {
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
                                                 <label htmlFor="school">Trường</label>
-                                                <Select
-                                                    styles={selectStyle}
-                                                    onChange={this.handleChangeSchool}
-                                                    options={this.state.schoolOptions}
-                                                    value={this.state.schoolSelectedOption}
-                                                    placeholder="Trường"
-                                                />
+                                                <div
+                                                    className="h-hand"
+                                                    onClick={this.toggleSchool}
+                                                >
+                                                    <Select
+                                                        isSearchable={false}
+                                                        styles={{ ...selectStyle, menu: () => ({ display: 'none' }) }}
+                                                        value={this.state.schoolSelectedOption}
+                                                        placeholder="Trường"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
                                                 <label htmlFor="major">Ngành</label>
-                                                <Select
-                                                    styles={selectStyle}
-                                                    onChange={this.handleChangeMajor}
-                                                    options={this.state.majorOptions}
-                                                    value={this.state.majorSelectedOption}
-                                                    placeholder="Ngành"
-                                                />
+                                                <div
+                                                    className="h-hand"
+                                                    onClick={this.toggleMajor}
+                                                >
+                                                    <Select
+                                                        isSearchable={false}
+                                                        styles={{ ...selectStyle, menu: () => ({ display: 'none' }) }}
+                                                        value={this.state.majorSelectedOption}
+                                                        placeholder="Ngành"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
