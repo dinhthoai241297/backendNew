@@ -22,6 +22,10 @@ class UserApi {
         return request.post(`${HOST}user/getone`).send({ data });
     }
 
+    static updateStatus(data) {
+        return request.post(`${HOST}user/updatestatus`).send({ data });
+    }
+    
     static login(data) {
         return request.post(`${HOST}user/login`).send({ data });
     }
@@ -30,8 +34,8 @@ class UserApi {
         return request.post(`${HOST}user/logout`).send({ data });
     }
 
-    static updateStatus(data) {
-        return request.post(`${HOST}user/updatestatus`).send({ data });
+    static checkSession(data) {
+        return request.post(`${HOST}user/checksession`).send({ data });
     }
 }
 

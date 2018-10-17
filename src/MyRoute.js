@@ -27,6 +27,7 @@ import * as roles from './contants/roles';
 import * as actions from './actions/UserActions';
 import * as actionsStatus from './actions/StatusActions';
 import StatusApi from './api/StatusApi';
+import UserApi from './api/UserApi';
 
 class MyRoute extends Component {
 
@@ -35,33 +36,26 @@ class MyRoute extends Component {
         let data = JSON.parse(localStorage.getItem('data'));
         if (data) {
             this.props.loginState(data);
-            this.state = {
-                user: data.user,
-                session: data.session
-            }
-        } else {
-            this.state = {
-                user: '',
-                session: ''
+        }
+    }
+
+    async componentWillReceiveProps(nextProps) {
+        let { session } = nextProps.data;
+        if (session && session !== this.props.data.session) {
+            let rs = await UserApi.checkSession({ session });
+            if (rs.body.code !== 200) {
+                this.props.logout();
             }
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        let { user, session } = nextProps.data;
-        this.setState({
-            user, session
-        });
-    }
-
     async componentDidMount() {
+        // load status
+        let { session } = this.props.data;
         let next = true, tmp, list = [], page = 1;
         while (next) {
             next = false;
-            tmp = await StatusApi.getAll({
-                page: page++,
-                session: this.state.session
-            });
+            tmp = await StatusApi.getAll({ page: page++, session });
             if (tmp.body.code === 200) {
                 list = list.concat(tmp.body.data.list);
                 next = tmp.body.data.next;
@@ -81,7 +75,7 @@ class MyRoute extends Component {
     }
 
     render() {
-        let { user } = this.state;
+        let { user } = this.props.data;
         let logged = (user && user.username !== '' && user.password !== '') ? true : false;
         return (
             <Router>
@@ -147,7 +141,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, props) => {
     return {
         loginState: (data) => dispatch(actions.loginState(data)),
-        loadStatus: (data) => dispatch(actionsStatus.loadAllStatusState(data))
+        loadStatus: (data) => dispatch(actionsStatus.loadAllStatusState(data)),
+        logout: () => dispatch(actions.logoutState())
     }
 }
 
