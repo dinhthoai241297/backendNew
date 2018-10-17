@@ -45,25 +45,20 @@ class MyRoute extends Component {
             let rs = await UserApi.checkSession({ session });
             if (rs.body.code !== 200) {
                 this.props.logout();
+            } else {
+                let next = true, tmp, list = [], page = 1;
+                while (next) {
+                    next = false;
+                    tmp = await StatusApi.getAll({ page: page++, session });
+                    if (tmp.body.code === 200) {
+                        list = list.concat(tmp.body.data.list);
+                        next = tmp.body.data.next;
+                    }
+                }
+                this.props.loadStatus({ list, next });
             }
         }
     }
-
-    async componentDidMount() {
-        // load status
-        let { session } = this.props.data;
-        let next = true, tmp, list = [], page = 1;
-        while (next) {
-            next = false;
-            tmp = await StatusApi.getAll({ page: page++, session });
-            if (tmp.body.code === 200) {
-                list = list.concat(tmp.body.data.list);
-                next = tmp.body.data.next;
-            }
-        }
-        this.props.loadStatus({ list, next });
-    }
-
 
     validateRole = (roles, role) => {
         for (let i = 0; i < roles.length; i++) {
