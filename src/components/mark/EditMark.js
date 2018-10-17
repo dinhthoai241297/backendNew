@@ -228,7 +228,6 @@ class EditMark extends Component {
         this.setState({
             major: [],
             pageMajor: 1,
-            page: 1,
             schoolSelectedOption: {
                 label: s.name
             },
@@ -286,10 +285,9 @@ class EditMark extends Component {
         let { mark } = this.state;
         mark.major = s.id;
         this.setState({
-            page: 1,
             mark,
             majorSelectedOption: { label: s.name }
-        }, this.pushUrl);
+        });
     }
 
     genListMajor = () => {

@@ -28,9 +28,12 @@ class EditMajor extends Component {
 
         this.state = {
             isUpdate: false,
-            schoolOptions: [],
             statusOptions: [],
-            ...this.init
+            ...this.init,
+
+            school: [],
+            pageSchool: 1,
+            nextSchool: false
         }
         toastr.options = toastrOption;
     }
@@ -41,22 +44,6 @@ class EditMajor extends Component {
 
     componentWillReceiveProps(nextProps) {
         this.updateAction(nextProps);
-    }
-
-    loadSchoolOption = async () => {
-        // get all sector in database
-        let next = true, rs = [], tmp, page = 1;
-        while (next) {
-            tmp = await SchoolApi.getAll({
-                page: page++,
-                session: this.props.session
-            });
-            rs = rs.concat(tmp.body.data.list);
-            next = tmp.body.data.next;
-        }
-        this.setState({
-            schoolOptions: rs.map(el => ({ value: el.id, label: el.name }))
-        });
     }
 
     loadStatusOption = async () => {
@@ -79,7 +66,6 @@ class EditMajor extends Component {
         let isUpdate = props.do === 'update' ? true : false;
         this.setState({ isUpdate });
         await this.loadStatusOption();
-        await this.loadSchoolOption();
         if (isUpdate) {
             MajorApi.getOne({
                 id: props.match.params.id,
@@ -87,8 +73,10 @@ class EditMajor extends Component {
             }).then(res => {
                 let major = res.body.data;
                 if (major) {
+                    let s = major.school;
+                    major.school = s.id;
                     this.setState({
-                        schoolSelectedOption: this.state.schoolOptions.filter(el => el.value === major.school),
+                        schoolSelectedOption: { label: s.name },
                         statusSelectedOption: this.state.statusOptions.filter(el => el.value === major.status),
                         major
                     });
@@ -167,10 +155,94 @@ class EditMajor extends Component {
         });
     }
 
+    toggleSchool = () => {
+        if (this.state.school.length === 0) {
+            this.loadSchools(this.state.pageSchool);
+        }
+        $('#modal-school').modal('toggle');
+    }
+
+    handleChangeSchool = (s) => {
+        $('#modal-school').modal('hide');
+        let { major } = this.state;
+        major.school = s.id;
+        this.setState({ major, schoolSelectedOption: { label: s.name } });
+    }
+
+    genListSchool = () => {
+        let { school } = this.state;
+        let rs = null;
+        rs = school.map((s, i) => (
+            <a
+                key={i}
+                className={"list-group-item h-hand " + (s.id === this.state.major.school ? 'active' : '')}
+                onClick={() => this.handleChangeSchool(s)}
+            >{s.name}</a>
+        ));
+        return rs;
+    }
+
+    newPageSchool = (e, num) => {
+        e.preventDefault();
+        let { pageSchool, nextSchool } = this.state;
+        pageSchool += num;
+        if (pageSchool === 0 || (!nextSchool && num > 0)) {
+            return;
+        } else {
+            this.loadSchools(pageSchool);
+        }
+    }
+
+    loadSchools = async page => {
+        let rs = await SchoolApi.getAll({
+            page,
+            session: this.props.session
+        });
+
+        this.setState({
+            school: rs.body.data.list,
+            nextSchool: rs.body.data.next,
+            pageSchool: page
+        });
+    }
+
     render() {
         let { major } = this.state;
         return (
             <Fragment>
+                {/* modal school */}
+                <div className="modal fade" id="modal-school">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal">
+                                    <span aria-hidden="true">×</span></button>
+                                <h4 className="modal-title">Trường</h4>
+                            </div>
+                            <div className="modal-body">
+                                <div className="list-group">
+                                    {this.genListSchool()}
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <ul className="pagination pagination-md no-margin pull-right">
+                                    <li className={this.state.pageSchool === 1 ? 'disabled' : ''}>
+                                        <a href="#" onClick={(e) => this.newPageSchool(e, -1)}>Pre</a>
+                                    </li>
+                                    <li className="active">
+                                        <a>{this.state.pageSchool}</a>
+                                    </li>
+                                    <li className={this.state.nextSchool ? '' : 'disabled'}>
+                                        <a href="#" onClick={(e) => this.newPageSchool(e, 1)} >Next</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {/* /.modal-content */}
+                    </div>
+                    {/* /.modal-dialog */}
+                </div>
+
                 {/* Content Header (Page header) */}
                 <section className="content-header">
                     <h1>
@@ -227,13 +299,17 @@ class EditMajor extends Component {
                                             <div className="form-group">
                                                 <label htmlFor="school">Trường</label>
                                                 <div className="form-group">
-                                                    <Select
-                                                        styles={selectStyle}
-                                                        onChange={this.handleChangeSchool}
-                                                        options={this.state.schoolOptions}
-                                                        value={this.state.schoolSelectedOption}
-                                                        placeholder="Trường"
-                                                    />
+                                                    <div
+                                                        className="h-hand"
+                                                        onClick={this.toggleSchool}
+                                                    >
+                                                        <Select
+                                                            isSearchable={false}
+                                                            styles={{ ...selectStyle, menu: () => ({ display: 'none' }) }}
+                                                            value={this.state.schoolSelectedOption}
+                                                            placeholder="Trường"
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
