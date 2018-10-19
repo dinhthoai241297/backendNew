@@ -7,6 +7,7 @@ import ProvinceApi from '../../api/ProvinceApi';
 import SectorApi from '../../api/SectorApi';
 import StatusApi from '../../api/StatusApi';
 import { selectStyle, toastrOption } from './../../custom/Custom';
+import { changeLoading } from './../../actions/DifActions';
 
 class EditProvince extends Component {
 
@@ -34,8 +35,10 @@ class EditProvince extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        this.updateAction(this.props);
+    async componentDidMount() {
+        this.props.changeLoading(true);
+        await this.updateAction(this.props);
+        this.props.changeLoading(false);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -276,6 +279,7 @@ const mapDispatchToProps = (dispatch, props) => {
     return {
         addProvince: province => dispatch(provinceAction.addProvinceApi(province)),
         updateProvince: province => dispatch(provinceAction.updateProvinceApi(province)),
+        changeLoading: loading => dispatch(changeLoading(loading))
     }
 }
 

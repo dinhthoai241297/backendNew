@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch, BrowserRouter as Router, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
 import Sector from './components/sector/Sector';
 import EditSector from './components/sector/EditSector';
@@ -36,6 +36,15 @@ class MyRoute extends Component {
         let data = JSON.parse(localStorage.getItem('data'));
         if (data) {
             this.props.loginState(data);
+            this.state = {
+                user: data.user,
+                session: data.session
+            }
+        } else {
+            this.state = {
+                user: undefined,
+                session: undefined
+            }
         }
     }
 
@@ -58,6 +67,14 @@ class MyRoute extends Component {
                 this.props.loadStatus({ list, next });
             }
         }
+
+        let { user, s } = this.state;
+        if (JSON.stringify(nextProps.data) !== JSON.stringify({ user, session: s })) {
+            this.setState({
+                user: nextProps.data.user,
+                session: nextProps.data.session
+            });
+        }
     }
 
     validateRole = (roles, role) => {
@@ -70,57 +87,61 @@ class MyRoute extends Component {
     }
 
     render() {
-        let { user } = this.props.data;
-        let logged = (user && user.username !== '' && user.password !== '') ? true : false;
+        let { user } = this.state;
+        let logged = false, role = [];
+        if (user) {
+            logged = true;
+            role = user.role || [];
+        }
         return (
             <Router>
                 <Switch>
-                    <Route path="/login" exact render={() => (logged ? (<Redirect to="/sector/list" />) : (<Login />))} />
-                    <Route render={(props) => (!logged ? (<Redirect to="/login" />) : (
+                    <Route path="/login" exact render={props => (logged ? <Redirect to='/' /> : <Login {...props} user={user} />)} />
+                    <Route render={props => (!logged ? <Redirect to='/login' /> :
                         <App {...props} user={user}>
                             <Switch>
                                 <Route path="/" exact render={() => (<Redirect to="/sector/list" />)} />
 
-                                <Route path="/sector/list" render={props => (this.validateRole(user.role, roles.VIEW) ? <Sector {...props} /> : <Permission />)} />
-                                <Route path="/sector/update/:id" exact render={props => (this.validateRole(user.role, roles.UPDATE) ? <EditSector {...props} do='update' /> : <Permission />)} />
-                                <Route path="/sector/add" exact render={props => (this.validateRole(user.role, roles.ADD) ? <EditSector {...props} do='add' /> : <Permission />)} />
+                                <Route path="/sector/list" render={props => (this.validateRole(role, roles.VIEW) ? <Sector {...props} /> : <Permission />)} />
+                                <Route path="/sector/update/:id" exact render={props => (this.validateRole(role, roles.UPDATE) ? <EditSector {...props} do='update' /> : <Permission />)} />
+                                <Route path="/sector/add" exact render={props => (this.validateRole(role, roles.ADD) ? <EditSector {...props} do='add' /> : <Permission />)} />
 
-                                <Route path="/mark/list" render={props => (this.validateRole(user.role, roles.VIEW) ? <Mark {...props} /> : <Permission />)} />
-                                <Route path="/mark/update/:id" exact render={props => (this.validateRole(user.role, roles.UPDATE) ? <EditMark {...props} do='update' /> : <Permission />)} />
-                                <Route path="/mark/add" exact render={props => (this.validateRole(user.role, roles.ADD) ? <EditMark {...props} do='add' /> : <Permission />)} />
+                                <Route path="/mark/list" render={props => (this.validateRole(role, roles.VIEW) ? <Mark {...props} /> : <Permission />)} />
+                                <Route path="/mark/update/:id" exact render={props => (this.validateRole(role, roles.UPDATE) ? <EditMark {...props} do='update' /> : <Permission />)} />
+                                <Route path="/mark/add" exact render={props => (this.validateRole(role, roles.ADD) ? <EditMark {...props} do='add' /> : <Permission />)} />
 
-                                <Route path="/school/list" render={props => (this.validateRole(user.role, roles.VIEW) ? <School {...props} /> : <Permission />)} />
-                                <Route path="/school/update/:id" exact render={props => (this.validateRole(user.role, roles.UPDATE) ? <EditSchool {...props} do='update' /> : <Permission />)} />
-                                <Route path="/school/add" exact render={props => (this.validateRole(user.role, roles.ADD) ? <EditSchool {...props} do='add' /> : <Permission />)} />
+                                <Route path="/school/list" render={props => (this.validateRole(role, roles.VIEW) ? <School {...props} /> : <Permission />)} />
+                                <Route path="/school/update/:id" exact render={props => (this.validateRole(role, roles.UPDATE) ? <EditSchool {...props} do='update' /> : <Permission />)} />
+                                <Route path="/school/add" exact render={props => (this.validateRole(role, roles.ADD) ? <EditSchool {...props} do='add' /> : <Permission />)} />
 
-                                <Route path="/province/list" render={props => (this.validateRole(user.role, roles.VIEW) ? <Province {...props} /> : <Permission />)} />
-                                <Route path="/province/update/:id" exact render={props => (this.validateRole(user.role, roles.UPDATE) ? <EditProvince {...props} do='update' /> : <Permission />)} />
-                                <Route path="/province/add" exact render={props => (this.validateRole(user.role, roles.ADD) ? <EditProvince {...props} do='add' /> : <Permission />)} />
+                                <Route path="/province/list" render={props => (this.validateRole(role, roles.VIEW) ? <Province {...props} /> : <Permission />)} />
+                                <Route path="/province/update/:id" exact render={props => (this.validateRole(role, roles.UPDATE) ? <EditProvince {...props} do='update' /> : <Permission />)} />
+                                <Route path="/province/add" exact render={props => (this.validateRole(role, roles.ADD) ? <EditProvince {...props} do='add' /> : <Permission />)} />
 
-                                <Route path="/major/list" render={props => (this.validateRole(user.role, roles.VIEW) ? <Major {...props} /> : <Permission />)} />
-                                <Route path="/major/update/:id" exact render={props => (this.validateRole(user.role, roles.UPDATE) ? <EditMajor {...props} do='update' /> : <Permission />)} />
-                                <Route path="/major/add" exact render={props => (this.validateRole(user.role, roles.ADD) ? <EditMajor {...props} do='add' /> : <Permission />)} />
+                                <Route path="/major/list" render={props => (this.validateRole(role, roles.VIEW) ? <Major {...props} /> : <Permission />)} />
+                                <Route path="/major/update/:id" exact render={props => (this.validateRole(role, roles.UPDATE) ? <EditMajor {...props} do='update' /> : <Permission />)} />
+                                <Route path="/major/add" exact render={props => (this.validateRole(role, roles.ADD) ? <EditMajor {...props} do='add' /> : <Permission />)} />
 
-                                <Route path="/subject/list" render={props => (this.validateRole(user.role, roles.VIEW) ? <Subject {...props} /> : <Permission />)} />
-                                <Route path="/subject/update/:id" exact render={props => (this.validateRole(user.role, roles.UPDATE) ? <EditSubject {...props} do='update' /> : <Permission />)} />
-                                <Route path="/subject/add" exact render={props => (this.validateRole(user.role, roles.ADD) ? <EditSubject {...props} do='add' /> : <Permission />)} />
+                                <Route path="/subject/list" render={props => (this.validateRole(role, roles.VIEW) ? <Subject {...props} /> : <Permission />)} />
+                                <Route path="/subject/update/:id" exact render={props => (this.validateRole(role, roles.UPDATE) ? <EditSubject {...props} do='update' /> : <Permission />)} />
+                                <Route path="/subject/add" exact render={props => (this.validateRole(role, roles.ADD) ? <EditSubject {...props} do='add' /> : <Permission />)} />
 
-                                <Route path="/subjectGroup/list" render={props => (this.validateRole(user.role, roles.VIEW) ? <SubjectGroup {...props} /> : <Permission />)} />
-                                <Route path="/subjectGroup/update/:id" exact render={props => (this.validateRole(user.role, roles.UPDATE) ? <EditSubjectGroup {...props} do='update' /> : <Permission />)} />
-                                <Route path="/subjectGroup/add" exact render={props => (this.validateRole(user.role, roles.ADD) ? <EditSubjectGroup {...props} do='add' /> : <Permission />)} />
+                                <Route path="/subjectGroup/list" render={props => (this.validateRole(role, roles.VIEW) ? <SubjectGroup {...props} /> : <Permission />)} />
+                                <Route path="/subjectGroup/update/:id" exact render={props => (this.validateRole(role, roles.UPDATE) ? <EditSubjectGroup {...props} do='update' /> : <Permission />)} />
+                                <Route path="/subjectGroup/add" exact render={props => (this.validateRole(role, roles.ADD) ? <EditSubjectGroup {...props} do='add' /> : <Permission />)} />
 
-                                <Route path="/role/list" render={props => (this.validateRole(user.role, roles.ROOT) ? <Role {...props} /> : <Permission />)} />
-                                <Route path="/role/update/:id" exact render={props => (this.validateRole(user.role, roles.ROOT) ? <EditRole {...props} do='update' /> : <Permission />)} />
-                                <Route path="/role/add" exact render={props => (this.validateRole(user.role, roles.ROOT) ? <EditRole {...props} do='add' /> : <Permission />)} />
+                                <Route path="/role/list" render={props => (this.validateRole(role, roles.ROOT) ? <Role {...props} /> : <Permission />)} />
+                                <Route path="/role/update/:id" exact render={props => (this.validateRole(role, roles.ROOT) ? <EditRole {...props} do='update' /> : <Permission />)} />
+                                <Route path="/role/add" exact render={props => (this.validateRole(role, roles.ROOT) ? <EditRole {...props} do='add' /> : <Permission />)} />
 
-                                <Route path="/user/list" render={props => (this.validateRole(user.role, roles.ROOT) ? <User {...props} /> : <Permission />)} />
-                                <Route path="/user/update/:id" exact render={props => (this.validateRole(user.role, roles.ROOT) ? <EditUser {...props} do='update' /> : <Permission />)} />
-                                <Route path="/user/add" exact render={props => (this.validateRole(user.role, roles.ROOT) ? <EditUser {...props} do='add' /> : <Permission />)} />
+                                <Route path="/user/list" render={props => (this.validateRole(role, roles.ROOT) ? <User {...props} /> : <Permission />)} />
+                                <Route path="/user/update/:id" exact render={props => (this.validateRole(role, roles.ROOT) ? <EditUser {...props} do='update' /> : <Permission />)} />
+                                <Route path="/user/add" exact render={props => (this.validateRole(role, roles.ROOT) ? <EditUser {...props} do='add' /> : <Permission />)} />
 
                                 <Route path="/test" render={props => <Test {...props} test='abcd' />} />
                             </Switch>
                         </App>
-                    ))} />
+                    )} />
                 </Switch>
             </Router>
         );

@@ -10,6 +10,7 @@ import RoleReducer from './RoleReducer';
 import UserReducer from './UserReducer';
 import LoginReducer from './LoginReducer';
 import StatusReducer from './StatusReducer';
+import DifReducer from './DifReducer';
 
 const root = combineReducers({
     SectorReducer,
@@ -22,7 +23,8 @@ const root = combineReducers({
     RoleReducer,
     UserReducer,
     LoginReducer,
-    StatusReducer
+    StatusReducer,
+    DifReducer
 });
 
 export default root;

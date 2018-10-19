@@ -7,6 +7,7 @@ import * as roleAction from './../../actions/RoleActions';
 import RoleApi from './../../api/RoleApi';
 import StatusApi from '../../api/StatusApi';
 import { selectStyle, toastrOption } from './../../custom/Custom';
+import { changeLoading } from './../../actions/DifActions';
 
 class EditRole extends Component {
 
@@ -56,8 +57,10 @@ class EditRole extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        this.updateAction(this.props);
+    async componentDidMount() {
+        this.props.changeLoading(true);
+        await this.updateAction(this.props);
+        this.props.changeLoading(false);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -270,6 +273,7 @@ const mapDispatchToProps = (dispatch, props) => {
     return {
         addRole: role => dispatch(roleAction.addRoleApi(role)),
         updateRole: role => dispatch(roleAction.updateRoleApi(role)),
+        changeLoading: loading => dispatch(changeLoading(loading))
     }
 }
 

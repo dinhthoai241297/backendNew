@@ -1,8 +1,8 @@
 .wrapper {
     width: 100%;
     min-height: 100vh;
-    height: auto !important;
     position: absolute;
+    height: 100vh !important;
 }
 
 .h-hand:hover {

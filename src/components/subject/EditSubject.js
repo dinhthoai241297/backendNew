@@ -6,6 +6,7 @@ import SubjectApi from '../../api/SubjectApi';
 import StatusApi from '../../api/StatusApi';
 import Select from 'react-select';
 import { selectStyle, toastrOption } from './../../custom/Custom';
+import { changeLoading } from './../../actions/DifActions';
 
 class EditSubject extends Component {
 
@@ -32,8 +33,10 @@ class EditSubject extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        this.updateAction(this.props);
+    async componentDidMount() {
+        this.props.changeLoading(true);
+        await this.updateAction(this.props);
+        this.props.changeLoading(false);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -233,6 +236,7 @@ const mapDispatchToProps = (dispatch, props) => {
     return {
         addSubject: subject => dispatch(subjectAction.addSubjectApi(subject)),
         updateSubject: subject => dispatch(subjectAction.updateSubjectApi(subject)),
+        changeLoading: loading => dispatch(changeLoading(loading))
     }
 }
 

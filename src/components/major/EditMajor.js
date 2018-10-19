@@ -7,6 +7,7 @@ import MajorApi from '../../api/MajorApi';
 import SchoolApi from '../../api/SchoolApi';
 import StatusApi from '../../api/StatusApi';
 import { selectStyle, toastrOption } from './../../custom/Custom';
+import { changeLoading } from './../../actions/DifActions';
 
 class EditMajor extends Component {
 
@@ -38,8 +39,10 @@ class EditMajor extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        this.updateAction(this.props);
+    async componentDidMount() {
+        this.props.changeLoading(true);
+        await this.updateAction(this.props);
+        this.props.changeLoading(false);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -355,6 +358,7 @@ const mapDispatchToProps = (dispatch, props) => {
     return {
         addMajor: major => dispatch(majorAction.addMajorApi(major)),
         updateMajor: major => dispatch(majorAction.updateMajorApi(major)),
+        changeLoading: loading => dispatch(changeLoading(loading))
     }
 }
 

@@ -9,6 +9,7 @@ import SubjectGroupApi from '../../api/SubjectGroupApi';
 import MajorApi from '../../api/MajorApi';
 import StatusApi from '../../api/StatusApi';
 import { selectStyle, toastrOption } from './../../custom/Custom';
+import { changeLoading } from './../../actions/DifActions';
 
 class EditMark extends Component {
 
@@ -52,8 +53,10 @@ class EditMark extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        this.updateAction(this.props);
+    async componentDidMount() {
+        this.props.changeLoading(true);
+        await this.updateAction(this.props);
+        this.props.changeLoading(false);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -94,7 +97,6 @@ class EditMark extends Component {
             sGSelectedOption = sGSelectedOption.concat(sGOptions.filter(el => el.value === mark.subjectGroups[i]));
         }
         this.setState({ sGOptions, sGSelectedOption });
-        console.log(mark);
     }
 
     updateAction = async (props) => {
@@ -149,8 +151,6 @@ class EditMark extends Component {
     }
 
     handleSave = (e) => {
-        console.log(this.state.mark);
-        return;
         e.preventDefault();
         this.setState({
             isProcess: true
@@ -566,6 +566,7 @@ const mapDispatchToProps = (dispatch, props) => {
     return {
         addMark: mark => dispatch(markAction.addMarkApi(mark)),
         updateMark: mark => dispatch(markAction.updateMarkApi(mark)),
+        changeLoading: loading => dispatch(changeLoading(loading))
     }
 }
 

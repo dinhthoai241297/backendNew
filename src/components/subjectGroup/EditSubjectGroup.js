@@ -7,6 +7,7 @@ import SubjectApi from './../../api/SubjectApi';
 import Select from 'react-select';
 import { selectStyle, toastrOption } from './../../custom/Custom';
 import StatusApi from '../../api/StatusApi';
+import { changeLoading } from './../../actions/DifActions';
 
 class EditSubjectGroup extends Component {
 
@@ -36,8 +37,10 @@ class EditSubjectGroup extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        this.updateAction(this.props);
+    async componentDidMount() {
+        this.props.changeLoading(true);
+        await this.updateAction(this.props);
+        this.props.changeLoading(false);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -283,6 +286,7 @@ const mapDispatchToProps = (dispatch, props) => {
     return {
         addSubjectGroup: subjectGroup => dispatch(subjectGroupAction.addSubjectGroupApi(subjectGroup)),
         updateSubjectGroup: subjectGroup => dispatch(subjectGroupAction.updateSubjectGroupApi(subjectGroup)),
+        changeLoading: loading => dispatch(changeLoading(loading))
     }
 }
 

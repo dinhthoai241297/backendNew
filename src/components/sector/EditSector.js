@@ -6,6 +6,7 @@ import toastr from 'toastr';
 import Select from 'react-select';
 import StatusApi from '../../api/StatusApi';
 import { selectStyle, toastrOption } from './../../custom/Custom';
+import { changeLoading } from './../../actions/DifActions';
 
 class EditSector extends Component {
 
@@ -32,8 +33,10 @@ class EditSector extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        this.updateAction(this.props);
+    async componentDidMount() {
+        this.props.changeLoading(true);
+        await this.updateAction(this.props);
+        this.props.changeLoading(false);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -236,6 +239,7 @@ const mapDispatchToProps = (dispatch, props) => {
     return {
         addSector: sector => dispatch(sectorAction.addSectorApi(sector)),
         updateSector: sector => dispatch(sectorAction.updateSectorApi(sector)),
+        changeLoading: loading => dispatch(changeLoading(loading))
     }
 }
 

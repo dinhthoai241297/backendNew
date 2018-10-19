@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import * as actions from './../../actions/UserActions';
-import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import UserApi from './../../api/UserApi';
 
 class Login extends Component {
 
@@ -23,16 +23,25 @@ class Login extends Component {
     login = (e) => {
         e.preventDefault();
         let { username, password } = this.state;
-        this.props.login(username, password).then(code => {
-            let mes = '';
-            if (code === 804) {
-                mes = 'Tài khoản chưa kích hoạt!';
-            } else if (code === 803) {
-                mes = 'Tài khoản hoặc mật khẩu không hợp lệ!';
+        UserApi.login({ username, password }).then(res => {
+            let { code } = res.body;
+            if (code === 200) {
+                let { data } = res.body;
+                console.log(data);
+                data.user.role = JSON.parse(data.user.role.roles);
+                localStorage.setItem('data', JSON.stringify(data));
+                window.location.reload();
             } else {
-                mes = 'Error: ' + code;
+                let mes = '';
+                if (code === 804) {
+                    mes = 'Tài khoản chưa kích hoạt!';
+                } else if (code === 803) {
+                    mes = 'Tài khoản hoặc mật khẩu không hợp lệ!';
+                } else {
+                    mes = 'Error: ' + code;
+                }
+                this.setState({ mes });
             }
-            this.setState({ mes });
         });
     }
 
@@ -95,10 +104,4 @@ class Login extends Component {
     }
 }
 
-const mapDispatchToProps = (dispatch, props) => {
-    return {
-        login: (username, password) => dispatch(actions.loginApi(username, password))
-    }
-}
-
-export default connect(null, mapDispatchToProps)(Login);
+export default Login;

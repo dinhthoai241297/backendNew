@@ -1,33 +1,22 @@
 import * as actionTypes from './../actionTypes/UserActionTypes';
 
 let initState = {
-    user: {
-        username: '',
-        password: '',
-        roles: []
-    },
-    session: ''
+    user: undefined,
+    session: undefined
 };
 
 const loginReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.LOGIN: {
             return {
-                user: {
-                    ...action.data.user,
-                    role: JSON.parse(action.data.user.role.roles)
-                },
+                user: action.data.user,
                 session: action.data.session
             };
         }
         case actionTypes.LOGOUT: {
             return {
-                user: {
-                    username: '',
-                    password: '',
-                    roles: []
-                },
-                session: ''
+                user: undefined,
+                session: undefined
             };
         }
         default: {

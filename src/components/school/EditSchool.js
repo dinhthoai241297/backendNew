@@ -7,6 +7,7 @@ import Select from 'react-select';
 import ProvinceApi from '../../api/ProvinceApi';
 import StatusApi from '../../api/StatusApi';
 import { selectStyle, toastrOption } from './../../custom/Custom';
+import { changeLoading } from './../../actions/DifActions';
 
 class EditSchool extends Component {
 
@@ -40,8 +41,10 @@ class EditSchool extends Component {
         toastr.options = toastrOption;
     }
 
-    componentDidMount() {
-        this.updateAction(this.props);
+    async componentDidMount() {
+        this.props.changeLoading(true);
+        await this.updateAction(this.props);
+        this.props.changeLoading(false);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -378,6 +381,7 @@ const mapDispatchToProps = (dispatch, props) => {
     return {
         addSchool: school => dispatch(schoolAction.addSchoolApi(school)),
         updateSchool: school => dispatch(schoolAction.updateSchoolApi(school)),
+        changeLoading: loading => dispatch(changeLoading(loading))
     }
 }
 
