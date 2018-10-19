@@ -49,6 +49,14 @@ class MyRoute extends Component {
     }
 
     async componentWillReceiveProps(nextProps) {
+
+        if (JSON.stringify(nextProps.data.session) !== JSON.stringify(this.state.session)) {
+            this.setState({
+                user: nextProps.data.user,
+                session: nextProps.data.session
+            });
+        }
+
         let { session } = nextProps.data;
         if (session && session !== this.props.data.session) {
             let rs = await UserApi.checkSession({ session });
@@ -66,14 +74,6 @@ class MyRoute extends Component {
                 }
                 this.props.loadStatus({ list, next });
             }
-        }
-
-        let { user, s } = this.state;
-        if (JSON.stringify(nextProps.data) !== JSON.stringify({ user, session: s })) {
-            this.setState({
-                user: nextProps.data.user,
-                session: nextProps.data.session
-            });
         }
     }
 

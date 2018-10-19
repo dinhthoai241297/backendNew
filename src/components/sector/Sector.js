@@ -29,7 +29,6 @@ class Sectors extends Component {
     }
 
     async componentDidMount() {
-        console.log(this.props);
         await this.initStatusOptions(this.props);
         await this.initFilter(qs.parse(this.props.location.search));
         this.loadSectors();

@@ -7,7 +7,6 @@ let initState = {
 const difReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.LOADING: {
-            console.log(action);
             return {
                 ...state,
                 loading: action.loading

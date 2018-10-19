@@ -19,7 +19,6 @@ class App extends Component {
         const childrenWithProps = React.Children.map(children, child =>
             React.cloneElement(child, { test: '123123' })
         );
-        console.log(this.props.loading);
         return (
             <div className="wrapper" >
 
