@@ -38,7 +38,7 @@ class Login extends Component {
                 } else if (code === 803) {
                     mes = 'Tài khoản hoặc mật khẩu không hợp lệ!';
                 } else {
-                    mes = 'Error: ' + code;
+                    mes = 'Có lỗi xảy ra vui lòng thử lại sau!';
                 }
                 this.setState({ mes });
             }
@@ -67,6 +67,7 @@ class Login extends Component {
                                                 placeholder="Tên đăng nhập"
                                                 value={this.state.username}
                                                 onChange={(e) => this.onChange(e)}
+                                                onClick={() => this.setState({mes: ''})}
                                             />
                                         </div>
                                         <div className="form-group">
@@ -79,6 +80,7 @@ class Login extends Component {
                                                 placeholder="Mật khẩu"
                                                 value={this.state.password}
                                                 onChange={(e) => this.onChange(e)}
+                                                onClick={() => this.setState({mes: ''})}
                                             />
                                         </div>
                                     </div>
