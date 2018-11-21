@@ -60,6 +60,7 @@ class Province extends Component {
     initFilter = (filter) => {
         let { page, statusFilter, sectorFilter } = filter;
         page = Number(page) || 1;
+        page = page < 0 ? 1 : page;
         this.setState({ page, statusFilter, sectorFilter }, this.initSelectedOption);
     }
 

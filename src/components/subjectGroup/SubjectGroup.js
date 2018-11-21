@@ -53,6 +53,7 @@ class SubjectGroup extends Component {
     initFilter = filter => {
         let { statusFilter, page } = filter;
         page = Number(page) || 1;
+        page = page < 0 ? 1 : page;
         this.setState({ statusFilter, page }, this.initSelectedOption);
     }
 

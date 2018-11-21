@@ -66,6 +66,7 @@ class School extends Component {
     initFilter = (filter) => {
         let { page, statusFilter, provinceFilter } = filter;
         page = Number(page) || 1;
+        page = page < 0 ? 1 : page;
         this.setState({ page, statusFilter, provinceFilter }, this.initSelectedOption);
     }
 

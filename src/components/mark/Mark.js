@@ -87,6 +87,7 @@ class Mark extends Component {
         let { page, statusFilter, yearFilter, schoolFilter, majorFilter } = filter;
         // valid page, year
         page = Number(page) || 1;
+        page = page < 0 ? 1 : page;
         yearFilter = Number(yearFilter) || undefined;
         this.setState({ page, statusFilter, yearFilter, schoolFilter, majorFilter }, this.initSelectedOption);
     }

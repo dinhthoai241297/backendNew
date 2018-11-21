@@ -77,6 +77,7 @@ class Users extends Component {
     initFilter = (filter) => {
         let { page, statusFilter, roleFilter, start, end } = filter;
         page = Number(page) || 1;
+        page = page < 0 ? 1 : page;
         // valid start, end
         start = Number(start) ? new Date(Number(start)) : new Date(1001, 1, 1);
         end = Number(end) ? new Date(Number(end)) : new Date();

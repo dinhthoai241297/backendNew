@@ -63,6 +63,7 @@ class Major extends Component {
         let { page, statusFilter, schoolFilter } = filter;
         // valid page
         page = Number(page) || 1;
+        page = page < 0 ? 1 : page;
         this.setState({ page, statusFilter, schoolFilter }, this.initSelectedOption);
     }
 
