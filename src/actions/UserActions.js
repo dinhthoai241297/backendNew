@@ -9,7 +9,7 @@ export const addUserApi = user => {
         if (res.body.code === 200) {
             dispatch(addUserState(user));
         }
-        return res.body.code;
+        return res;
     }).catch(error => {
         throw (error);
     });
@@ -27,11 +27,10 @@ export const updateUserApi = user => {
         user,
         session: getState().LoginReducer.session
     }).then(res => {
-
         if (res.body.code === 200) {
             dispatch(updateUserState(user));
         }
-        return res.body.code;
+        return res;
     }).catch(error => {
         throw (error);
     });
@@ -52,7 +51,7 @@ export const deleteUserApi = id => {
         if (res.body.code === 200) {
             dispatch(deleteUserState(id));
         }
-        return res.body.code;
+        return res;
     }).catch(error => {
         throw (error);
     });
@@ -73,7 +72,7 @@ export const loadAllUserApi = (page, status, role, date) => {
         if (res.body.code === 200) {
             dispatch(loadAllUserState(res.body.data));
         }
-        return res.body.code;
+        return res;
     }).catch(error => {
         throw (error);
     });;
@@ -95,7 +94,7 @@ export const loginApi = (username, password) => {
             localStorage.setItem('data', JSON.stringify(res.body.data));
             dispatch(loginState(res.body.data));
         }
-        return res.body.code;
+        return res;
     }).catch(error => {
         throw (error);
     });
@@ -115,7 +114,7 @@ export const logoutApi = () => {
         if (res.body.code === 200) {
             dispatch(logoutState());
         }
-        return res.body.code;
+        return res;
     }).catch(error => {
         throw (error);
     });
@@ -137,7 +136,7 @@ export const updateStatusApi = (id, status) => {
         if (res.body.code === 200) {
             dispatch(updateStatusState(id, status));
         }
-        return res.body.code;
+        return res;
     }).catch(error => {
         throw (error);
     });

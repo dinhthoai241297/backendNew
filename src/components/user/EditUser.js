@@ -129,22 +129,22 @@ class EditUser extends Component {
         });
         let { user } = this.state;
         if (user.id) {
-            this.props.updateUser(user).then(code => {
-                if (code === 200) {
+            this.props.updateUser(user).then(res => {
+                if (res.body.code === 200) {
                     toastr.success('Updated!');
                 } else {
-                    toastr.error('Error! ' + code);
+                    toastr.error('Error! ' + res.body.code);
                 }
                 this.setState({
                     isProcess: false
                 });
             });
         } else {
-            this.props.addUser(user).then(code => {
-                if (code === 200) {
+            this.props.addUser(user).then(res => {
+                if (res.body.code === 200) {
                     toastr.success('Added!');
                 } else {
-                    toastr.error('Error! ' + code);
+                    toastr.error('Error! ' + res.body.code);
                 }
                 this.setState({
                     isProcess: false

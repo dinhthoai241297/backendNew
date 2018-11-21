@@ -180,6 +180,7 @@ class Users extends Component {
         this.setState({ loading: true });
         var { page, statusFilter, roleFilter, dateFilter } = this.state;
         this.props.loadUsers(page, statusFilter, roleFilter, dateFilter).then(res => {
+            console.log(res);
             this.setState({ loading: false });
         });
     }
