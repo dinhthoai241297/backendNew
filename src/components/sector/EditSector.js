@@ -18,7 +18,7 @@ class EditSector extends Component {
                 name: '',
                 description: '',
                 id: undefined,
-                status: 1
+                status: ''
             },
             statusSelectedOption: null,
             isProcess: false
@@ -27,7 +27,8 @@ class EditSector extends Component {
         this.state = {
             isUpdate: false,
             statusOptions: [],
-            ...this.init
+            ...this.init,
+            invalid: false
         }
 
         toastr.options = toastrOption;
@@ -85,9 +86,17 @@ class EditSector extends Component {
         }
     }
 
-    // xóa trắng form nhập
     renewForm = () => {
-        this.setState(preState => ({ ...preState, ...this.init }));
+        let { statusOptions } = this.state;
+        this.setState(preState => ({
+            ...preState,
+            ...this.init,
+            sector: {
+                ...preState.sector,
+                status: statusOptions.length > 0 ? statusOptions[0].value : undefined
+            },
+            statusSelectedOption: statusOptions.length > 0 ? statusOptions[0] : undefined
+        }));
     }
 
     // sự kiện nhập input
@@ -107,6 +116,12 @@ class EditSector extends Component {
         this.setState({
             isProcess: true
         });
+        // true tức không hợp lệ
+        let invalid = this.checkInput();
+        if (invalid) {
+            this.setState({ invalid, isProcess: false });
+            return;
+        }
         let { sector } = this.state;
         if (sector.id) {
             this.props.updateSector(sector).then(code => {
@@ -144,6 +159,11 @@ class EditSector extends Component {
         });
     }
 
+    checkInput = () => {
+        let { sector } = this.state;
+        return sector.name === '';
+    }
+
     render() {
         let { sector } = this.state;
         return (
@@ -170,18 +190,22 @@ class EditSector extends Component {
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
+                                        <div className="col-xs-12 text-center" style={{ color: 'red' }}>
+                                            {this.state.invalid && <p>Vui lòng không bỏ trống các trường có dấu (*)</p>}
+                                        </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tên khu vực</label>
+                                                <label htmlFor="name">Tên khu vực (*)</label>
                                                 <input
                                                     value={sector.name}
                                                     autoComplete="off"
                                                     type="text"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.sector.name === '' ? ' cus-error' : '')}
                                                     id="name"
                                                     name="name"
-                                                    placeholder="Tên khu vực"
+                                                    placeholder="Tên khu vực (*)"
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
@@ -202,12 +226,14 @@ class EditSector extends Component {
                                         </div>
                                         <div className="col-xs-12">
                                             <div className="form-group">
+                                                <label htmlFor="status">Trạng thái (*)</label>
                                                 <Select
+                                                    id="status"
                                                     styles={selectStyle}
                                                     onChange={this.handleChangeStatus}
                                                     options={this.state.statusOptions}
                                                     value={this.state.statusSelectedOption}
-                                                    placeholder="Trạng thái"
+                                                    placeholder="Trạng thái (*)"
                                                 />
                                             </div>
                                         </div>

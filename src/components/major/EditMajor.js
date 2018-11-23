@@ -20,7 +20,7 @@ class EditMajor extends Component {
                 name: '',
                 code: '',
                 school: '',
-                status: 1
+                status: ''
             },
             isProcess: false,
             statusSelectedOption: null,
@@ -34,7 +34,9 @@ class EditMajor extends Component {
 
             school: [],
             pageSchool: 1,
-            nextSchool: false
+            nextSchool: false,
+
+            invalid: false
         }
         toastr.options = toastrOption;
     }
@@ -93,7 +95,16 @@ class EditMajor extends Component {
     }
 
     renewForm = () => {
-        this.setState(preState => ({ ...preState, ...this.init }));
+        let { statusOptions } = this.state;
+        this.setState(preState => ({
+            ...preState,
+            ...this.init,
+            major: {
+                ...preState.major,
+                status: statusOptions.length > 0 ? statusOptions[0].value : undefined
+            },
+            statusSelectedOption: statusOptions.length > 0 ? statusOptions[0] : undefined
+        }));
     }
 
     handleChangeInput = (e) => {
@@ -112,6 +123,11 @@ class EditMajor extends Component {
             isProcess: true
         });
         e.preventDefault();
+        let invalid = this.checkInput();
+        if (invalid) {
+            this.setState({ isProcess: false, invalid });
+            return;
+        }
         let { major } = this.state;
         if (major.id) {
             this.props.updateMajor(major).then(code => {
@@ -209,6 +225,11 @@ class EditMajor extends Component {
         });
     }
 
+    checkInput = () => {
+        let { major } = this.state;
+        return major.name === '' || major.school === '' || major.status === '' || major.code === '';
+    }
+
     render() {
         let { major } = this.state;
         return (
@@ -268,49 +289,54 @@ class EditMajor extends Component {
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
+                                        <div className="col-xs-12 text-center" style={{ color: 'red' }}>
+                                            {this.state.invalid && <p>Vui lòng không bỏ trống các trường có dấu (*)</p>}
+                                        </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tên Ngành</label>
+                                                <label htmlFor="name">Tên Ngành (*)</label>
                                                 <input
                                                     value={major.name}
                                                     autoComplete="off"
                                                     type="text"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.major.name === '' ? ' cus-error' : '')}
                                                     id="name"
                                                     name="name"
-                                                    placeholder="Tên Ngành"
+                                                    placeholder="Tên Ngành (*)"
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="code">Mã Ngành</label>
+                                                <label htmlFor="code">Mã Ngành (*)</label>
                                                 <input
                                                     value={major.code}
                                                     autoComplete="off"
                                                     type="text"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.major.code === '' ? ' cus-error' : '')}
                                                     id="code"
                                                     name="code"
-                                                    placeholder="Mã Ngành"
+                                                    placeholder="Mã Ngành (*)"
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="school">Trường</label>
+                                                <label htmlFor="school">Trường (*)</label>
                                                 <div className="form-group">
                                                     <div
-                                                        className="h-hand"
-                                                        onClick={this.toggleSchool}
+                                                        className={'h-hand' + (this.state.invalid && this.state.major.school === '' ? ' cus-error' : '')}
+                                                        onClick={() => { this.toggleSchool(); this.setState({ invalid: false }); }}
                                                     >
                                                         <Select
                                                             isSearchable={false}
                                                             styles={{ ...selectStyle, menu: () => ({ display: 'none' }) }}
                                                             value={this.state.schoolSelectedOption}
-                                                            placeholder="Trường"
+                                                            placeholder="Trường (*)"
                                                         />
                                                     </div>
                                                 </div>
@@ -318,14 +344,14 @@ class EditMajor extends Component {
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="status">Trạng thái</label>
+                                                <label htmlFor="status">Trạng thái (*)</label>
                                                 <div className="form-group">
                                                     <Select
                                                         styles={selectStyle}
                                                         onChange={this.handleChangeStatus}
                                                         options={this.state.statusOptions}
                                                         value={this.state.statusSelectedOption}
-                                                        placeholder="Trạng thái"
+                                                        placeholder="Trạng thái (*)"
                                                     />
                                                 </div>
                                             </div>

@@ -20,7 +20,7 @@ class EditProvince extends Component {
                 description: '',
                 sector: '',
                 id: undefined,
-                status: 1
+                status: ''
             },
             isProcess: false,
             sectorSelectedOption: null
@@ -29,7 +29,8 @@ class EditProvince extends Component {
         this.state = {
             isUpdate: false,
             sectorOptions: [],
-            ...this.init
+            ...this.init,
+            invalid: false
         }
 
         toastr.options = toastrOption;
@@ -106,7 +107,16 @@ class EditProvince extends Component {
     }
 
     renewForm = () => {
-        this.setState(preState => ({ ...preState, ...this.init }));
+        let { statusOptions } = this.state;
+        this.setState(preState => ({
+            ...preState,
+            ...this.init,
+            province: {
+                ...preState.province,
+                status: statusOptions.length > 0 ? statusOptions[0].value : undefined
+            },
+            statusSelectedOption: statusOptions.length > 0 ? statusOptions[0] : undefined
+        }));
     }
 
     handleChangeInput = (e) => {
@@ -125,6 +135,11 @@ class EditProvince extends Component {
         this.setState({
             isProcess: true
         });
+        let invalid = this.checkInput();
+        if (invalid) {
+            this.setState({ isProcess: false, invalid });
+            return;
+        }
         let { province } = this.state;
         if (province.id) {
             this.props.updateProvince(province).then(code => {
@@ -171,6 +186,12 @@ class EditProvince extends Component {
         });
     }
 
+    // trả về true nếu k hợp lệ, ngược lại trả về false
+    checkInput = () => {
+        let { province } = this.state;
+        return province.id === '' || province.status === '' || province.sector === '';
+    }
+
     render() {
         let { province } = this.state;
         return (
@@ -197,18 +218,22 @@ class EditProvince extends Component {
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
+                                        <div className="col-xs-12 text-center" style={{ color: 'red' }}>
+                                            {this.state.invalid && <p>Vui lòng không bỏ trống các trường có dấu (*)</p>}
+                                        </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tên tỉnh thành</label>
+                                                <label htmlFor="name">Tên tỉnh thành (*)</label>
                                                 <input
                                                     value={province.name}
                                                     autoComplete="off"
                                                     type="text"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.province.name === '' ? ' cus-error' : '')}
                                                     id="name"
                                                     name="name"
-                                                    placeholder="Tên tỉnh thành"
+                                                    placeholder="Tên tỉnh thành (*)"
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
@@ -229,26 +254,33 @@ class EditProvince extends Component {
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="sector">Khu vực</label>
-                                                <Select
-                                                    styles={selectStyle}
-                                                    onChange={this.handleChangeSector}
-                                                    options={this.state.sectorOptions}
-                                                    value={this.state.sectorSelectedOption}
-                                                    placeholder="Khu Vực"
-                                                />
+                                                <label htmlFor="sector">Khu vực (*)</label>
+                                                <div
+                                                    className={this.state.invalid && this.state.province.sector === '' ? 'cus-error' : ''}
+                                                    onClick={() => this.setState({ invalid: false })}
+                                                >
+                                                    <Select
+                                                        styles={selectStyle}
+                                                        onChange={this.handleChangeSector}
+                                                        options={this.state.sectorOptions}
+                                                        value={this.state.sectorSelectedOption}
+                                                        placeholder="Khu Vực (*)"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="status">Trạng thái</label>
-                                                <Select
-                                                    styles={selectStyle}
-                                                    onChange={this.handleChangeStatus}
-                                                    options={this.state.statusOptions}
-                                                    value={this.state.statusSelectedOption}
-                                                    placeholder="Trạng thái"
-                                                />
+                                                <label htmlFor="status">Trạng thái (*)</label>
+                                                <div className={this.state.invalid && this.state.province.status === '' ? 'cus-error' : ''}>
+                                                    <Select
+                                                        styles={selectStyle}
+                                                        onChange={this.handleChangeStatus}
+                                                        options={this.state.statusOptions}
+                                                        value={this.state.statusSelectedOption}
+                                                        placeholder="Trạng thái (*)"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

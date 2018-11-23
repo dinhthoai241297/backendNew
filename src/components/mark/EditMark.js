@@ -23,10 +23,10 @@ class EditMark extends Component {
                 major: '',
                 year: 0,
                 mark: 0,
-                aspiration: 0,
+                aspiration: 1,
                 subjectGroups: '',
                 note: '',
-                status: 1
+                status: ''
             },
             schoolSelectedOption: null,
             majorSelectedOption: null,
@@ -48,7 +48,9 @@ class EditMark extends Component {
 
             major: [],
             pageMajor: 1,
-            nextMajor: false
+            nextMajor: false,
+
+            invalid: false
         }
         toastr.options = toastrOption;
     }
@@ -136,7 +138,16 @@ class EditMark extends Component {
     }
 
     renewForm = () => {
-        this.setState(preState => ({ ...preState, ...this.init }));
+        let { statusOptions } = this.state;
+        this.setState(preState => ({
+            ...preState,
+            ...this.init,
+            mark: {
+                ...preState.mark,
+                status: statusOptions.length > 0 ? statusOptions[0].value : undefined
+            },
+            statusSelectedOption: statusOptions.length > 0 ? statusOptions[0] : undefined
+        }));
     }
 
     handleChangeInput = (e) => {
@@ -155,6 +166,11 @@ class EditMark extends Component {
         this.setState({
             isProcess: true
         });
+        let invalid = this.checkInput();
+        if (invalid) {
+            this.setState({ isProcess: false, invalid });
+            return;
+        }
         let { mark } = this.state;
         if (mark.id) {
             this.props.updateMark(mark).then(code => {
@@ -328,6 +344,11 @@ class EditMark extends Component {
         });
     }
 
+    checkInput = () => {
+        let { mark } = this.state;
+        return mark.year === 0 || mark.mark === 0 || mark.major === '' || mark.school === '' || mark.status === '';
+    }
+
     render() {
         let { mark } = this.state;
         return (
@@ -421,65 +442,70 @@ class EditMark extends Component {
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
+                                        <div className="col-xs-12 text-center" style={{ color: 'red' }}>
+                                            {this.state.invalid && <p>Vui lòng không bỏ trống các trường có dấu (*)</p>}
+                                        </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="school">Trường</label>
+                                                <label htmlFor="school">Trường (*)</label>
                                                 <div
-                                                    className="h-hand"
-                                                    onClick={this.toggleSchool}
+                                                    className={'h-hand' + (this.state.invalid && this.state.mark.school === '' ? ' cus-error' : '')}
+                                                    onClick={() => { this.toggleSchool(); this.setState({ invalid: false }) }}
                                                 >
                                                     <Select
                                                         isSearchable={false}
                                                         styles={{ ...selectStyle, menu: () => ({ display: 'none' }) }}
                                                         value={this.state.schoolSelectedOption}
-                                                        placeholder="Trường"
+                                                        placeholder="Trường (*)"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="major">Ngành</label>
+                                                <label htmlFor="major">Ngành (*)</label>
                                                 <div
-                                                    className="h-hand"
-                                                    onClick={this.toggleMajor}
+                                                    className={'h-hand' + (this.state.invalid && this.state.mark.major === '' ? ' cus-error' : '')}
+                                                    onClick={() => { this.toggleMajor(); this.setState({ invalid: false }) }}
                                                 >
                                                     <Select
                                                         isSearchable={false}
                                                         styles={{ ...selectStyle, menu: () => ({ display: 'none' }) }}
                                                         value={this.state.majorSelectedOption}
-                                                        placeholder="Ngành"
+                                                        placeholder="Ngành (*)"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="year">Năm</label>
+                                                <label htmlFor="year">Năm (*)</label>
                                                 <input
                                                     value={mark.year}
                                                     autoComplete="off"
                                                     type="number"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.mark.year === 0 ? ' cus-error' : '')}
                                                     id="year"
                                                     name="year"
-                                                    placeholder="Năm"
+                                                    placeholder="Năm (*)"
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="mark">Điểm chuẩn</label>
+                                                <label htmlFor="mark">Điểm chuẩn (*)</label>
                                                 <input
                                                     value={mark.mark}
                                                     autoComplete="off"
                                                     type="number"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.mark.mark === 0 ? ' cus-error' : '')}
                                                     id="mark"
                                                     name="mark"
-                                                    placeholder="Điểm chuẩn"
+                                                    placeholder="Điểm chuẩn (*)"
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
@@ -515,26 +541,31 @@ class EditMark extends Component {
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="subjectGroups">Tổ Hợp Môn</label>
-                                                <Select
-                                                    isMulti={true}
-                                                    styles={selectStyle}
-                                                    onChange={this.handleChangeSG}
-                                                    options={this.state.sGOptions}
-                                                    value={this.state.sGSelectedOption}
-                                                    placeholder="Tổ hợp môn"
-                                                />
+                                                <label htmlFor="subjectGroups">Tổ Hợp Môn (*)</label>
+                                                <div
+                                                    className={this.state.invalid && this.state.mark.subjectGroups === '' ? 'cus-error' : ''}
+                                                    onClick={() => this.setState({ invalid: false })}
+                                                >
+                                                    <Select
+                                                        isMulti={true}
+                                                        styles={selectStyle}
+                                                        onChange={this.handleChangeSG}
+                                                        options={this.state.sGOptions}
+                                                        value={this.state.sGSelectedOption}
+                                                        placeholder="Tổ hợp môn (*)"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="status">Trạng thái</label>
+                                                <label htmlFor="status">Trạng thái (*)</label>
                                                 <Select
                                                     styles={selectStyle}
                                                     onChange={this.handleChangeStatus}
                                                     options={this.state.statusOptions}
                                                     value={this.state.statusSelectedOption}
-                                                    placeholder="Trạng thái"
+                                                    placeholder="Trạng thái (*)"
                                                 />
                                             </div>
                                         </div>

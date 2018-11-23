@@ -22,11 +22,13 @@ class EditUser extends Component {
                 email: '',
                 fullName: '',
                 role: '',
-                status: 1
+                status: ''
             },
             isProcess: false,
             roleSelectedOption: null,
-            statusSelectedOption: null
+            statusSelectedOption: null,
+
+            invalid: false
         }
 
         this.state = {
@@ -108,8 +110,18 @@ class EditUser extends Component {
     }
 
     renewForm = () => {
-        this.setState(preState => ({ ...preState, ...this.init }));
+        let { statusOptions } = this.state;
+        this.setState(preState => ({
+            ...preState,
+            ...this.init,
+            user: {
+                ...preState.user,
+                status: statusOptions.length > 0 ? statusOptions[0].value : undefined
+            },
+            statusSelectedOption: statusOptions.length > 0 ? statusOptions[0] : undefined
+        }));
     }
+
 
     handleChangeInput = (e) => {
         let { name, value } = e.target;
@@ -127,6 +139,11 @@ class EditUser extends Component {
         this.setState({
             isProcess: true
         });
+        let invalid = this.checkInput();
+        if (invalid) {
+            this.setState({ isProcess: false, invalid });
+            return;
+        }
         let { user } = this.state;
         if (user.id) {
             this.props.updateUser(user).then(res => {
@@ -173,6 +190,11 @@ class EditUser extends Component {
         });
     }
 
+    checkInput = () => {
+        let { user } = this.state;
+        return user.fullName === '' || user.username === '' || user.password === '' || user.status === '' || user.role === '';
+    }
+
     render() {
         let { user } = this.state;
         return (
@@ -199,48 +221,54 @@ class EditUser extends Component {
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
+                                        <div className="col-xs-12 text-center" style={{ color: 'red' }}>
+                                            {this.state.invalid && <p>Vui lòng không bỏ trống các trường có dấu (*)</p>}
+                                        </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="fullName">Tên</label>
+                                                <label htmlFor="fullName">Tên (*)</label>
                                                 <input
                                                     autoComplete="off"
                                                     type="text"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.user.fullName === '' ? ' cus-error' : '')}
                                                     id="fullName"
                                                     name="fullName"
-                                                    placeholder="Tên"
+                                                    placeholder="Tên (*)"
                                                     value={user.fullName}
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="username">Tài Khoản</label>
+                                                <label htmlFor="username">Tài Khoản (*)</label>
                                                 <input
                                                     autoComplete="off"
                                                     type="text"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.user.username === '' ? ' cus-error' : '')}
                                                     id="username"
                                                     name="username"
-                                                    placeholder="Tài khoản"
+                                                    placeholder="Tài khoản (*)"
                                                     value={user.username}
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="password">Mật khẩu</label>
+                                                <label htmlFor="password">Mật khẩu (*)</label>
                                                 <input
                                                     autoComplete="off"
                                                     type="password"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.user.password === '' ? ' cus-error' : '')}
                                                     id="password"
                                                     name="password"
-                                                    placeholder="Mật khẩu"
+                                                    placeholder="Mật khẩu (*)"
                                                     value={user.password}
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
@@ -261,25 +289,30 @@ class EditUser extends Component {
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="role">Quyền</label>
-                                                <Select
-                                                    styles={selectStyle}
-                                                    onChange={this.handleChangeRole}
-                                                    options={this.state.roleOptions}
-                                                    value={this.state.roleSelectedOption}
-                                                    placeholder="Quyền"
-                                                />
+                                                <label htmlFor="role">Quyền (*)</label>
+                                                <div
+                                                    className={this.state.invalid && this.state.user.role === '' ? 'cus-error' : ''}
+                                                    onClick={() => this.setState({ invalid: false })}
+                                                >
+                                                    <Select
+                                                        styles={selectStyle}
+                                                        onChange={this.handleChangeRole}
+                                                        options={this.state.roleOptions}
+                                                        value={this.state.roleSelectedOption}
+                                                        placeholder="Quyền (*)"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="status">Trạng thái</label>
+                                                <label htmlFor="status">Trạng thái (*)</label>
                                                 <Select
                                                     styles={selectStyle}
                                                     onChange={this.handleChangeStatus}
                                                     options={this.state.statusOptions}
                                                     value={this.state.statusSelectedOption}
-                                                    placeholder="Trạng thái"
+                                                    placeholder="Trạng thái (*)"
                                                 />
                                             </div>
                                         </div>

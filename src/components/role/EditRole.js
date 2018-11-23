@@ -19,11 +19,13 @@ class EditRole extends Component {
                 id: undefined,
                 name: '',
                 roles: [],
-                status: 1
+                status: ''
             },
             isProcess: false,
             statusSelectedOption: null,
-            roleSelectedOption: null
+            roleSelectedOption: null,
+
+            invalid: false
         }
 
         this.state = {
@@ -114,7 +116,16 @@ class EditRole extends Component {
     }
 
     renewForm = () => {
-        this.setState(preState => ({ ...preState, ...this.init }));
+        let { statusOptions } = this.state;
+        this.setState(preState => ({
+            ...preState,
+            ...this.init,
+            role: {
+                ...preState.role,
+                status: statusOptions.length > 0 ? statusOptions[0].value : undefined
+            },
+            statusSelectedOption: statusOptions.length > 0 ? statusOptions[0] : undefined
+        }));
     }
 
     handleChangeInput = (e) => {
@@ -133,6 +144,11 @@ class EditRole extends Component {
         this.setState({
             isProcess: true
         });
+        let invalid = this.checkInput();
+        if (invalid) {
+            this.setState({ isProcess: false, invalid });
+            return;
+        }
         let { role } = this.state;
         if (role.id) {
             this.props.updateRole(role).then(code => {
@@ -179,6 +195,11 @@ class EditRole extends Component {
         });
     }
 
+    checkInput = () => {
+        let { role } = this.state;
+        return role.name === '' || role.status === '' || role.roles.length === 0;
+    }
+
     render() {
         let { role } = this.state;
         return (
@@ -205,43 +226,52 @@ class EditRole extends Component {
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
+                                        <div className="col-xs-12 text-center" style={{ color: 'red' }}>
+                                            {this.state.invalid && <p>Vui lòng không bỏ trống các trường có dấu (*)</p>}
+                                        </div>
                                         <div className="col-xs-12">
                                             <div className="form-group">
-                                                <label htmlFor="name">Tên Quyền</label>
+                                                <label htmlFor="name">Tên Quyền (*)</label>
                                                 <input
                                                     value={role.name}
                                                     autoComplete="off"
                                                     type="text"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.role.name === '' ? ' cus-error' : '')}
                                                     id="name"
                                                     name="name"
-                                                    placeholder="Tên Quyền"
+                                                    placeholder="Tên Quyền (*)"
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="description">Quyền</label>
-                                                <Select
-                                                    isMulti={true}
-                                                    styles={selectStyle}
-                                                    onChange={this.handleChangeRole}
-                                                    options={this.state.roleOptions}
-                                                    value={this.state.roleSelectedOption}
-                                                    placeholder="Quyền"
-                                                />
+                                                <label htmlFor="description">Quyền (*)</label>
+                                                <div
+                                                    className={this.state.invalid && this.state.role.roles.length === 0 ? 'cus-error' : ''}
+                                                    onClick={() => this.setState({ invalid: false })}
+                                                >
+                                                    <Select
+                                                        isMulti={true}
+                                                        styles={selectStyle}
+                                                        onChange={this.handleChangeRole}
+                                                        options={this.state.roleOptions}
+                                                        value={this.state.roleSelectedOption}
+                                                        placeholder="Quyền (*)"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="status">Trạng thái</label>
+                                                <label htmlFor="status">Trạng thái (*)</label>
                                                 <Select
                                                     styles={selectStyle}
                                                     onChange={this.handleChangeStatus}
                                                     options={this.state.statusOptions}
                                                     value={this.state.statusSelectedOption}
-                                                    placeholder="Trạng thái"
+                                                    placeholder="Trạng thái (*)"
                                                 />
                                             </div>
                                         </div>

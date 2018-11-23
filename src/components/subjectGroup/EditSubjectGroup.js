@@ -20,7 +20,7 @@ class EditSubjectGroup extends Component {
                 description: '',
                 id: undefined,
                 subjects: [],
-                status: 1
+                status: ''
             },
             isProcess: false,
             subjectSelectedOption: [],
@@ -31,7 +31,9 @@ class EditSubjectGroup extends Component {
             isUpdate: false,
             subjectOptions: [],
             statusOptions: [],
-            ...this.init
+            ...this.init,
+
+            invalid: false
         }
 
         toastr.options = toastrOption;
@@ -112,7 +114,16 @@ class EditSubjectGroup extends Component {
     }
 
     renewForm = () => {
-        this.setState(preState => ({ ...preState, ...this.init }));
+        let { statusOptions } = this.state;
+        this.setState(preState => ({
+            ...preState,
+            ...this.init,
+            subjectGroup: {
+                ...preState.subjectGroup,
+                status: statusOptions.length > 0 ? statusOptions[0].value : undefined
+            },
+            statusSelectedOption: statusOptions.length > 0 ? statusOptions[0] : undefined
+        }));
     }
 
     handleChangeInput = (e) => {
@@ -131,6 +142,11 @@ class EditSubjectGroup extends Component {
             isProcess: true
         });
         e.preventDefault();
+        let invalid = this.checkInput();
+        if (invalid) {
+            this.setState({ isProcess: false, invalid });
+            return;
+        }
         let { subjectGroup } = this.state;
         if (subjectGroup.id) {
             this.props.updateSubjectGroup(subjectGroup).then(code => {
@@ -177,6 +193,11 @@ class EditSubjectGroup extends Component {
         });
     }
 
+    checkInput = () => {
+        let { subjectGroup } = this.state;
+        return subjectGroup.code === '' || subjectGroup.status === '' || subjectGroup.subjects.length === 0;
+    }
+
     render() {
         let { subjectGroup } = this.state;
         return (
@@ -203,18 +224,22 @@ class EditSubjectGroup extends Component {
                                 {/* <!-- /.box-header --> */}
                                 <div className="box-body">
                                     <div className="row">
+                                        <div className="col-xs-12 text-center" style={{ color: 'red' }}>
+                                            {this.state.invalid && <p>Vui lòng không bỏ trống các trường có dấu (*)</p>}
+                                        </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="code">Mã tổ hợp môn</label>
+                                                <label htmlFor="code">Mã tổ hợp môn (*)</label>
                                                 <input
                                                     value={subjectGroup.code}
                                                     autoComplete="off"
                                                     type="text"
-                                                    className="form-control"
+                                                    className={'form-control' + (this.state.invalid && this.state.subjectGroup.code === '' ? ' cus-error' : '')}
                                                     id="code"
                                                     name="code"
-                                                    placeholder="Mã tổ hợp môn"
+                                                    placeholder="Mã tổ hợp môn (*)"
                                                     onChange={(e) => this.handleChangeInput(e)}
+                                                    onClick={() => this.setState({ invalid: false })}
                                                 />
                                             </div>
                                         </div>
@@ -235,26 +260,31 @@ class EditSubjectGroup extends Component {
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="subject">Môn</label>
-                                                <Select
-                                                    isMulti={true}
-                                                    styles={selectStyle}
-                                                    onChange={this.handleChangeSubject}
-                                                    options={this.state.subjectOptions}
-                                                    value={this.state.subjectSelectedOption}
-                                                    placeholder="Môn"
-                                                />
+                                                <label htmlFor="subject">Môn (*)</label>
+                                                <div
+                                                    className={this.state.invalid && this.state.subjectGroup.subjects.length === 0 ? 'cus-error' : ''}
+                                                    onClick={() => this.setState({ invalid: false })}
+                                                >
+                                                    <Select
+                                                        isMulti={true}
+                                                        styles={selectStyle}
+                                                        onChange={this.handleChangeSubject}
+                                                        options={this.state.subjectOptions}
+                                                        value={this.state.subjectSelectedOption}
+                                                        placeholder="Môn (*)"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="status">Trạng thái</label>
+                                                <label htmlFor="status">Trạng thái (*)</label>
                                                 <Select
                                                     styles={selectStyle}
                                                     onChange={this.handleChangeStatus}
                                                     options={this.state.statusOptions}
                                                     value={this.state.statusSelectedOption}
-                                                    placeholder="Trạng thái"
+                                                    placeholder="Trạng thái (*)"
                                                 />
                                             </div>
                                         </div>

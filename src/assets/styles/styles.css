@@ -108,3 +108,8 @@ table td, table th {
 #my-loading > i {
     margin-top: 40vh;
 }
+
+.cus-error {
+    box-shadow: 0 0 1px 0px red;
+    border: 1px solid red;
+}

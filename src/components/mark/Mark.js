@@ -268,6 +268,7 @@ class Mark extends Component {
         $('#modal-school').modal('hide');
         this.setState({
             schoolFilter: s.id,
+            majorFilter: undefined,
             major: [],
             pageMajor: 1,
             page: 1
