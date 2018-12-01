@@ -11,6 +11,7 @@ import UserReducer from './UserReducer';
 import LoginReducer from './LoginReducer';
 import StatusReducer from './StatusReducer';
 import DifReducer from './DifReducer';
+import NewReducer from './NewReducer';
 
 const root = combineReducers({
     SectorReducer,
@@ -24,7 +25,8 @@ const root = combineReducers({
     UserReducer,
     LoginReducer,
     StatusReducer,
-    DifReducer
+    DifReducer,
+    NewReducer
 });
 
 export default root;

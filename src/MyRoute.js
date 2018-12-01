@@ -28,6 +28,8 @@ import * as actions from './actions/UserActions';
 import * as actionsStatus from './actions/StatusActions';
 import StatusApi from './api/StatusApi';
 import UserApi from './api/UserApi';
+import EditNew from './components/new/EditNew';
+import New from './components/new/New';
 
 class MyRoute extends Component {
 
@@ -137,6 +139,10 @@ class MyRoute extends Component {
                                 <Route path="/user/list" render={props => (this.validateRole(role, roles.ROOT) ? <User {...props} /> : <Permission />)} />
                                 <Route path="/user/update/:id" exact render={props => (this.validateRole(role, roles.ROOT) ? <EditUser {...props} do='update' /> : <Permission />)} />
                                 <Route path="/user/add" exact render={props => (this.validateRole(role, roles.ROOT) ? <EditUser {...props} do='add' /> : <Permission />)} />
+
+                                <Route path="/new/list" render={props => (this.validateRole(role, roles.VIEW) ? <New {...props} /> : <Permission />)} />
+                                <Route path="/new/update/:id" exact render={props => (this.validateRole(role, roles.UPDATE) ? <EditNew {...props} do='update' /> : <Permission />)} />
+                                <Route path="/new/add" exact render={props => (this.validateRole(role, roles.ADD) ? <EditNew {...props} do='add' /> : <Permission />)} />
 
                                 <Route path="/test" render={props => <Test {...props} test='abcd' />} />
                             </Switch>

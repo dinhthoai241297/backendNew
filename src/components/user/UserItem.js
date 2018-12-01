@@ -16,9 +16,9 @@ class UserItem extends Component {
         let icon = status.renIcon(user.status.status);
         return (
             <tr>
-                <td>{user.username}</td>
+                <td>{user.username || user.email}</td>
                 <td>{user.fullName}</td>
-                <td>{user.role.name}</td>
+                <td>{user.role ? user.role.name : 'Normal'}</td>
                 <td className="text-center">
                     <a
                         data-toggle="tooltip"

@@ -526,7 +526,7 @@ class EditMark extends Component {
                                         </div>
                                         <div className="col-xs-12 col-lg-6">
                                             <div className="form-group">
-                                                <label htmlFor="note">Nghi Chú</label>
+                                                <label htmlFor="note">Ghi chú</label>
                                                 <input
                                                     value={mark.note}
                                                     autoComplete="off"
@@ -534,7 +534,7 @@ class EditMark extends Component {
                                                     className="form-control"
                                                     id="note"
                                                     name="note"
-                                                    placeholder="Nghi Chú"
+                                                    placeholder="Ghi chú"
                                                     onChange={(e) => this.handleChangeInput(e)}
                                                 />
                                             </div>
