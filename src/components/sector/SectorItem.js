@@ -6,10 +6,14 @@ class SectorItem extends Component {
 
     constructor(props) {
         super(props);
+    }
+
+    componentDidMount() {
         $(function () {
             $('[data-toggle="tooltip"]').tooltip();
         })
     }
+
 
     render() {
         let { sector } = this.props;

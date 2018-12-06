@@ -30,6 +30,8 @@ import StatusApi from './api/StatusApi';
 import UserApi from './api/UserApi';
 import EditNew from './components/new/EditNew';
 import New from './components/new/New';
+import Media from './components/media/Media';
+import EditMedia from './components/media/EditMedia';
 
 class MyRoute extends Component {
 
@@ -143,6 +145,9 @@ class MyRoute extends Component {
                                 <Route path="/new/list" render={props => (this.validateRole(role, roles.VIEW) ? <New {...props} /> : <Permission />)} />
                                 <Route path="/new/update/:id" exact render={props => (this.validateRole(role, roles.UPDATE) ? <EditNew {...props} do='update' /> : <Permission />)} />
                                 <Route path="/new/add" exact render={props => (this.validateRole(role, roles.ADD) ? <EditNew {...props} do='add' /> : <Permission />)} />
+
+                                <Route path="/media/list" render={props => (this.validateRole(role, roles.VIEW) ? <Media {...props} /> : <Permission />)} />
+                                <Route path="/media/add" exact render={props => (this.validateRole(role, roles.ADD) ? <EditMedia {...props} do='add' /> : <Permission />)} />
 
                                 <Route path="/test" render={props => <Test {...props} test='abcd' />} />
                             </Switch>

@@ -52,8 +52,8 @@ module.exports = {
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.ProvidePlugin({
-            $: 'admin-lte/bower_components/jquery/dist/jquery.min.js',
-            jQuery: 'admin-lte/bower_components/jquery/dist/jquery.min.js'
+            $: path.resolve(__dirname, './src/assets/vendor/admin-lte/bower_components/jquery/dist/jquery.min.js'),
+            jQuery: path.resolve(__dirname, './src/assets/vendor/admin-lte/bower_components/jquery/dist/jquery.min.js')
         }),
         new webpack.ContextReplacementPlugin(/\.\/locale$/, 'empty-module', false, /js$/)
     ]

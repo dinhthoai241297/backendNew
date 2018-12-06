@@ -5,9 +5,9 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "prestart": "babel-node tools/StartMessage.js",
-        "start": "babel-node tools/SrcServer.js",
-        "build": "webpack"
+        "build": "babel-node tools/build.js",
+        "start": "babel-node tools/distServer.js",
+        "startDev": "babel-node tools/SrcServer.js"
     },
     "author": "rem",
     "license": "ISC",
@@ -27,6 +27,7 @@
         "open": "0.0.5",
         "style-loader": "^0.23.0",
         "webpack": "^4.19.0",
+        "webpack-bundle-analyzer": "^3.0.3",
         "webpack-cli": "^3.1.0",
         "webpack-dev-middleware": "^3.3.0",
         "webpack-hot-middleware": "^2.24.0"

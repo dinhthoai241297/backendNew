@@ -113,3 +113,31 @@ table td, table th {
     box-shadow: 0 0 1px 0px red;
     border: 1px solid red;
 }
+
+.drop_zone {
+    cursor: pointer;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+    color: #00b200;
+    border: 5px dotted #00b200;
+}
+
+.box-mediaUpload {
+    width: 100%;
+    padding: 0;
+    padding-bottom: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 1px solid #adadad;
+    cursor: pointer;
+}
+
+.box-mediaUpload:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.mb-30 {
+    margin-bottom: 30px;
+}

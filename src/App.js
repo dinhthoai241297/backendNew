@@ -1,16 +1,15 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import Header from './components/main/Header';
 import Sidebar from './components/main/Sidebar';
 import Footer from './components/main/Footer';
 import ControlSidebar from './components/main/ControlSidebar';
 import { connect } from 'react-redux';
-import * as actions from './actions/DifActions';
 
 class App extends Component {
 
-    componentDidMount() {
-        $('[data-toggle="tooltip"]').tooltip();
-    }
+    // componentDidMount() {
+    // //     $('[data-toggle="tooltip"]').tooltip();
+    // // }
 
     render() {
         let { user } = this.props;
