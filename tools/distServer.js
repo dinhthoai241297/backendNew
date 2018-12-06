@@ -4,7 +4,7 @@ import open from 'open';
 
 /* eslint-disable no-console */
 
-const port = 8080;
+const port = 8081;
 const app = express();
 
 app.use('/dist', express.static('dist'));
